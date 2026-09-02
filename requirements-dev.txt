@@ -1,0 +1,5 @@
+# CARN-X — development / CI extras (not needed to run the app)
+-r requirements.txt
+
+ruff              # formatter + linter  (`ruff format .` / `ruff check .`)
+playwright        # headless-browser mobile-responsiveness audit (mobile_audit.py)

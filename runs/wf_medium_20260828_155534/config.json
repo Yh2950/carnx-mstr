@@ -1,0 +1,79 @@
+{
+  "window": 64,
+  "initial_train": 504,
+  "step": 21,
+  "embargo": 20,
+  "retrain_every": 3,
+  "max_folds": null,
+  "epochs": 40,
+  "patience": 6,
+  "batch_size": 64,
+  "lr": 0.0012,
+  "weight_decay": 0.00015,
+  "grad_clip": 1.0,
+  "val_frac": 0.15,
+  "ensemble": 2,
+  "seeds": [
+    0,
+    1
+  ],
+  "use_experts": true,
+  "device": "cpu",
+  "num_threads": 4,
+  "verbose": true,
+  "run_dir": "./runs",
+  "tag": "wf_medium",
+  "model": {
+    "seq_feature_names": [
+      "mstr_ret_1",
+      "mstr_rv_20",
+      "mstr_ewmavol",
+      "mstr_dd_60",
+      "mstr_pricez_20",
+      "btc_ret_1",
+      "btc_rv_20",
+      "ibit_ret_1",
+      "mstr_btc_resid_20",
+      "mstr_btc_beta_60",
+      "vix_level",
+      "tnx_chg_5"
+    ],
+    "window": 64,
+    "horizons": [
+      1,
+      5,
+      20
+    ],
+    "d_model": 96,
+    "n_heads": 4,
+    "depth": 3,
+    "mlp_ratio": 2.0,
+    "dropout": 0.2,
+    "tab_hidden": 128,
+    "tab_embed": 64,
+    "trunk_hidden": 128,
+    "use_experts": true,
+    "expert_fourier_freqs": 16,
+    "nu_min": 2.2,
+    "nu_max": 60.0,
+    "sigma_min": 0.05,
+    "sigma_max": 6.0,
+    "w_nll": 1.0,
+    "w_pinball": 0.3,
+    "w_direction": 0.4,
+    "w_vol": 0.25
+  },
+  "targets": {
+    "horizons": [
+      1,
+      5,
+      20
+    ],
+    "vol_lambda": 0.94,
+    "vol_floor_annual": 0.15,
+    "detrend": true,
+    "drift_window": 252,
+    "recency_halflife_days": 504.0,
+    "clip_scaled": 8.0
+  }
+}

@@ -1,0 +1,40 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+
+# --- virtual envs ---
+.venv/
+venv/
+env/
+
+# --- Streamlit ---
+.streamlit/secrets.toml
+
+# --- CARN-X generated artifacts ---
+# legacy prototype checkpoint (74 MB, unused by the app)
+carnx_checkpoints/best.pt
+# transient test checkpoints
+carnx_checkpoints/_test_model.pt
+carnx_checkpoints/*.pt.new
+carnx_config*.json
+runs/wf_smoke_*/
+runs/wf_apptest_*/
+runs/wf_fast_*/
+
+# --- heavy design docs kept out of the deploy repo (still on disk locally) ---
+*.pdf
+
+# --- editor / OS ---
+.idea/
+.vscode/
+.DS_Store
+*.swp
+
+# --- headless-audit scratch ---
+m_*.png
+tv*.js
+tv_test.html

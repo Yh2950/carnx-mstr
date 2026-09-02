@@ -1,0 +1,32 @@
+# CARN-X  --  visual theme only (no behaviour / no logic touched)
+# Neon-aurora dark palette.  Every value here is presentation.
+
+[theme]
+base = "dark"
+primaryColor = "#A855F7"                 # violet -- widgets / accents
+backgroundColor = "#070B1E"              # deep space navy
+secondaryBackgroundColor = "#111834"     # glass panels / inputs
+textColor = "#E9ECFF"
+linkColor = "#38E8FF"
+font = "sans-serif"
+headingFont = "sans-serif"
+codeFont = "monospace"
+baseRadius = "1.1rem"
+borderColor = "rgba(150,170,255,0.16)"
+showWidgetBorder = true
+baseFontSize = 15
+
+# native st.line_chart / st.bar_chart / st.area_chart pick these up
+chartCategoricalColors = [
+  "#38E8FF", "#A855F7", "#F472B6", "#A3E635",
+  "#FBBF24", "#22D3EE", "#818CF8", "#FB7185",
+]
+chartSequentialColors = [
+  "#0B1233", "#15224F", "#1E3A8A", "#3B5BDB",
+  "#5B8DEF", "#38E8FF", "#7DF9FF", "#D9FCFF",
+]
+
+[theme.sidebar]
+backgroundColor = "#0A1030"
+secondaryBackgroundColor = "#131B3E"
+borderColor = "rgba(150,170,255,0.18)"

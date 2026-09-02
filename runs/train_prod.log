@@ -1,0 +1,10 @@
+  0/4
+  1/4
+  2/4
+  3/4
+  4/4
+saved: ./carnx_checkpoints/production_model.pt
+ horizon  expected_move_pct  p_up  ann_vol_implied  ret_q05_pct  ret_q95_pct
+       1             -0.737 0.474           85.929       -8.787        8.023
+       5             -4.356 0.418           85.929      -18.102       11.697
+      20            -17.263 0.396           85.929      -38.267       10.887

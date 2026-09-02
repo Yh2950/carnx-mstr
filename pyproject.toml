@@ -1,0 +1,45 @@
+[project]
+name = "carnx-mstr"
+version = "1.0.0"
+description = "CARN-X — probabilistic forecasting console for MicroStrategy (MSTR)"
+requires-python = ">=3.11"
+readme = "README.md"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+extend-exclude = [".venv", "runs", "data_cache", "carnx_checkpoints", "_imported"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "lf"
+docstring-code-format = false
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B", "C4", "SIM"]
+ignore = [
+  "E402",   # module-level import not at top -- the `import envcheck` interpreter guard
+  "E501",   # line length -- handled by the formatter, long strings are fine
+  "E741",   # ambiguous var name (l, O) -- domain math uses them (low / high, etc.)
+  "B008",   # function call in default arg -- Streamlit / dataclass field() idiom
+  "B023",   # loop var in closure -- every case is an immediately-consumed comprehension
+  "B905",   # zip() without strict= -- lengths are guaranteed equal by construction
+  "SIM108", # ternary -- readability call left to the author
+  "SIM105", # contextlib.suppress -- try/except pass reads clearer at these call sites
+  "C408",   # dict(a=1) -- kept where the keyword form documents the schema
+  "UP035",  # `from typing import Dict` -- annotations are lazy (from __future__), harmless
+  "UP038",  # isinstance tuple -- pending py deprecation, keep explicit
+]
+
+[tool.ruff.lint.isort]
+# keep the `from __future__ import annotations` / `import envcheck` guard intact:
+# envcheck is treated as first-party and never hoisted above __future__.
+known-first-party = ["envcheck"]
+force-sort-within-sections = false
+
+[tool.ruff.lint.per-file-ignores]
+"*.py" = ["F401"]        # `import envcheck  # noqa` and re-exports are deliberate
+"test_*.py" = ["F841", "E731"]
+"stress_test.py" = ["F841", "E731", "B007"]
+"mobile_audit.py" = ["E731"]

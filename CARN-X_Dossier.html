@@ -1,0 +1,966 @@
+<title>CARN-X Product Dossier</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap">
+
+<style>
+:root {
+  --bg: #F4F5FB;
+  --surface: #FFFFFF;
+  --surface-2: #FAFAFE;
+  --text: #191D2E;
+  --text-muted: #595F79;
+  --border: #E4E7F2;
+  --border-strong: #CDD2E6;
+  --accent: #6D28D9;
+  --accent-ink: #FFFFFF;
+  --accent-soft: #F1ECFD;
+  --cyan: #0E7490;
+  --good: #15803D;   --good-soft: #E6F4EC;
+  --warn: #B45309;   --warn-soft: #FAF0E1;
+  --crit: #BE123C;   --crit-soft: #FBEAEF;
+  --shadow: 0 1px 2px rgba(20,25,45,.04), 0 10px 26px -14px rgba(20,25,45,.14);
+  --spine: #E0E3F1;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #070B1A;
+    --surface: #0F1533;
+    --surface-2: #0B1029;
+    --text: #E7EAF7;
+    --text-muted: #8B93B9;
+    --border: rgba(150,170,255,.13);
+    --border-strong: rgba(150,170,255,.24);
+    --accent: #A78BFA;
+    --accent-ink: #0A0620;
+    --accent-soft: rgba(167,139,250,.15);
+    --cyan: #38E8FF;
+    --good: #34E5B0;   --good-soft: rgba(52,229,176,.13);
+    --warn: #FBBF24;   --warn-soft: rgba(251,191,36,.13);
+    --crit: #FB7185;   --crit-soft: rgba(251,113,133,.13);
+    --shadow: 0 1px 2px rgba(0,0,0,.32), 0 14px 34px -16px rgba(0,0,0,.6);
+    --spine: rgba(150,170,255,.2);
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #070B1A;
+  --surface: #0F1533;
+  --surface-2: #0B1029;
+  --text: #E7EAF7;
+  --text-muted: #8B93B9;
+  --border: rgba(150,170,255,.13);
+  --border-strong: rgba(150,170,255,.24);
+  --accent: #A78BFA;
+  --accent-ink: #0A0620;
+  --accent-soft: rgba(167,139,250,.15);
+  --cyan: #38E8FF;
+  --good: #34E5B0;   --good-soft: rgba(52,229,176,.13);
+  --warn: #FBBF24;   --warn-soft: rgba(251,191,36,.13);
+  --crit: #FB7185;   --crit-soft: rgba(251,113,133,.13);
+  --shadow: 0 1px 2px rgba(0,0,0,.32), 0 14px 34px -16px rgba(0,0,0,.6);
+  --spine: rgba(150,170,255,.2);
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 5rem; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } * { animation: none !important; transition: none !important; } }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.68;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---------- top bar ---------- */
+.topbar {
+  position: sticky; top: 0; z-index: 50;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 1rem; padding: .75rem clamp(1rem, 4vw, 2.5rem);
+  background: color-mix(in srgb, var(--bg) 82%, transparent);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+}
+.wordmark {
+  font-family: "Space Grotesk", sans-serif; font-weight: 700;
+  letter-spacing: .02em; font-size: 1rem;
+}
+.wordmark span { color: var(--accent); }
+.topnav { display: flex; gap: .3rem; flex-wrap: wrap; }
+.topnav a {
+  font-family: "IBM Plex Mono", monospace; font-size: .72rem;
+  letter-spacing: .06em; text-transform: uppercase;
+  color: var(--text-muted); text-decoration: none;
+  padding: .35rem .6rem; border-radius: 7px;
+}
+.topnav a:hover { color: var(--text); background: var(--accent-soft); }
+.topnav a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* ---------- shell ---------- */
+.wrap {
+  max-width: 1180px; margin: 0 auto;
+  padding: clamp(1.5rem, 5vw, 3.5rem) clamp(1rem, 4vw, 2.5rem) 6rem;
+  display: grid; grid-template-columns: 1fr; gap: 2rem;
+}
+@media (min-width: 1080px) {
+  .wrap { grid-template-columns: 220px minmax(0, 1fr); gap: 3.5rem; }
+}
+.rail { display: none; }
+@media (min-width: 1080px) {
+  .rail {
+    display: block; position: sticky; top: 5rem; align-self: start;
+    font-size: .82rem; max-height: calc(100vh - 7rem); overflow-y: auto;
+  }
+  .rail strong {
+    display: block; font-family: "IBM Plex Mono", monospace;
+    font-size: .68rem; letter-spacing: .12em; text-transform: uppercase;
+    color: var(--text-muted); margin: 1.2rem 0 .4rem;
+  }
+  .rail a {
+    display: block; color: var(--text-muted); text-decoration: none;
+    padding: .22rem 0; border-left: 2px solid transparent; padding-left: .7rem;
+  }
+  .rail a:hover { color: var(--text); border-color: var(--border-strong); }
+}
+.doc { min-width: 0; max-width: 780px; }
+
+/* ---------- masthead ---------- */
+.masthead { margin-bottom: 3.5rem; }
+.eyebrow {
+  font-family: "IBM Plex Mono", monospace; font-size: .72rem;
+  letter-spacing: .16em; text-transform: uppercase; color: var(--accent);
+  margin-bottom: 1rem;
+}
+h1.title {
+  font-family: "Space Grotesk", sans-serif; font-weight: 700;
+  font-size: clamp(2.1rem, 6vw, 3.1rem); line-height: 1.05;
+  letter-spacing: -.02em; margin: 0 0 1rem; text-wrap: balance;
+}
+.lede { font-size: 1.12rem; color: var(--text-muted); max-width: 62ch; }
+.metaline {
+  margin-top: 1.6rem; display: flex; flex-wrap: wrap; gap: .5rem .9rem;
+  font-family: "IBM Plex Mono", monospace; font-size: .78rem; color: var(--text-muted);
+}
+.metaline b { color: var(--text); font-weight: 500; }
+
+.readguide {
+  margin-top: 2rem; border: 1px solid var(--border); border-radius: 14px;
+  background: var(--surface); box-shadow: var(--shadow); overflow: hidden;
+}
+.readguide-row {
+  display: grid; grid-template-columns: 4.5rem 1fr; gap: 1rem;
+  padding: .85rem 1.1rem; border-top: 1px solid var(--border);
+}
+.readguide-row:first-child { border-top: 0; }
+.readguide-row code {
+  font-family: "IBM Plex Mono", monospace; font-weight: 500; color: var(--accent);
+  font-size: .82rem;
+}
+.readguide-row span { font-size: .92rem; color: var(--text-muted); }
+
+/* ---------- document parts ---------- */
+.part { margin: 5rem 0 0; scroll-margin-top: 5rem; }
+.part-head {
+  border-top: 2px solid var(--text); padding-top: 1.1rem; margin-bottom: 2rem;
+}
+.part-index {
+  font-family: "IBM Plex Mono", monospace; font-size: .74rem;
+  letter-spacing: .14em; text-transform: uppercase; color: var(--accent);
+  display: flex; align-items: baseline; gap: .8rem;
+}
+.part-index .sep { color: var(--border-strong); }
+h2.part-title {
+  font-family: "Space Grotesk", sans-serif; font-weight: 600;
+  font-size: clamp(1.7rem, 4vw, 2.35rem); letter-spacing: -.015em;
+  margin: .5rem 0 .6rem; text-wrap: balance;
+}
+.part-purpose { color: var(--text-muted); font-size: 1.05rem; max-width: 58ch; }
+
+h3 {
+  font-family: "IBM Plex Sans", sans-serif; font-weight: 600;
+  font-size: 1.16rem; letter-spacing: -.005em;
+  margin: 2.6rem 0 .9rem; scroll-margin-top: 5rem;
+}
+h4 {
+  font-family: "IBM Plex Mono", monospace; font-weight: 500;
+  font-size: .82rem; letter-spacing: .06em; text-transform: uppercase;
+  color: var(--text-muted); margin: 1.8rem 0 .6rem;
+}
+p { margin: 0 0 1rem; }
+.doc ul, .doc ol { margin: 0 0 1.1rem; padding-left: 1.3rem; }
+.doc li { margin: .3rem 0; }
+.doc li::marker { color: var(--accent); }
+strong { font-weight: 600; }
+code {
+  font-family: "IBM Plex Mono", monospace; font-size: .88em;
+  background: var(--surface-2); border: 1px solid var(--border);
+  border-radius: 5px; padding: .06em .35em;
+}
+a { color: var(--accent); }
+
+/* ---------- chips ---------- */
+.chip {
+  display: inline-flex; align-items: center; gap: .35rem;
+  font-family: "IBM Plex Mono", monospace; font-size: .68rem; font-weight: 500;
+  letter-spacing: .04em; text-transform: uppercase;
+  padding: .18rem .5rem; border-radius: 999px; white-space: nowrap;
+  border: 1px solid transparent;
+}
+.chip::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.chip.shipped  { color: var(--good); background: var(--good-soft); border-color: color-mix(in srgb, var(--good) 30%, transparent); }
+.chip.partial  { color: var(--warn); background: var(--warn-soft); border-color: color-mix(in srgb, var(--warn) 30%, transparent); }
+.chip.deferred { color: var(--crit); background: var(--crit-soft); border-color: color-mix(in srgb, var(--crit) 30%, transparent); }
+.chip.plain    { color: var(--text-muted); background: var(--surface-2); border-color: var(--border); }
+.chip.plain::before { display: none; }
+
+/* ---------- tables ---------- */
+.tablewrap { overflow-x: auto; margin: 1rem 0 1.6rem; border: 1px solid var(--border); border-radius: 12px; box-shadow: var(--shadow); }
+table { width: 100%; border-collapse: collapse; font-size: .9rem; background: var(--surface); }
+thead th {
+  text-align: left; font-family: "IBM Plex Mono", monospace; font-weight: 500;
+  font-size: .68rem; letter-spacing: .08em; text-transform: uppercase;
+  color: var(--text-muted); padding: .7rem .9rem;
+  border-bottom: 1px solid var(--border-strong); white-space: nowrap;
+}
+tbody td { padding: .7rem .9rem; border-top: 1px solid var(--border); vertical-align: top; }
+tbody tr:first-child td { border-top: 0; }
+td .id, td code.id {
+  font-family: "IBM Plex Mono", monospace; font-weight: 500; color: var(--accent);
+  font-size: .82rem; background: none; border: 0; padding: 0; white-space: nowrap;
+}
+.num { font-variant-numeric: tabular-nums; text-align: right; white-space: nowrap; }
+td.mono, .mono { font-family: "IBM Plex Mono", monospace; font-size: .84rem; }
+
+/* ---------- layer stack ---------- */
+.stack { margin: 1.2rem 0 1.8rem; border-left: 2px solid var(--spine); padding-left: 0; }
+.layer {
+  position: relative; display: grid;
+  grid-template-columns: 3.2rem minmax(0,1fr) auto; gap: .9rem; align-items: center;
+  padding: .8rem 1rem .8rem 1.4rem; margin-left: -2px;
+  border-left: 2px solid transparent;
+}
+.layer + .layer { border-top: 1px solid var(--border); }
+.layer:hover { border-left-color: var(--accent); background: var(--surface-2); }
+.layer .lx {
+  font-family: "Space Grotesk", sans-serif; font-weight: 700; font-size: .95rem;
+  color: var(--accent);
+}
+.layer .lname { font-family: "IBM Plex Mono", monospace; font-size: .84rem; }
+.layer .lname em { color: var(--text-muted); font-style: normal; display: block; font-size: .82rem; margin-top: .1rem; font-family: "IBM Plex Sans", sans-serif; }
+
+/* ---------- panels ---------- */
+.panel {
+  border: 1px solid var(--border); border-radius: 14px; background: var(--surface);
+  box-shadow: var(--shadow); padding: 1.3rem 1.4rem; margin: 1.4rem 0 1.8rem;
+}
+.panel.accent { border-left: 3px solid var(--accent); }
+.panel.verdict { border-left: 3px solid var(--good); background: var(--good-soft); }
+.panel.limit { border-left: 3px solid var(--warn); }
+.panel h4 { margin-top: 0; }
+.panel p:last-child, .panel ul:last-child { margin-bottom: 0; }
+
+.grid2 { display: grid; gap: 1rem; grid-template-columns: 1fr; margin: 1.2rem 0 1.6rem; }
+@media (min-width: 640px) { .grid2 { grid-template-columns: 1fr 1fr; } }
+.card {
+  border: 1px solid var(--border); border-radius: 12px; background: var(--surface);
+  padding: 1.1rem 1.2rem; box-shadow: var(--shadow);
+}
+.card h4 { margin-top: 0; }
+.card p { font-size: .92rem; color: var(--text-muted); margin: 0; }
+
+.stat { display: grid; gap: .15rem; }
+.stat .v { font-family: "Space Grotesk", sans-serif; font-weight: 700; font-size: 1.5rem; font-variant-numeric: tabular-nums; }
+.stat .k { font-family: "IBM Plex Mono", monospace; font-size: .68rem; letter-spacing: .08em; text-transform: uppercase; color: var(--text-muted); }
+
+/* ---------- diagram figures ---------- */
+figure { margin: 1.4rem 0 1.8rem; }
+.diagram {
+  background: #FCFCFE; border: 1px solid var(--border-strong); border-radius: 14px;
+  padding: 1.4rem; overflow-x: auto;
+}
+.diagram .mermaid { min-width: 480px; display: flex; justify-content: center; }
+figcaption {
+  font-family: "IBM Plex Mono", monospace; font-size: .72rem; color: var(--text-muted);
+  letter-spacing: .04em; margin-top: .6rem; text-align: center;
+}
+
+hr { border: 0; border-top: 1px solid var(--border); margin: 3rem 0; }
+.footer {
+  margin-top: 5rem; padding-top: 1.5rem; border-top: 1px solid var(--border);
+  font-family: "IBM Plex Mono", monospace; font-size: .76rem; color: var(--text-muted);
+}
+</style>
+
+<div class="topbar">
+  <div class="wordmark">CARN<span>·</span>X <span style="color:var(--text-muted);font-weight:500">Dossier</span></div>
+  <nav class="topnav">
+    <a href="#mvp">MVP</a>
+    <a href="#mrd">MRD</a>
+    <a href="#prd">PRD</a>
+    <a href="#erd">ERD</a>
+  </nav>
+</div>
+
+<div class="wrap">
+
+  <aside class="rail" aria-label="Contents">
+    <strong>Front matter</strong>
+    <a href="#build-history">Build history</a>
+    <strong>1 · MVP</strong>
+    <a href="#mvp-loop">Core loop</a>
+    <a href="#mvp-scope">Scope in / out</a>
+    <a href="#mvp-dod">Definition of done</a>
+    <strong>2 · MRD</strong>
+    <a href="#mrd-problem">The problem</a>
+    <a href="#mrd-user">Who it's for</a>
+    <a href="#mrd-context">Market context</a>
+    <a href="#mrd-alt">Alternatives</a>
+    <a href="#mrd-req">Market requirements</a>
+    <strong>3 · PRD</strong>
+    <a href="#prd-engines">Three engines</a>
+    <a href="#prd-arch">8-layer architecture</a>
+    <a href="#prd-screens">Screen specs</a>
+    <a href="#prd-fr">Functional reqs</a>
+    <a href="#prd-nfr">Non-functional reqs</a>
+    <a href="#prd-pipeline">Data pipeline</a>
+    <a href="#prd-config">Configuration</a>
+    <a href="#prd-training">Training &amp; honesty</a>
+    <a href="#prd-limits">Known limits</a>
+    <a href="#prd-validation">Validation</a>
+    <a href="#prd-design">Design system</a>
+    <strong>4 · ERD</strong>
+    <a href="#erd-diagram">Entity diagram</a>
+    <a href="#erd-dict">Entity dictionary</a>
+    <a href="#erd-provenance">Prediction provenance</a>
+  </aside>
+
+  <main class="doc">
+
+    <header class="masthead">
+      <div class="eyebrow">Product Dossier &nbsp;·&nbsp; v1.0 &nbsp;·&nbsp; 2026-08-31</div>
+      <h1 class="title">CARN-X — probabilistic forecasting console for MSTR</h1>
+      <p class="lede">One page, four documents. The minimum viable product, the market it answers to, the full product specification, and the data model — for a research-grade tool that forecasts the <em>full predictive distribution</em> of MicroStrategy returns and refuses to pretend it can call direction.</p>
+      <div class="metaline">
+        <span>Built <b>2026-08-28 → 2026-08-31</b></span>
+        <span>·</span>
+        <span><b>~20 h</b> across 4 phases</span>
+        <span>·</span>
+        <span>Python · PyTorch · Streamlit</span>
+        <span>·</span>
+        <span>CPU-only</span>
+      </div>
+
+      <div class="readguide">
+        <div class="readguide-row"><code>MVP</code><span>What the smallest shippable version is, and what it deliberately leaves out.</span></div>
+        <div class="readguide-row"><code>MRD</code><span>The problem in the market, who has it, and the requirements that problem imposes.</span></div>
+        <div class="readguide-row"><code>PRD</code><span>The architecture, every screen, functional and non-functional requirements, the training method, and the honesty stance.</span></div>
+        <div class="readguide-row"><code>ERD</code><span>Every data and model entity, how each is produced, and how a single prediction is assembled.</span></div>
+      </div>
+    </header>
+
+    <!-- ============ BUILD HISTORY ============ -->
+    <section id="build-history" class="part">
+      <div class="part-head">
+        <div class="part-index">Front matter <span class="sep">/</span> How it got here</div>
+        <h2 class="part-title">Build history — four phases</h2>
+        <p class="part-purpose">The project started as an over-ambitious "combine all of mathematics into one neural net" prompt and was rebuilt into an honestly-evaluated pipeline. Each phase is a real checkpoint, not a sprint label.</p>
+      </div>
+
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>Phase</th><th>Date</th><th>What shipped</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><span class="id">P1</span> Foundation</td>
+              <td class="mono">Aug 28</td>
+              <td>Deep scan of every file in the folder. Rejected the monolith framing. Built the real pipeline: <code>data_layer</code> → <code>features</code> → <code>targets</code> → <code>dataset</code> → <code>forecast_net</code> → <code>walk_forward</code> → <code>baselines</code> → <code>evaluation</code>, with anti-look-ahead guarantees enforced by <code>test_integrity.py</code>.</td>
+            </tr>
+            <tr>
+              <td><span class="id">P2</span> Productization</td>
+              <td class="mono">Aug 29</td>
+              <td><code>inference.py</code> production path (train once, save, load, serve). <code>mstr_app.py</code> Streamlit console. Data-freshness fixes: intraday-to-daily backfill, split-adjustment verified end-to-end. Every MSTR-related script on the machine copied (never moved) into <code>_imported/</code>.</td>
+            </tr>
+            <tr>
+              <td><span class="id">P3</span> Depth</td>
+              <td class="mono">Aug 30</td>
+              <td>25-model probability lab with per-sensor on/off toggles and a headline first-passage answer. BTC 4-year halving-cycle engine. External-critique audit (unit fixes, Chebyshev→Cantelli, holiday-aware trading days, GARCH + Markov for the IID violation). Architecture aligned to the CARN-X 8-layer spec: <code>config.CarnxConfig</code>, <code>carnx.CARNX</code> orchestrator, <code>ExpertStrengths</code>→<code>Routing</code> (15 gates + <code>LossSchedule</code>). <code>NET_ARCH_VERSION = 2</code>. Deep retrain (<code>production_xl</code>, 9-seed ensemble). Monte-Carlo engine rebuilt: configurable drift, martingale-safe convexity correction, antithetic variates, trading-calendar bi-directional sync, first-passage / CVaR / drawdown metrics.</td>
+            </tr>
+            <tr>
+              <td><span class="id">P4</span> Polish &amp; hardening</td>
+              <td class="mono">Aug 31</td>
+              <td>Visual identity: <code>theme.py</code> neon-aurora skin, hero banners, Altair chart theme. <code>charts.py</code> — 16 chart builders (candlestick, donut, gauge, gradient area, diverging bars, ranked bars, bullet, ridgeline, PIT reliability). Brutal adversarial audit: <code>stress_test.py</code>, 7 sections, 174 widget mutations across 9 screens. <strong>Three real bugs found and fixed</strong> — calc-screen <code>OverflowError</code> at long horizons, wrong Altair-6 theme API, chart crashes on degenerate input.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ============ 1 · MVP ============ -->
+    <section id="mvp" class="part">
+      <div class="part-head">
+        <div class="part-index">Document 1 <span class="sep">/</span> Minimum Viable Product</div>
+        <h2 class="part-title">The smallest thing that delivers an honest probability</h2>
+        <p class="part-purpose">A local console that trains one probabilistic model on real MSTR history and serves its calibrated distribution, a fair Monte-Carlo cone, and a classical-statistics second opinion — with the out-of-sample evidence attached.</p>
+      </div>
+
+      <h3 id="mvp-loop">The core loop</h3>
+      <p>Four steps. Steps 1–3 run once (or on demand); step 4 is every screen, instant, from a cached checkpoint.</p>
+      <ol>
+        <li><strong>Fetch</strong> — daily OHLCV for MSTR plus 11 context assets from Yahoo Finance, split- and dividend-adjusted, aligned to the NYSE calendar, cached to parquet.</li>
+        <li><strong>Feature &amp; target</strong> — ~265 strictly-causal features; vol-normalized, de-trended forward-log-return targets at horizons 1 / 5 / 20 days.</li>
+        <li><strong>Train once</strong> — a 9-seed ensemble of the hybrid net on all history (~11 min, CPU); persisted with a schema fingerprint.</li>
+        <li><strong>Serve</strong> — nine screens load the checkpoint and render the predictive distribution, the Monte-Carlo cone, the probability lab, the BTC-cycle scenario, and the walk-forward evidence.</li>
+      </ol>
+
+      <h3 id="mvp-scope">Scope — in and out for v1</h3>
+      <div class="grid2">
+        <div class="card">
+          <h4>In scope <span class="chip shipped">shipped</span></h4>
+          <p style="color:var(--text)">
+            Full Student-t predictive distribution (μ, σ, ν) per horizon · calibrated direction probability · Monte-Carlo price cone with four drift modes · first-passage / terminal / multi-touch probabilities · VaR &amp; CVaR at 1% and 5% · 25+ classical distributions with E / Var / SD · GARCH(1,1) &amp; 2-state Markov · BTC halving-cycle structural scenario · walk-forward OOS evidence with calibration diagnostics · advisory position sizing · one-click retrain.
+          </p>
+        </div>
+        <div class="card">
+          <h4>Out of scope <span class="chip deferred">deferred</span></h4>
+          <p>
+            Intraday horizons · options greeks / implied-vol surface · live order routing or brokerage integration · multi-ticker portfolios · the L5 macro-micro fusion layer (present, off by default) · Engine A (structural bivariate Merton-jump BTC + Ornstein-Uhlenbeck mNAV Monte-Carlo) · Sobol quasi-random sequences · hosted / multi-user deployment.
+          </p>
+        </div>
+      </div>
+
+      <h3 id="mvp-dod">Definition of done</h3>
+      <ul>
+        <li><code>test_app.py</code> — 10 steps, green (data, inference, every screen, the real train button, integrity, orchestrator conformance, MC engine).</li>
+        <li><code>stress_test.py</code> — 7 sections, green (chart fuzz, MC invariant sweep, calendar round-trip, config, model staleness, prob-model extremes, 174-mutation widget sweep).</li>
+        <li><code>test_integrity.py</code> and <code>test_prob_math.py</code> — green.</li>
+        <li>A <code>production_xl</code> checkpoint exists; every non-Settings screen loads it in under a second.</li>
+        <li>The walk-forward report is reproducible and its calibration numbers are documented (see <a href="#prd-training">§3.8</a>).</li>
+      </ul>
+    </section>
+
+    <!-- ============ 2 · MRD ============ -->
+    <section id="mrd" class="part">
+      <div class="part-head">
+        <div class="part-index">Document 2 <span class="sep">/</span> Market Requirements</div>
+        <h2 class="part-title">Why this tool has to exist</h2>
+        <p class="part-purpose">MSTR is one of the most-analysed and worst-served names for a retail analyst who wants a probability rather than a headline. Three failure modes dominate the alternatives.</p>
+      </div>
+
+      <h3 id="mrd-problem">The problem, in three framings</h3>
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>Failure mode</th><th>What it looks like</th><th>Why it misleads</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><strong>Point-target theatre</strong></td>
+              <td>"MSTR price target: $432."</td>
+              <td>No probability is attached. A number with no distribution around it can't be sized, hedged, or falsified.</td>
+            </tr>
+            <tr>
+              <td><strong>Naive-GBM artifact</strong></td>
+              <td>A generic Monte-Carlo calculator returns "93% chance MSTR is lower in 60 days."</td>
+              <td>Negative backward-looking drift plus the −½σ² volatility drag at ~85% annualized vol mechanically forces most paths down. A near-certain decline only exists near insolvency — not for a going concern.</td>
+            </tr>
+            <tr>
+              <td><strong>Assumption laundered as forecast</strong></td>
+              <td>"If BTC reaches $150k then MSTR is $432" — presented as a prediction.</td>
+              <td>The conditional is an assumption the reader supplied. The probability of the antecedent is never stated, so the whole chain inherits false confidence.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 id="mrd-user">Who it's for</h3>
+      <ul>
+        <li><strong>Primary</strong> — a single quant-curious MSTR holder or independent analyst who wants institutional methodology (calibrated distributions, walk-forward validation, fat-tailed innovations) running on a laptop, not a Bloomberg terminal.</li>
+        <li><strong>Secondary</strong> — anyone stress-testing an MSTR thesis who needs to see the same question from the neural, the classical-statistics, and the BTC-cycle angle at once.</li>
+      </ul>
+
+      <h3 id="mrd-context">Market context that shapes the requirements</h3>
+      <ul>
+        <li>MSTR trades as a <strong>leveraged Bitcoin-treasury proxy</strong>. Its multi-month path is BTC-driven; its rolling beta to BTC is ~1.4–1.5.</li>
+        <li>BTC's multi-year path has historically organised around the <strong>~4-year halving cycle</strong>, with collapsing amplitude each cycle (2016 ≈ ×100, 2020 ≈ ×7, 2024 ≈ ×1.8).</li>
+        <li>The stock carries an <strong>mNAV premium</strong> over its Bitcoin holdings and a Saylor reflexivity flywheel (issue shares above NAV → buy BTC → raise sats-per-share).</li>
+        <li>Post the 2024 10:1 split and in the ETF era, realized annualized volatility sits at <strong>82–88%</strong>. As of the current panel: last close $127.31, all-time high $473.83 (2024-11-20), −73% drawdown.</li>
+      </ul>
+
+      <h3 id="mrd-alt">Alternatives and why they fall short</h3>
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>Alternative</th><th>Gap</th></tr></thead>
+          <tbody>
+            <tr><td>Sell-side analyst price targets</td><td>Scenario, not probability. No distribution, no calibration record.</td></tr>
+            <tr><td>TradingView / charting indicators</td><td>No forward distribution; no fat tails; no walk-forward evidence.</td></tr>
+            <tr><td>Generic Monte-Carlo calculators</td><td>Naive GBM, Gaussian steps, no trading calendar, the drift artifact above.</td></tr>
+            <tr><td>Bloomberg / institutional platforms</td><td>Inaccessible to the target user, and still point-estimate-centric for a name like this.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 id="mrd-req">Requirements the market imposes</h3>
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>ID</th><th>Requirement</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td><span class="id">MRD-01</span></td><td>Every forward statement carries a probability or an explicit interval — never a bare point.</td><td><span class="chip shipped">shipped</span></td></tr>
+            <tr><td><span class="id">MRD-02</span></td><td>The tool never claims directional skill it cannot demonstrate out-of-sample.</td><td><span class="chip shipped">shipped</span></td></tr>
+            <tr><td><span class="id">MRD-03</span></td><td>The UI structurally separates an assumption ("if BTC → X") from a model probability ("P(BTC reaches X)").</td><td><span class="chip shipped">shipped</span></td></tr>
+            <tr><td><span class="id">MRD-04</span></td><td>Spot price is the latest split- and dividend-adjusted close; the 10:1 split must not appear as a 10× jump.</td><td><span class="chip shipped">shipped</span></td></tr>
+            <tr><td><span class="id">MRD-05</span></td><td>Return innovations are fat-tailed (Student-t), not Gaussian.</td><td><span class="chip shipped">shipped</span></td></tr>
+            <tr><td><span class="id">MRD-06</span></td><td>Horizons are counted in NYSE trading days with US market holidays excluded.</td><td><span class="chip shipped">shipped</span></td></tr>
+            <tr><td><span class="id">MRD-07</span></td><td>The Monte-Carlo drift is user-selectable; the risk-neutral mode is a true martingale (E[S<sub>T</sub>] = S<sub>0</sub>·e<sup>rT</sup>).</td><td><span class="chip shipped">shipped</span></td></tr>
+            <tr><td><span class="id">MRD-08</span></td><td>Runs offline on CPU; every result reproducible from a fixed seed.</td><td><span class="chip shipped">shipped</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="panel accent">
+        <h4>Success criteria</h4>
+        <ul>
+          <li>Out-of-sample <strong>PIT–KS &lt; 0.06</strong> and <strong>90% interval coverage within ±0.04</strong> of the nominal at every horizon.</li>
+          <li>A user can go from a clean checkout to a calibrated distribution with one <em>Train model now</em> click.</li>
+          <li>No screen can present a scenario as if it were a probability.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ============ 3 · PRD ============ -->
+    <section id="prd" class="part">
+      <div class="part-head">
+        <div class="part-index">Document 3 <span class="sep">/</span> Product Requirements</div>
+        <h2 class="part-title">The full specification</h2>
+        <p class="part-purpose">Architecture, every screen, functional and non-functional requirements, the data pipeline, the configuration system, the training method, the honest results, the known limits, and the validation strategy.</p>
+      </div>
+
+      <h3 id="prd-engines">3.1 &nbsp; System overview — three engines in parallel</h3>
+      <p>Three independent forecasting engines run side by side. All three draw from the same historical panel; none feeds another. They "cross-reference" only in the UI, so the user sees one question from three angles. The neural engine is the flagship; the other two are baselines and scenarios.</p>
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>Engine</th><th>Module</th><th>Produces</th><th>Rests on</th></tr></thead>
+          <tbody>
+            <tr><td><strong>A · Neural</strong> (8-layer core)</td><td class="mono">forecast_net · walk_forward · inference</td><td>Full Student-t distribution (μ, σ, ν) at h = 1 / 5 / 20</td><td>Trained ensemble + 265 causal features</td></tr>
+            <tr><td><strong>B · Analytic</strong></td><td class="mono">prob_models</td><td>25+ closed-form distributions with E / Var / SD + a specific probability; GARCH; Markov; a GBM / Student-t Monte-Carlo</td><td>Closed-form statistics from the trailing 504 days</td></tr>
+            <tr><td><strong>C · Structural</strong> (BTC cycle)</td><td class="mono">btc_cycle</td><td>Multi-year scenario: BTC price along the halving cycle → MSTR via rolling beta</td><td>Full BTC history + template of the 3 prior cycles</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 id="prd-arch">3.2 &nbsp; The CARN-X 8-layer architecture</h3>
+      <p>The named orchestrator is <code>carnx.CARNX</code> — one method per layer. <code>config.CarnxConfig</code> is threaded through all of them; <code>python carnx.py</code> prints the live conformance report.</p>
+      <div class="panel" style="padding:0;overflow:hidden">
+        <div class="stack">
+          <div class="layer"><span class="lx">L1</span><span class="lname">diagnosis_layer<em>Statistical characterisation of the current regime — GARCH vol, STL decomposition, distribution fit, EVT / GEV, change-points (Pelt), order · repetition · symmetry.</em></span><span class="chip shipped">wired</span></div>
+          <div class="layer"><span class="lx">L2</span><span class="lname">combinatorial_gate → Routing<em>Turns the L1 diagnosis into 15 attention-gate strengths + a LossSchedule + the dominant combinatorial case (n<sup>k</sup> / P(n,k) / C(n+k−1,k) / C(n,k)). This is the "screw" that fastens the algorithmic layer onto the net.</em></span><span class="chip shipped">wired</span></div>
+          <div class="layer"><span class="lx">L3</span><span class="lname">gated expert modules<em>Fourier (spectral) · Recurrent/Fibonacci (GRU) · Wavelet (à-trous dilated conv) · GARCH (GRU vol path) · ChangePoint (time-attention) · Extreme gate · MC-dropout. Each is active only when its gate &gt; 0.15.</em></span><span class="chip shipped">wired</span></div>
+          <div class="layer"><span class="lx">L4</span><span class="lname">forecast_net.ForecastNet<em>RoPE causal Transformer (d=96, 4 heads, depth 3) over 12 curated series ‖ MLP over the full ~265-feature vector → per-horizon Student-t head (μ, log σ, log ν) + calibrated direction head + forward-vol head.</em></span><span class="chip shipped">wired</span></div>
+          <div class="layer"><span class="lx">L5</span><span class="lname">macro_micro_fusion + nav_premium<em>Merges an mNAV-premium macro vector into the hidden stream. Present but off by default — needs a NAV-premium CSV.</em></span><span class="chip partial">off by default</span></div>
+          <div class="layer"><span class="lx">L6</span><span class="lname">forecast_loss<em>L = w<sub>nll</sub>·StudentT-NLL + w<sub>pin</sub>·pinball + w<sub>dir</sub>·BCE(direction) + w<sub>vol</sub>·Huber(fwd vol) + w<sub>struct</sub>·(hidden-trajectory smoothness). Weights come from L2's LossSchedule; risk-aversion up-weights extreme samples.</em></span><span class="chip shipped">wired</span></div>
+          <div class="layer"><span class="lx">L7</span><span class="lname">inference + inference_decision_layer + leverage_factorization<em>Predictive distribution for the latest bar, the Monte-Carlo cone, tail probabilities, and an advisory position / leverage recommendation.</em></span><span class="chip shipped">wired</span></div>
+          <div class="layer"><span class="lx">L8</span><span class="lname">walk_forward + evaluation + baselines<em>Expanding-window walk-forward with embargo, 8 honest baselines on the same folds, calibration diagnostics, Diebold-Mariano, and a costed strategy with a regime split.</em></span><span class="chip shipped">wired</span></div>
+        </div>
+      </div>
+
+      <h3 id="prd-screens">3.3 &nbsp; Screen specifications</h3>
+      <p>Nine Streamlit screens. Each spec lists its job, its inputs, and its outputs. All render under the neon-aurora theme (<a href="#prd-design">§3.11</a>).</p>
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>Screen</th><th>Job</th><th>Inputs</th><th>Outputs</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><strong>Overview</strong><br><span class="mono">סקירה</span></td>
+              <td>One-glance snapshot of price, volatility, drawdown, and MSTR vs BTC.</td>
+              <td>—</td>
+              <td>5 KPI cards · MSTR candlestick + volume · distance-from-ATH gauge · up / down-day donut · diverging daily-return bars · gradient drawdown area · optional NAV-premium block.</td>
+            </tr>
+            <tr>
+              <td><strong>Probability Lab</strong><br><span class="mono">מחשבון הסתברויות</span></td>
+              <td>Run every classical probability / statistics / combinatorics model against user sensors.</td>
+              <td>Target price · target date (→ trading-day horizon) · move threshold · k · day n · r · loss % · extreme % · sample days · pattern · price band. Each sensor has an on/off toggle that hides dependent models.</td>
+              <td>Headline first-passage answer (historical vs BTC-cycle drift) with P(touch) gauge + donut · "expected price next trading day" panel · 7 family tabs (query builder / discrete / continuous / extreme / combinatorics / time-dependent / statistical inference / full table), each model with E · Var · SD + its probability.</td>
+            </tr>
+            <tr>
+              <td><strong>Diagnosis</strong><br><span class="mono">אבחון סטטיסטי</span></td>
+              <td>Characterise the current regime (L1, standalone).</td>
+              <td>Diagnosis window (60–500 trading days).</td>
+              <td>8 metric cards (historical vol, MaxDD, skew, kurtosis, best-fit distribution, JB normality, dominant cycle, IQR outliers) · 3 gauges + an outlier donut · engine recommendations · GARCH(1,1) conditional-vol gradient area.</td>
+            </tr>
+            <tr>
+              <td><strong>Probabilistic Forecast</strong><br><span class="mono">תחזית הסתברותית</span></td>
+              <td>Show the model's calibrated distribution.</td>
+              <td>Per-horizon "probability of a drop of at least …" select-slider.</td>
+              <td>Ridgeline of the three Student-t densities · per horizon: 5 metric cards + a P(up) gauge + a return-vs-90%-range bullet + a percentile → price table + a tail-probability bar.</td>
+            </tr>
+            <tr>
+              <td><strong>Monte Carlo</strong><br><span class="mono">Monte Carlo</span></td>
+              <td>A fair forward price cone.</td>
+              <td>Horizon 5–504 trading days (bi-directionally synced to a target date; preset buttons 1M / 3M / 6M / Apr-2027 / 1Y / 2Y) · path count 5k–100k · target price · drift mode (risk-neutral r / scenario μ / historical / model) · log-Y toggle.</td>
+              <td>8 metric cards (E, median, P(up), μ used, VaR &amp; CVaR at 1% &amp; 5%, median MaxDD) · P(touch) gauge + terminal-bucket donut · fan chart (p1–p99 bands + sampled traces + reference lines) · terminal histogram + KDE · full percentile table with skew / excess-kurtosis.</td>
+            </tr>
+            <tr>
+              <td><strong>BTC Cycle → MSTR</strong><br><span class="mono">מחזור ביטקוין → MSTR</span></td>
+              <td>The multi-year structural scenario.</td>
+              <td>Target date · current-cycle weight (0–1) · macro overlay toggle · structural panel: BTC target · mNAV premium.</td>
+              <td>4 cycle-state cards · BTC candlestick (log-Y) + cycle-phase gauge · BTC &amp; MSTR median + 80% band · MSTR cone vs history · the three prior cycles aligned by days-from-halving · structural panel: implied MSTR (assumption) + P(BTC reaches target) (model), kept visually separate.</td>
+            </tr>
+            <tr>
+              <td><strong>Walk-Forward Evidence</strong><br><span class="mono">ראיות Walk-Forward</span></td>
+              <td>The out-of-sample proof.</td>
+              <td>Run selector (any <code>runs/*/oos_predictions.parquet</code>).</td>
+              <td>Per-horizon dir-acc + binomial p, RMSE skill vs RW, PIT-KS, 90% coverage, Student-t NLL, costed-strategy Sharpe / MaxDD / vol · ranked bars for dir-acc &amp; coverage · PIT reliability histogram with the nominal-frequency reference line.</td>
+            </tr>
+            <tr>
+              <td><strong>Risk &amp; Leverage</strong><br><span class="mono">סיכון ומינוף</span></td>
+              <td>Advisory position sizing.</td>
+              <td>Account equity · confidence · extreme-event severity.</td>
+              <td>Recommended leverage, ceiling, margin-call distance, financing cost · leverage-vs-ceiling gauge + bullet · bounded-Kelly suggested exposure. Labelled advisory, not an order.</td>
+            </tr>
+            <tr>
+              <td><strong>Settings</strong><br><span class="mono">הגדרות</span></td>
+              <td>Operate the system.</td>
+              <td>Ensemble size · epochs · experts toggle · NAV CSV upload.</td>
+              <td><em>Train model now</em> (trains + saves the production checkpoint, progress bar) · <em>Refresh market data</em> · <em>Run test_integrity</em> · model timestamp.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 id="prd-fr">3.4 &nbsp; Functional requirements</h3>
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>ID</th><th>Requirement</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td><span class="id">FR-01</span></td><td>Pull daily OHLCV for 12 tickers via <code>yfinance</code> with <code>auto_adjust=True</code>; back-fill a lagging daily bar from 1-hour data.</td><td><span class="chip shipped">shipped</span></td></tr>
+            <tr><td><span class="id">FR-02</span></td><td>Align all series to the MSTR NYSE calendar; forward-fill 24/7 crypto with a bounded limit.</td><td><span class="chip shipped">shipped</span></td></tr>
+            <tr><td><span class="id">FR-03</span></td><td>Cache the panel to parquet keyed by an MD5 config fingerprint; report staleness vs the expected last session.</td><td><span class="chip shipped">shipped</span></td></tr>
+            <tr><td><span class="id">FR-04</span></td><td>Compute ~265 strictly-causal features; a feature on a truncated panel must be byte-identical to the full run sliced to the same date.</td><td><span class="chip shipped">shipped</span></td></tr>
+            <tr><td><span class="id">FR-05</span></td><td>Build vol-normalized, de-trended forward-log-return targets at h = 1 / 5 / 20; store the subtracted drift and add it back at predict time.</td><td><span class="chip shipped">shipped</span></td></tr>
+            <tr><td><span class="id">FR-06</span></td><td>Fit fold scaling (winsorize + standardize) on the training slice only.</td><td><span class="chip shipped">shipped</span></td></tr>
+            <tr><td><span class="id">FR-07</span></td><td>Expanding-window walk-forward with a 20-row embargo (= max horizon) between train and test.</td><td><span class="chip shipped">shipped</span></td></tr>
+            <tr><td><span class="id">FR-08</span></td><td>Train a production model on all history; persist it with <code>NET_ARCH_VERSION</code> and the feature count; raise <code>ModelStale</code> on any mismatch.</td><td><span class="chip shipped">shipped</span></td></tr>
+            <tr><td><span class="id">FR-09</span></td><td>Serve the predictive distribution (μ, σ, ν, p_up, quantiles, forward vol) per horizon, cached and keyed by the checkpoint mtime.</td><td><span class="chip shipped">shipped</span></td></tr>
+            <tr><td><span class="id">FR-10</span></td><td>Monte-Carlo price cone with four selectable drift modes; standardized Student-t innovations (Var = 1, Δt = 1/252); antithetic variates; an empirical convexity correction so E[S<sub>T</sub>] = S<sub>0</sub>·e<sup>μT</sup> holds even with fat tails.</td><td><span class="chip shipped">shipped</span></td></tr>
+            <tr><td><span class="id">FR-11</span></td><td>Horizon slider 5–504 trading days with bi-directional target-date sync (NYSE holidays excluded via <code>add_trading_days</code>, the exact inverse of the day count) and preset buttons.</td><td><span class="chip shipped">shipped</span></td></tr>
+            <tr><td><span class="id">FR-12</span></td><td>Report first-passage (touch) probability, terminal-target probability, multi-touch, expected first-hit day, VaR &amp; CVaR at 1% &amp; 5%, and the median simulated max-drawdown.</td><td><span class="chip shipped">shipped</span></td></tr>
+            <tr><td><span class="id">FR-13</span></td><td>Analytic probability lab: 25+ classical distributions parameterised from the trailing 504-day MSTR stats, each with E / Var / SD + a specific probability; GARCH(1,1); a 2-state Markov chain.</td><td><span class="chip shipped">shipped</span></td></tr>
+            <tr><td><span class="id">FR-14</span></td><td>Per-sensor on/off toggles that hide every model depending on a disabled sensor; results update live.</td><td><span class="chip shipped">shipped</span></td></tr>
+            <tr><td><span class="id">FR-15</span></td><td>Custom query builder: 15 models, each with its own inline sensors (strike / count / horizon / model-specific).</td><td><span class="chip shipped">shipped</span></td></tr>
+            <tr><td><span class="id">FR-16</span></td><td>Combinatorial counts are computed in log space and return +∞ (rendered "—") rather than overflowing at long horizons; they snap to the exact integer while still representable.</td><td><span class="chip shipped">shipped</span></td></tr>
+            <tr><td><span class="id">FR-17</span></td><td>BTC 4-year halving-cycle engine: full history, a template weighted over the 2016 / 2020 / 2024 cycles, a BTC projection, and an MSTR projection via rolling beta.</td><td><span class="chip shipped">shipped</span></td></tr>
+            <tr><td><span class="id">FR-18</span></td><td>Structural "if BTC → X" panel that shows the implied MSTR price (assumption) and P(BTC reaches X) (model) as visually distinct outputs.</td><td><span class="chip shipped">shipped</span></td></tr>
+            <tr><td><span class="id">FR-19</span></td><td>Walk-forward evidence screen: dir-acc + binomial p, RMSE skill vs random walk, PIT-KS, 90% coverage, NLL, a costed strategy with a calm / wild regime split, and a PIT reliability histogram.</td><td><span class="chip shipped">shipped</span></td></tr>
+            <tr><td><span class="id">FR-20</span></td><td>Advisory risk screen: bounded fractional-Kelly exposure plus a leverage recommendation with a margin-call distance. Explicitly not a trade instruction.</td><td><span class="chip shipped">shipped</span></td></tr>
+            <tr><td><span class="id">FR-21</span></td><td>Settings: a configurable train button (ensemble / epochs / experts), a market-data refresh, a NAV CSV upload, and an integrity-test runner using the same interpreter.</td><td><span class="chip shipped">shipped</span></td></tr>
+            <tr><td><span class="id">FR-22</span></td><td>L5 macro-micro fusion of an mNAV-premium vector into the hidden stream.</td><td><span class="chip partial">present, off</span></td></tr>
+            <tr><td><span class="id">FR-23</span></td><td>Engine A — structural bivariate Monte-Carlo (Merton jump-diffusion BTC + Ornstein-Uhlenbeck mNAV, correlated).</td><td><span class="chip deferred">deferred</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 id="prd-nfr">3.5 &nbsp; Non-functional requirements</h3>
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>ID</th><th>Requirement</th><th>Target / status</th></tr></thead>
+          <tbody>
+            <tr><td><span class="id">NFR-01</span></td><td>Production training time (9-seed ensemble, 4 CPU threads).</td><td class="mono">≈ 11 min · met</td></tr>
+            <tr><td><span class="id">NFR-02</span></td><td>Every non-Settings screen loads the cached checkpoint.</td><td class="mono">&lt; 1 s · met</td></tr>
+            <tr><td><span class="id">NFR-03</span></td><td>50 000-path × up-to-504-step Monte-Carlo: simulate + analyse + render.</td><td class="mono">a few seconds · met</td></tr>
+            <tr><td><span class="id">NFR-04</span></td><td>Monte-Carlo is deterministic for a fixed seed.</td><td><span class="chip shipped">met</span></td></tr>
+            <tr><td><span class="id">NFR-05</span></td><td>Hebrew right-to-left UI throughout.</td><td><span class="chip shipped">met</span></td></tr>
+            <tr><td><span class="id">NFR-06</span></td><td>Theme-aware charts — transparent ground, dark axes, one shared palette via a registered Altair theme.</td><td><span class="chip shipped">met</span></td></tr>
+            <tr><td><span class="id">NFR-07</span></td><td>Interpreter guard (<code>envcheck</code>) exits with a helpful message when torch / pandas / numpy / yfinance is missing.</td><td><span class="chip shipped">met</span></td></tr>
+            <tr><td><span class="id">NFR-08</span></td><td>Test coverage: <code>test_app.py</code> (10 steps, ~4 min) · <code>stress_test.py</code> (7 sections, ~13 min, 174 widget mutations) · <code>test_integrity.py</code> · <code>test_prob_math.py</code>.</td><td><span class="chip shipped">all green</span></td></tr>
+            <tr><td><span class="id">NFR-09</span></td><td>No code change touches model behaviour without a <code>NET_ARCH_VERSION</code> bump and a retrain.</td><td><span class="chip shipped">met</span></td></tr>
+            <tr><td><span class="id">NFR-10</span></td><td>Graceful degradation — degenerate chart input (empty / NaN / reversed range) renders a neutral chart, never crashes a screen.</td><td><span class="chip shipped">met</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 id="prd-pipeline">3.6 &nbsp; Data pipeline — twelve stages</h3>
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>#</th><th>Stage</th><th>Module</th><th>What it does</th></tr></thead>
+          <tbody>
+            <tr><td class="num">1</td><td>Data</td><td class="mono">data_layer.py</td><td>Daily OHLCV for 12 tickers from Yahoo; aligned to the MSTR calendar; parquet cache.</td></tr>
+            <tr><td class="num">2</td><td>Features</td><td class="mono">features.py</td><td>~265 strictly-causal features (returns, realized vol, drawdown, RSI / MACD, MSTR↔BTC beta &amp; residual, leverage-ETF decay, macro, halving-cycle, calendar, missingness).</td></tr>
+            <tr><td class="num">3</td><td>Targets</td><td class="mono">targets.py</td><td><code>y = (log(P<sub>t+h</sub>/P<sub>t</sub>) − drift<sub>h</sub>) / (σ<sub>ewma</sub>·√h)</code> plus raw returns, forward realized vol, up/down labels, recency weights.</td></tr>
+            <tr><td class="num">4</td><td>Windowing</td><td class="mono">dataset.py</td><td>Sequence windows (W = 64) for the encoder + the full tabular vector; train-only <code>FoldScaler</code>.</td></tr>
+            <tr><td class="num">5</td><td>Model</td><td class="mono">forecast_net.py</td><td>The hybrid net (§3.2, L3–L4).</td></tr>
+            <tr><td class="num">6</td><td>Training</td><td class="mono">walk_forward.py</td><td>Expanding-window walk-forward with embargo, seed ensembling, early stopping.</td></tr>
+            <tr><td class="num">7</td><td>Baselines</td><td class="mono">baselines.py</td><td>Random walk, drift, EWMA, AR(1), GARCH, Ridge, HistGradientBoosting, Logistic — same folds and metrics.</td></tr>
+            <tr><td class="num">8</td><td>Evaluation</td><td class="mono">evaluation.py</td><td>Directional accuracy + binomial p, RMSE skill, Student-t NLL, PIT-KS + coverage, Diebold-Mariano, a costed strategy with a regime split.</td></tr>
+            <tr><td class="num">9</td><td>Production inference</td><td class="mono">inference.py</td><td>Train once on all history → <code>ProductionModel</code>; predict the latest bar; the Monte-Carlo cone.</td></tr>
+            <tr><td class="num">10</td><td>BTC cycle</td><td class="mono">btc_cycle.py</td><td>Full BTC history + halving-cycle features + cycle template + BTC→MSTR structural scenario + macro overlay.</td></tr>
+            <tr><td class="num">11</td><td>Probability calculator</td><td class="mono">prob_models.py</td><td>25+ classical distributions parameterised from 2 years of MSTR; "expected price next trading day".</td></tr>
+            <tr><td class="num">12</td><td>App</td><td class="mono">mstr_app.py · theme.py · charts.py</td><td>The nine-screen Streamlit console and its presentation layer.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h4>Data sources — exactly what is pulled</h4>
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>Key</th><th>Ticker</th><th>Role</th></tr></thead>
+          <tbody>
+            <tr><td class="mono">mstr</td><td class="mono">MSTR</td><td>Primary — the forecast target (MicroStrategy / Strategy)</td></tr>
+            <tr><td class="mono">btc</td><td class="mono">BTC-USD</td><td>The balance-sheet driver</td></tr>
+            <tr><td class="mono">ibit</td><td class="mono">IBIT</td><td>Spot-BTC ETF (post 2024-01) — a clean BTC proxy</td></tr>
+            <tr><td class="mono">mstu</td><td class="mono">MSTU</td><td>2× long MSTR ETF — leveraged sentiment</td></tr>
+            <tr><td class="mono">mstz</td><td class="mono">MSTZ</td><td>−2× MSTR ETF — short sentiment</td></tr>
+            <tr><td class="mono">gld</td><td class="mono">GLD</td><td>Gold — alternative store of value</td></tr>
+            <tr><td class="mono">vix</td><td class="mono">^VIX</td><td>Equity implied volatility</td></tr>
+            <tr><td class="mono">tnx</td><td class="mono">^TNX</td><td>10-year US Treasury yield</td></tr>
+            <tr><td class="mono">dxy</td><td class="mono">DX-Y.NYB</td><td>US dollar index</td></tr>
+            <tr><td class="mono">spx</td><td class="mono">^GSPC</td><td>S&amp;P 500</td></tr>
+            <tr><td class="mono">ndx</td><td class="mono">^IXIC</td><td>Nasdaq Composite</td></tr>
+            <tr><td class="mono">qqq</td><td class="mono">QQQ</td><td>Nasdaq-100 ETF (tradable, dividend-adjusted)</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="mono" style="font-size:.82rem;color:var(--text-muted)">Current panel: 1,561 trading days · 2020-06-12 → 2026-08-28 · 72 columns. Full BTC history (from 2011, all halvings) is pulled separately by <code>btc_cycle.load_btc_history()</code>.</p>
+
+      <h3 id="prd-config">3.7 &nbsp; Configuration system</h3>
+      <p><code>CarnxConfig</code> is a single object threaded through every layer. It aggregates eight sub-configs (<code>DataConfig</code>, <code>FeatureConfig</code>, <code>TargetConfig</code>, <code>ModelConfig</code>, <code>WFConfig</code>, <code>BaselineConfig</code>, <code>EconConfig</code>, <code>InferenceConfig</code>) plus a <code>Constants</code> singleton (252, 504, RiskMetrics λ = 0.94, z-values, MC path count, 1400-day cycle length) and toggles.</p>
+      <p><code>.sync()</code> is the hierarchy that prevents contradiction: it pushes shared fields <em>down</em> so <code>walk_forward.model</code> <strong>is</strong> <code>inference.model</code> <strong>is</strong> <code>config.model</code> — the same object. Change <code>d_model</code> once and the whole pipeline follows. It is verified idempotent, and <code>save</code> / <code>load</code> to JSON round-trips.</p>
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>Preset</th><th>Ensemble</th><th>Epochs</th><th>Use</th></tr></thead>
+          <tbody>
+            <tr><td class="mono">default()</td><td class="num">3</td><td class="num">60</td><td>Everything at its defaults.</td></tr>
+            <tr><td class="mono">fast()</td><td class="num">1–2</td><td class="num">15</td><td>Smoke tests.</td></tr>
+            <tr><td class="mono">production()</td><td class="num">5</td><td class="num">45</td><td>Standard production checkpoint.</td></tr>
+            <tr><td class="mono">production_xl()</td><td class="num">9</td><td class="num">90</td><td>Highest-quality checkpoint. Architecture unchanged on purpose — on ~1,540 daily rows the reliable lever is ensembling and calibration, not capacity.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 id="prd-training">3.8 &nbsp; Training methodology &amp; the honesty stance</h3>
+      <h4>The recipe (per net)</h4>
+      <p>AdamW (lr 1.0–1.2e-3, weight-decay 1.5–2e-4) · CosineAnnealingLR · gradient clip 1.0 · early stopping on a held-out validation tail (patience 8–14) with best-state restore. Per fold, the <code>FoldScaler</code> is fitted on the training slice only and the experts are routed from the training-slice close window.</p>
+      <p><strong>Ensemble aggregation.</strong> μ = mean of members; σ = √(mean(σ²) + var(μ)) — a proper mixture variance that folds in between-model uncertainty; ν and p_up are member means. Then <code>descale</code>: μ<sub>raw</sub> = μ<sub>scaled</sub>·σ<sub>ewma</sub>·√h + drift<sub>h</sub> — the drift is added back (omitting it once drove directional accuracy below 50%; that bug is fixed and guarded).</p>
+
+      <h4>Does the training actually matter?</h4>
+      <p>Yes for what it is designed to do; no for what it does not claim. Measured out-of-sample across 49 folds, 3,051 rows, 2022-07 → 2026-07:</p>
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>Horizon</th><th class="num">PIT-KS</th><th class="num">90% coverage</th><th class="num">Dir-acc (binom p)</th><th class="num">RMSE skill vs RW</th><th class="num">Student-t NLL</th></tr></thead>
+          <tbody>
+            <tr><td>1 day</td><td class="num">0.056</td><td class="num">0.931</td><td class="num">0.501 (0.48)</td><td class="num">−0.6%</td><td class="num">−1.50</td></tr>
+            <tr><td>5 days</td><td class="num">0.053</td><td class="num">0.939</td><td class="num">0.500 (0.53)</td><td class="num">−2.4%</td><td class="num">−0.66</td></tr>
+            <tr><td>20 days</td><td class="num">0.024</td><td class="num">0.904</td><td class="num">0.532 (0.022)</td><td class="num">−6.9%</td><td class="num">+0.17</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="mono" style="font-size:.82rem;color:var(--text-muted)">Costed strategy: median MaxDD −8.5% vs buy-and-hold −82.6% · annualized vol 5.6% vs 88% · regime Sharpe: calm −0.04, wild +1.09. Martingale check (risk-neutral, 120k paths): E[S<sub>T</sub>]/S<sub>0</sub> = 1.044 vs e<sup>r</sup> = 1.046.</p>
+      <div class="panel verdict">
+        <h4>Plain-language verdict</h4>
+        <p>The 9-seed ensemble genuinely learns the <strong>shape, width, tails and regime</strong> of the return distribution, and that calibration <strong>holds on data it never saw</strong> — measurable, not asserted, and not over-fit (the walk-forward harness proves it). It does <strong>not</strong> learn to call direction: daily direction is a coin flip for every method, and only the 20-day horizon marginally beats chance. The point forecast is <em>worse</em> than "tomorrow = today" in squared error because the short-horizon drift is bearish — which is exactly why the configurable drift modes exist. This is a distribution / volatility / regime instrument, not a direction predictor, and every screen says so.</p>
+      </div>
+
+      <h3 id="prd-limits">3.9 &nbsp; Known limitations &amp; non-goals</h3>
+      <div class="panel limit">
+        <ul>
+          <li><strong>Direction is not predicted.</strong> Non-goal by design. Any edge is small, horizon-dependent, and disclosed.</li>
+          <li><strong>The BTC cycle rests on 2–3 prior cycles.</strong> The current cycle runs at ~30% of the historical amplitude; the 4-year theory may weaken in the ETF era. The width is the message, not the median.</li>
+          <li><strong>The US-market-holiday list runs through 2028.</strong> Beyond that the trading-day count is approximate (weekends only); the app caps the probability-lab horizon at 3 calendar years to stay inside it.</li>
+          <li><strong>L5 macro-micro fusion is off by default.</strong> It needs a manually-supplied NAV-premium CSV.</li>
+          <li><strong>The "model" Monte-Carlo drift mode extrapolates a one-day view over a year.</strong> Over 252 steps this compounds to an absurd annualized figure — labelled as such; risk-neutral is the default.</li>
+          <li><strong>Single-user, local.</strong> No hosting, no auth, no multi-ticker.</li>
+        </ul>
+      </div>
+
+      <h3 id="prd-validation">3.10 &nbsp; Validation strategy</h3>
+      <h4>Four test suites</h4>
+      <ul>
+        <li><code>test_integrity.py</code> — the anti-look-ahead guard rails (below).</li>
+        <li><code>test_prob_math.py</code> — every E / Var / SD and probability formula checked against scipy moments and closed forms.</li>
+        <li><code>test_app.py</code> — 10 steps: data, tiny fit → save → load → predict → Monte-Carlo, prob-models, an AppTest render of every screen with widget interaction, the real train button, the integrity runner, walk-forward smoke, orchestrator conformance, the Monte-Carlo engine (drift modes + martingale + calendar).</li>
+        <li><code>stress_test.py</code> — 7 adversarial sections: 50-case chart fuzz, a 196-config Monte-Carlo invariant sweep, a 1,586-case calendar round-trip, config presets, model staleness, prob-model sensor extremes, and a 174-mutation widget sweep that pushes every control on every screen to its edges.</li>
+      </ul>
+      <h4>The five anti-look-ahead guarantees</h4>
+      <ol>
+        <li><strong>Feature causality</strong> — a feature on a truncated panel is byte-identical to the full run sliced to the same date.</li>
+        <li><strong>No single-feature leak</strong> — |corr(feature<sub>t</sub>, next return)| &lt; 0.5 for every column.</li>
+        <li><strong>Fold scaling</strong> — winsor + standardize statistics come only from the training slice.</li>
+        <li><strong>Embargo</strong> — max(horizon) = 20 rows are skipped between train and test; a training label can never overlap the test window.</li>
+        <li><strong>Exact target inverse</strong> — <code>descale()</code> reproduces the raw forward return, drift included.</li>
+      </ol>
+
+      <h3 id="prd-design">3.11 &nbsp; Visual design system</h3>
+      <p><code>theme.py</code> — a "neon-aurora" dark skin injected as global CSS: a drifting aurora ground, glass metric cards, neon-pill tabs, gradient buttons, a shimmer progress bar, and matching sliders / alerts / expanders. Palette: cyan <code>#38E8FF</code>, violet <code>#A855F7</code>, magenta <code>#F472B6</code> on deep navy <code>#070B1E</code>. Fonts: Inter (body) + Space Grotesk (headings). A <code>hero()</code> helper replaces the plain page headers with a gradient banner, and a registered Altair theme (<code>carnx</code>) gives every custom chart a transparent ground and the same palette.</p>
+      <p><code>charts.py</code> — 16 themed builders fed only by already-computed values: <span class="mono">candlestick · donut / pie · gauge · gradient area · diverging bars · ranked h-bars · bullet · reliability · ridgeline · heatmap · fan · sparkline</span>. Every builder is hardened against empty / NaN / degenerate input.</p>
+    </section>
+
+    <!-- ============ 4 · ERD ============ -->
+    <section id="erd" class="part">
+      <div class="part-head">
+        <div class="part-index">Document 4 <span class="sep">/</span> Entity–Relationship Model</div>
+        <h2 class="part-title">The data model</h2>
+        <p class="part-purpose">Every data and model entity, how each is produced, and how a single prediction is assembled from the panel to the Monte-Carlo cone.</p>
+      </div>
+
+      <h3 id="erd-diagram">4.1 &nbsp; Core ML-pipeline entities</h3>
+      <figure>
+        <div class="diagram">
+          <pre class="mermaid">
+%%{init: {'theme':'neutral'}}%%
+erDiagram
+    PANEL ||--|| FEATURE_MATRIX : "features.build_features"
+    PANEL ||--|| TARGET_BUNDLE : "targets, close only"
+    FEATURE_MATRIX ||--|| ASSEMBLED_DATA : joins
+    TARGET_BUNDLE ||--|| ASSEMBLED_DATA : joins
+    ASSEMBLED_DATA ||--o{ WINDOWED_DATASET : "windows W=64"
+    ASSEMBLED_DATA ||--|| FOLD_SCALER : "fit on train slice"
+    ASSEMBLED_DATA ||--|| CHARACTERIZATION : "L1 diagnose close tail"
+    CHARACTERIZATION ||--|| ROUTING : "L2 CombinatorialGate route"
+    MODEL_CONFIG ||--|| FORECAST_NET : configures
+    ROUTING ||--o{ FORECAST_NET : "gates experts and loss weights"
+    FORECAST_NET ||--o{ PRODUCTION_MODEL : "9-seed ensemble"
+    FOLD_SCALER ||--|| PRODUCTION_MODEL : bundled
+    ROUTING ||--|| PRODUCTION_MODEL : bundled
+    PRODUCTION_MODEL ||--o{ PREDICTIVE_DISTRIBUTION : predict_distribution
+    ASSEMBLED_DATA ||--o{ PREDICTIVE_DISTRIBUTION : "latest bar"
+    PRODUCTION_MODEL ||--o{ MONTE_CARLO_RESULT : monte_carlo_paths
+    PREDICTIVE_DISTRIBUTION ||--o{ MONTE_CARLO_RESULT : "1-day params seed the sim"
+    CARNX_CONFIG ||--|| MODEL_CONFIG : aggregates
+    CARNX_CONFIG ||--|| TARGET_BUNDLE : "TargetConfig"
+    CARNX_CONFIG ||--o{ PRODUCTION_MODEL : InferenceConfig
+    PRODUCTION_MODEL ||--o{ WF_RESULT : "L8 walk_forward"
+    WF_RESULT ||--|| EVALUATION_REPORT : evaluate
+
+    PANEL {
+        DatetimeIndex index "NYSE calendar 1561 rows"
+        float64 mstr_ohlcv "primary plus 11 tickers"
+        bool ffill_flags "crypto forward-filled"
+    }
+    ASSEMBLED_DATA {
+        DataFrame X "265 causal features"
+        list seq_cols "12 curated series"
+        Series close "split-adjusted"
+        TargetBundle tb "y_scaled y_drift sigma_ewma"
+    }
+    ROUTING {
+        float gates_15 "attention-gate strengths"
+        LossSchedule weights "w_task w_comb w_struct risk_aversion"
+        string dominant_case "one of the 4 classic counts"
+    }
+    PRODUCTION_MODEL {
+        list nets "9 ForecastNet"
+        FoldScaler scaler "train-only stats"
+        Routing experts "frozen at fit"
+        int net_arch_version "equals 2"
+        int n_tab_features "staleness key"
+        string data_date_max "last training bar"
+    }
+    PREDICTIVE_DISTRIBUTION {
+        int horizon "1 5 or 20"
+        float mu_raw "location drift re-added"
+        float sigma_raw "scale"
+        float nu "tail dof"
+        float p_up "calibrated direction"
+    }
+    MONTE_CARLO_RESULT {
+        ndarray paths "n_paths x steps float32"
+        dict percentiles "p01 to p99 bands"
+        string drift_mode "risk_neutral custom historical model"
+        float var_5 "VaR 5pct"
+        float es_5 "CVaR 5pct"
+        float p_touch_up "first-passage"
+    }
+    CARNX_CONFIG {
+        DataConfig data "L-data"
+        ModelConfig model "L4"
+        WFConfig walk_forward "L8"
+        InferenceConfig inference "L7"
+        Constants CONST "252 504 lambda 0.94"
+        bool use_combinatorial_gate "L2 on"
+    }
+          </pre>
+        </div>
+        <figcaption>Entities join only where an arrow says so. The analytic and BTC-cycle engines (below) are parallel — they never touch these.</figcaption>
+      </figure>
+
+      <h3 id="erd-dict">4.2 &nbsp; Entity dictionary</h3>
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>Entity</th><th>Produced by</th><th>Key fields</th><th>Consumed by</th></tr></thead>
+          <tbody>
+            <tr><td class="mono">Panel</td><td class="mono">data_layer.build_panel</td><td>NYSE-indexed OHLCV for 12 tickers + ffill flags; 1,561 rows</td><td>features, targets, prob_models, btc_cycle (macro)</td></tr>
+            <tr><td class="mono">FeatureMatrix</td><td class="mono">features.build_features</td><td>~265 strictly-causal columns + missingness flags; no global winsorization</td><td>AssembledData</td></tr>
+            <tr><td class="mono">TargetBundle</td><td class="mono">targets.make_targets</td><td>y_scaled, y_raw, y_fwdvol, y_drift, sigma_ewma, sample_w; h = 1 / 5 / 20</td><td>AssembledData, walk_forward, descale</td></tr>
+            <tr><td class="mono">AssembledData</td><td class="mono">dataset.assemble</td><td>X, seq_cols, close, index, tb</td><td>WindowedDataset, FoldScaler, CharacterizationResult, every predict path</td></tr>
+            <tr><td class="mono">FoldScaler</td><td class="mono">dataset.FoldScaler.fit</td><td>winsor + standardize statistics from the train slice only</td><td>WindowedDataset, ProductionModel (bundled)</td></tr>
+            <tr><td class="mono">CharacterizationResult</td><td class="mono">diagnosis_layer.diagnose</td><td>basic moments, GARCH vol, STL, best-fit distribution, EVT, change-points, order·rep·symmetry, recommendations</td><td>combinatorial_gate (L2), Diagnosis screen</td></tr>
+            <tr><td class="mono">Routing</td><td class="mono">combinatorial_gate.route</td><td>15 attention-gate strengths, LossSchedule weights, dominant combinatorial case</td><td>ForecastNet (which experts fire), forecast_loss (weights), ProductionModel (bundled)</td></tr>
+            <tr><td class="mono">ForecastNet</td><td class="mono">forecast_net.ForecastNet</td><td>RoPE transformer ‖ tabular MLP → per-horizon Student-t / direction / vol heads; NET_ARCH_VERSION = 2</td><td>walk_forward, ProductionModel</td></tr>
+            <tr><td class="mono">ProductionModel</td><td class="mono">inference.fit_production_model</td><td>nets[9], scaler, experts, wf_cfg, trained_at, train_rows, data_date_max, net_arch_version, n_tab_features</td><td>predict_distribution, monte_carlo_paths; persisted to <code>carnx_checkpoints/production_model.pt</code></td></tr>
+            <tr><td class="mono">PredictiveDistribution</td><td class="mono">inference.predict_distribution</td><td>per horizon: mu_raw, sigma_raw, nu, p_up, fwd_vol_pred, quantiles, expected_move_pct</td><td>Forecast screen, Risk screen, MonteCarloResult (1-day params)</td></tr>
+            <tr><td class="mono">MonteCarloResult</td><td class="mono">inference.monte_carlo_paths</td><td>paths, percentiles, terminal_prices, prob_up, expected_price, median, skew, kurt, VaR/CVaR 1%&amp;5%, p_touch_up/down, p_close_above, expected_hit_day, max_drawdown_p50, drift_mode, mu_annual, sigma_annual, nu</td><td>Monte Carlo screen</td></tr>
+            <tr><td class="mono">MarketInputs</td><td class="mono">prob_models.market_inputs</td><td>up_day_prob, sigma_daily, mu_daily, nu (t-fit), big_move_prob, lap_scale — from the trailing 504 days</td><td>every classical distribution, GARCH, Markov (analytic engine)</td></tr>
+            <tr><td class="mono">DistResult</td><td class="mono">prob_models.*</td><td>key, hebrew, family, params, mean, variance, std, answers{label → probability}, note</td><td>FullReport, Probability-Lab screen</td></tr>
+            <tr><td class="mono">FullReport</td><td class="mono">prob_models.full_report</td><td>results[], next_day{}, by_family(), filtered by the active-sensor map</td><td>Probability-Lab screen</td></tr>
+            <tr><td class="mono">CycleTemplate / BTCProjection / MSTRProjection</td><td class="mono">btc_cycle.*</td><td>per-cycle aligned paths, weighted template, BTC median + 80% band, MSTR path via rolling beta</td><td>BTC-Cycle screen (structural engine)</td></tr>
+            <tr><td class="mono">CarnxConfig</td><td class="mono">config.CarnxConfig</td><td>8 sub-configs + Constants + toggles; <code>.sync()</code> aliases shared fields</td><td>every layer</td></tr>
+            <tr><td class="mono">WFResult / EvaluationReport</td><td class="mono">walk_forward · evaluation</td><td>oos predictions, fold log; per-horizon dir-acc, PIT-KS, coverage, NLL, DM, costed strategy</td><td>Walk-Forward Evidence screen</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 id="erd-provenance">4.3 &nbsp; How one prediction is assembled</h3>
+      <figure>
+        <div class="diagram">
+          <pre class="mermaid">
+%%{init: {'theme':'neutral'}}%%
+flowchart TB
+    P["Panel — OHLCV x 12"] --> F["FeatureMatrix — 265 causal cols"]
+    P --> T["TargetBundle — y_scaled, drift, sigma_ewma"]
+    F --> A["AssembledData"]
+    T --> A
+    A --> D["L1 CharacterizationResult"]
+    D --> R["L2 Routing — 15 gates + LossSchedule"]
+    A --> S["FoldScaler — train slice only"]
+    R --> N["ForecastNet x9 — RoPE + MLP to Student-t"]
+    S --> N
+    N --> AGG["Ensemble aggregate — mean mu, mixture sigma, nu, p_up"]
+    AGG --> DS["descale — x sigma_ewma sqrt h + drift_h"]
+    DS --> PD["PredictiveDistribution"]
+    PD --> MC["MonteCarloResult — Student-t paths, drift mode, antithetic"]
+          </pre>
+        </div>
+        <figcaption>The drift subtracted at target-build time (T) is added back at <code>descale</code> — the guarantee that closes the loop.</figcaption>
+      </figure>
+    </section>
+
+    <div class="footer">
+      CARN-X Product Dossier · v1.0 · compiled 2026-08-31 · MSTR probabilistic forecasting console ·
+      not investment advice — a distribution / volatility / regime instrument, validated out-of-sample, that does not predict direction.
+    </div>
+
+  </main>
+</div>
+
+<script>
+  (function () {
+    var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    // active-section highlight in the rail
+    var links = Array.prototype.slice.call(document.querySelectorAll(".rail a"));
+    var map = {};
+    links.forEach(function (a) { var id = a.getAttribute("href").slice(1); var el = document.getElementById(id); if (el) map[id] = a; });
+    if ("IntersectionObserver" in window && !reduce) {
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          var a = map[e.target.id];
+          if (a && e.isIntersecting) {
+            links.forEach(function (x) { x.style.color = ""; x.style.borderColor = ""; });
+            a.style.color = "var(--text)";
+            a.style.borderColor = "var(--accent)";
+          }
+        });
+      }, { rootMargin: "-20% 0px -70% 0px" });
+      Object.keys(map).forEach(function (id) { io.observe(document.getElementById(id)); });
+    }
+  })();
+</script>

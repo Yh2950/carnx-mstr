@@ -1,0 +1,24 @@
+# CARN-X — runtime dependencies (Streamlit Community Cloud reads this file)
+# ---------------------------------------------------------------------------
+# CPU-only PyTorch: the --extra-index-url keeps the wheel small so the cloud
+# build stays inside its time / disk budget.
+--extra-index-url https://download.pytorch.org/whl/cpu
+torch
+
+# scientific stack
+numpy
+pandas>=2.2
+scipy
+statsmodels
+scikit-learn
+arch
+ruptures
+pywavelets
+sympy
+networkx
+
+# app + data
+streamlit>=1.40
+altair
+yfinance
+pyarrow
