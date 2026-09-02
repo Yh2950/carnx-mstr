@@ -29,7 +29,6 @@ ignore = [
   "SIM105", # contextlib.suppress -- try/except pass reads clearer at these call sites
   "C408",   # dict(a=1) -- kept where the keyword form documents the schema
   "UP035",  # `from typing import Dict` -- annotations are lazy (from __future__), harmless
-  "UP038",  # isinstance tuple -- pending py deprecation, keep explicit
 ]
 
 [tool.ruff.lint.isort]

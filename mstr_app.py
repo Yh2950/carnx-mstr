@@ -264,7 +264,9 @@ def _live_ticker():
             )
             _lbl, _col = _MKT_LABEL.get(q.market_state, _MKT_LABEL["unknown"])
             _rng = (
-                f"טווח יום ${q.day_low:,.0f}–${q.day_high:,.0f}" if q.day_low and q.day_high else ""
+                rf"טווח יום \${q.day_low:,.0f}–\${q.day_high:,.0f}"
+                if q.day_low and q.day_high
+                else ""
             )
             _vol = f" · מחזור {q.volume / 1e6:,.1f}M" if q.volume else ""
             st.markdown(

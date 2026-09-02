@@ -241,6 +241,76 @@ hr {{ border-color: var(--cx-border); }}
   background: linear-gradient(180deg, var(--cx-violet), var(--cx-cyan));
   border-radius: 999px; border: 2px solid {INK};
 }}
+
+/* nothing may spill sideways -- wide content scrolls inside its own box */
+[data-testid="stAppViewContainer"] {{ overflow-x: hidden; }}
+[data-testid="stMain"] {{ overflow-x: clip; }}
+[data-testid="stDataFrame"], [data-testid="stTable"] {{ overflow-x: auto; }}
+pre, code {{ white-space: pre-wrap; word-break: break-word; }}
+[data-testid="stMetricValue"] {{ overflow-wrap: anywhere; }}
+img, iframe, canvas, svg {{ max-width: 100%; }}
+
+/* progress bar: the RTL page must not shove the track off the left edge */
+[data-testid="stProgress"], .stProgress, [data-testid="stProgressBar"],
+[data-testid="stProgressBar"] > div {{ direction: ltr !important; }}
+[data-testid="stProgressBar"] > div {{
+  margin: 0 !important; left: auto !important; right: auto !important;
+  transform: none !important; width: 100% !important;
+}}
+
+/* inline KaTeX formulas scroll inside their own box, never past the screen edge */
+[data-testid="stMain"] .katex-display {{ overflow-x: auto; overflow-y: hidden; }}
+[data-testid="stMain"] .katex {{ max-width: 100%; overflow-x: auto; overflow-y: hidden; }}
+
+/* tab strips scroll horizontally instead of pushing the layout wide */
+.stTabs [data-baseweb="tab-list"] {{ overflow-x: auto; overflow-y: hidden; flex-wrap: nowrap; }}
+.stTabs [data-baseweb="tab"], .stTabs [data-testid="stTab"] {{ flex: 0 0 auto; white-space: nowrap; }}
+
+/* ==================== tablet  (<= 900px) ==================== */
+@media (max-width: 900px) {{
+  [data-testid="stMainBlockContainer"], .block-container {{
+    padding-left: 1rem !important; padding-right: 1rem !important; max-width: 100% !important;
+  }}
+  [data-testid="stHorizontalBlock"] {{ flex-wrap: wrap !important; row-gap: .6rem; }}
+  [data-testid="stColumn"] {{ flex: 1 1 calc(50% - .6rem) !important; min-width: calc(50% - .6rem) !important; }}
+  .stTabs [data-baseweb="tab-list"] {{ overflow-x: auto !important; flex-wrap: nowrap !important; }}
+  .stTabs [data-baseweb="tab"] {{ flex: 0 0 auto; }}
+  [data-testid="stSegmentedControl"] [role="group"],
+  [data-testid="stSegmentedControl"] > div {{ flex-wrap: wrap !important; }}
+}}
+
+/* ==================== phone  (<= 560px -- iPhone) ==================== */
+@media (max-width: 560px) {{
+  [data-testid="stMainBlockContainer"], .block-container {{ padding: .75rem .6rem 3rem !important; }}
+  [data-testid="stHeader"] {{ height: 2.6rem; }}
+  [data-testid="stColumn"] {{ flex: 1 1 100% !important; min-width: 100% !important; width: 100% !important; }}
+  .cx-hero {{ padding: .9rem 1rem 1rem; border-radius: 15px; margin-bottom: 1rem; }}
+  .cx-hero-title {{ font-size: 1.15rem !important; line-height: 1.2; }}
+  .cx-hero-sub {{ font-size: .82rem; }}
+  .cx-hero-eyebrow {{ font-size: .6rem; }}
+  h1, h2 {{ font-size: 1.3rem !important; line-height: 1.25; }}
+  h3 {{ font-size: 1.05rem !important; }}
+  [data-testid="stMetric"] {{ padding: .65rem .75rem; }}
+  [data-testid="stMetricValue"] {{ font-size: 1.3rem !important; }}
+  [data-testid="stMetricLabel"] {{ font-size: .62rem !important; }}
+  [data-testid="stMetricLabel"] p {{ white-space: normal; }}
+  /* open sidebar floats over the content as an overlay -- never let its
+     layout box push or squeeze stMain (that caused the 40px content strip) */
+  [data-testid="stSidebar"][aria-expanded="true"] {{
+    position: fixed !important; top: 0; bottom: 0; left: 0; z-index: 9999;
+    min-width: min(86vw, 340px) !important; width: min(86vw, 340px) !important;
+    box-shadow: 0 0 40px rgba(0,0,0,.6);
+  }}
+  [data-testid="stSidebar"][aria-expanded="false"] {{ min-width: 0 !important; width: 0 !important; }}
+  iframe {{ width: 100% !important; }}
+  .stTabs [data-baseweb="tab"] {{ padding: .45rem .7rem; font-size: .8rem; }}
+  .stProgress p {{ white-space: normal; }}
+  [data-testid="stCaptionContainer"], [data-testid="stMarkdownContainer"] p {{ font-size: .86rem; }}
+  /* KaTeX / MathML formulas scroll inside their own box instead of spilling */
+  [data-testid="stMain"] .katex-display,
+  [data-testid="stMain"] mjx-container,
+  [data-testid="stMain"] math {{ overflow-x: auto; overflow-y: hidden; max-width: 100%; }}
+}}
 </style>
 """
 

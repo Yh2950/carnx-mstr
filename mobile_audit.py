@@ -51,16 +51,26 @@ _OVERFLOW_JS = r"""
   const doc = document.documentElement;
   const bad = [];
   const seen = new Set();
-  document.querySelectorAll('body *').forEach(el => {
+  document.querySelectorAll('[data-testid="stMain"] *, [data-testid="stMainBlockContainer"] *').forEach(el => {
     const r = el.getBoundingClientRect();
     if (r.width < 1 || r.height < 1) return;
+    if (el.closest('[data-testid="stSidebar"]')) return;
     // element sticks out past the right edge by > 2px, and isn't itself scrollable
     const overRight = r.right - vw;
     const overLeft = -r.left;
     if (overRight > 2 || overLeft > 2) {
       const style = getComputedStyle(el);
-      const scrollable = /(auto|scroll)/.test(style.overflowX);
+      const scrollable = /(auto|scroll|clip|hidden)/.test(style.overflowX);
       if (scrollable && el.scrollWidth > el.clientWidth) return; // intentional scroll area
+      // overflow that an ancestor clips or scrolls is invisible to the user
+      let anc = el.parentElement;
+      let clipped = false;
+      while (anc && !anc.matches('[data-testid="stMain"]')) {
+        const as = getComputedStyle(anc);
+        if (/(auto|scroll|clip|hidden)/.test(as.overflowX)) { clipped = true; break; }
+        anc = anc.parentElement;
+      }
+      if (clipped) return;
       const tag = el.tagName.toLowerCase();
       const cls = (el.getAttribute('class') || '').split(' ').slice(0, 2).join('.');
       const tid = el.getAttribute('data-testid') || '';
@@ -81,32 +91,53 @@ _OVERFLOW_JS = r"""
 """
 
 
+def _sidebar_open(page) -> bool:
+    return bool(
+        page.evaluate(
+            "() => { const s=document.querySelector('[data-testid=stSidebar]');"
+            "return !!s && s.getAttribute('aria-expanded') === 'true'; }"
+        )
+    )
+
+
 def _open_sidebar(page):
+    if _sidebar_open(page):
+        return True
     for sel in (
-        '[data-testid="stSidebarCollapseButton"] button',
-        '[data-testid="stSidebarCollapseButton"]',
         '[data-testid="stExpandSidebarButton"]',
-        '[data-testid="collapsedControl"]',
-        'button[kind="header"]',
+        '[data-testid="stExpandSidebarButton"] button',
+        '[data-testid="stSidebarCollapsedControl"]',
     ):
         try:
-            el = page.locator(sel).first
-            if el.is_visible(timeout=400):
-                el.click()
-                page.wait_for_timeout(350)
-                return True
+            page.locator(sel).first.click(timeout=1500, force=True)
+            page.wait_for_function(
+                "() => document.querySelector('[data-testid=stSidebar]')"
+                "?.getAttribute('aria-expanded') === 'true'",
+                timeout=4000,
+            )
+            return True
         except Exception:
-            pass
+            continue
     return False
 
 
-def _sidebar_visible(page) -> bool:
-    try:
-        return page.locator('[data-testid="stSidebar"] [role="radiogroup"]').first.is_visible(
-            timeout=400
-        )
-    except Exception:
-        return False
+def _close_sidebar(page):
+    if not _sidebar_open(page):
+        return
+    for sel in (
+        '[data-testid="stSidebarCollapseButton"]',
+        '[data-testid="stSidebarCollapseButton"] button',
+    ):
+        try:
+            page.locator(sel).first.click(timeout=1500, force=True)
+            page.wait_for_function(
+                "() => document.querySelector('[data-testid=stSidebar]')"
+                "?.getAttribute('aria-expanded') !== 'true'",
+                timeout=4000,
+            )
+            return
+        except Exception:
+            continue
 
 
 def main() -> int:
@@ -128,28 +159,30 @@ def main() -> int:
         page.wait_for_selector('[data-testid="stAppViewContainer"]', timeout=45000)
         page.wait_for_timeout(3500)
 
-        for sc in SCREENS:
+        # Fixed iPhone viewport throughout. The mobile sidebar is a fixed
+        # overlay (see theme.py) so it does not reflow stMain -- we navigate
+        # with it open, via a pure-JS click that needs no element geometry.
+        radio = page.locator('[data-testid="stSidebar"] [data-testid="stRadioOption"]')
+        radio.first.wait_for(state="attached", timeout=20000)
+
+        for idx, sc in enumerate(SCREENS):
             t0 = time.time()
-            if not _sidebar_visible(page):
-                _open_sidebar(page)
             try:
-                page.get_by_text(sc, exact=True).first.click(timeout=8000)
+                _open_sidebar(page)
+                radio.nth(idx).locator("input").evaluate("el => el.click()")
             except Exception as e:
                 fails.append(f"{sc}: could not navigate ({type(e).__name__})")
                 continue
-            # let the screen compute (models, sims, iframes)
-            page.wait_for_timeout(1200)
+            page.wait_for_timeout(1400)
             try:
                 page.wait_for_selector(
-                    '[data-testid="stStatusWidget"]', state="detached", timeout=40000
+                    '[data-testid="stStatusWidget"]', state="detached", timeout=45000
                 )
             except Exception:
                 pass
-            page.wait_for_timeout(2500)
-            # collapse the sidebar so we measure the real content width
-            if _sidebar_visible(page):
-                _open_sidebar(page)
-                page.wait_for_timeout(400)
+            page.wait_for_timeout(2800)
+            _close_sidebar(page)
+            page.wait_for_timeout(600)
             page.evaluate("window.scrollTo(0, 0)")
 
             res = page.evaluate(_OVERFLOW_JS)
@@ -158,15 +191,15 @@ def main() -> int:
             status = "ok  " if hs <= 2 and not offs else "FAIL"
             if status == "FAIL":
                 detail = " | ".join(
-                    f"{o['tid'] or o['tag']}.{o['cls']} w={o['w']} over={o['over']} “{o['text']}”"
-                    for o in offs[:6]
+                    f"{o['tid'] or o['tag']}[{o['cls']}] w={o['w']} over={o['over']} {o['text']!r}"
+                    for o in offs[:7]
                 )
-                fails.append(f"{sc}: hscroll={hs}px  ::  {detail}")
+                fails.append(f"{sc}: hscroll={hs}px :: {detail}")
             print(
-                f"  [{status}] {sc:26s} hscroll={hs:>3}px  offenders={len(offs)}  ({time.time() - t0:.1f}s)"
+                f"  [{status}] {sc:26s} hscroll={hs:>3}px  offenders={len(offs):>2}  ({time.time() - t0:.1f}s)"
             )
             if SHOT:
-                safe = sc.replace(" ", "_").replace("→", "to").replace("/", "-")
+                safe = sc.replace(" ", "_").replace("/", "-")
                 page.screenshot(
                     path=f"/tmp/claude-1000/-home-yedidyahkim-Desktop/c19fc0c5-5629-40d4-9627-9e9a76b4ffca/scratchpad/m_{safe}.png",
                     full_page=True,
