@@ -422,20 +422,20 @@ def build_panel(cfg: DataConfig | None = None, force_refresh: bool = False) -> p
                 patch_intraday=cfg.patch_with_intraday,
             )
         except Exception as e:  # noqa: BLE001
-            if key == cfg.primary_key:
-                raise
             df = _from_prev_cache(key)
             if df is None or len(df) < cfg.min_history_rows:
+                if key == cfg.primary_key:
+                    raise
                 dropped.append(f"{key} ({ticker}): {e}")
                 continue
             frozen.append(key)
         if len(df) < cfg.min_history_rows:
-            if key == cfg.primary_key:
-                raise RuntimeError(f"primary asset {ticker} has only {len(df)} rows")
             fb = _from_prev_cache(key)
             if fb is not None and len(fb) >= cfg.min_history_rows:
                 df = fb
                 frozen.append(key)
+            elif key == cfg.primary_key:
+                raise RuntimeError(f"primary asset {ticker} has only {len(df)} rows")
             else:
                 dropped.append(f"{key} ({ticker}): only {len(df)} rows")
                 continue
