@@ -2550,11 +2550,21 @@ elif section == "הגדרות":
     hero("הגדרות", "אימון מודל הייצור, רענון נתוני שוק ובדיקות תקינות", "Settings")
 
     st.subheader("נתונים")
-    if st.button("רענן נתוני שוק (משוך מ-Yahoo)"):
-        with st.spinner("מושך נתונים…"):
-            refresh_market_data()
-        st.success("הנתונים רועננו.")
-        st.rerun()
+    st.caption("מקור ראשי: Yahoo. אם חסום (כמו ב-Streamlit Cloud) — נפילה אוטומטית ל-Stooq.")
+    if st.button("רענן נתוני שוק"):
+        try:
+            with st.spinner("מושך נתונים…"):
+                refresh_market_data()
+            fresh = panel_freshness(get_panel())
+            lag = fresh["sessions_behind"]
+            state = "עדכני" if fresh["is_current"] else f"מפגר ב-{lag} ימי מסחר"
+            st.success(f"הנתונים רועננו — סגירה אחרונה {fresh['panel_last_date']} ({state}).")
+            st.rerun()
+        except Exception as e:  # noqa: BLE001
+            st.error(
+                "משיכת נתונים חיים נכשלה (גם Yahoo וגם Stooq לא זמינים מכאן). "
+                f"האפליקציה ממשיכה על הנתונים השמורים.\n\n`{type(e).__name__}: {e}`"
+            )
 
     nav_file = st.file_uploader("קובץ NAV Premium (CSV)", type="csv")
     if nav_file is not None:

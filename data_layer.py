@@ -39,6 +39,14 @@ try:
 except ImportError:  # pragma: no cover
     HAS_YF = False
 
+try:
+    from urllib.parse import quote
+    from urllib.request import Request, urlopen
+
+    HAS_URLLIB = True
+except ImportError:  # pragma: no cover
+    HAS_URLLIB = False
+
 
 # ---------------------------------------------------------------------------
 # Configuration
@@ -64,6 +72,12 @@ DEFAULT_TICKERS: dict[str, str] = {
 CRYPTO_KEYS = frozenset({"btc"})
 
 OHLCV_FIELDS = ("open", "high", "low", "close", "volume")
+
+# Yahoo's public chart endpoint. The `yfinance` library's crumb/cookie dance
+# is what trips over cloud IPs -- this raw endpoint with a browser UA is far
+# more robust, so it is the fallback feed for a manual "refresh" on the
+# deployed app.
+_YF_CHART = "https://query1.finance.yahoo.com/v8/finance/chart/{sym}"
 
 
 @dataclass
@@ -143,6 +157,47 @@ def _intraday_to_daily(ticker: str, days: int = 12) -> pd.DataFrame:
 # ---------------------------------------------------------------------------
 
 
+def _download_yahoo_direct(ticker: str, start: str, end: str | None) -> pd.DataFrame:
+    """Daily OHLCV straight from Yahoo's chart JSON endpoint (browser UA, no
+    library) -- the fallback when `yfinance` fails, e.g. from a cloud host.
+    Returns an empty frame on any failure. Close is split+dividend adjusted."""
+    if not HAS_URLLIB:
+        return pd.DataFrame()
+    p1 = int(pd.Timestamp(start).timestamp())
+    p2 = int(pd.Timestamp(end or _now_ny().normalize().tz_localize(None)).timestamp()) + 86400
+    url = (
+        _YF_CHART.format(sym=quote(ticker))
+        + f"?period1={p1}&period2={p2}&interval=1d&events=div%2Csplit"
+    )
+    try:
+        req = Request(url, headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"})
+        with urlopen(req, timeout=20) as resp:  # noqa: S310 -- fixed https host
+            j = json.loads(resp.read().decode())
+        res = j["chart"]["result"][0]
+        ts = res["timestamp"]
+        q = res["indicators"]["quote"][0]
+        adj = res["indicators"].get("adjclose", [{}])[0].get("adjclose")
+    except Exception:  # noqa: BLE001 -- any shape / network error -> no data
+        return pd.DataFrame()
+    idx = pd.to_datetime(ts, unit="s", utc=True).tz_convert(_NY).tz_localize(None).normalize()
+    raw_close = pd.Series(q.get("close"), index=idx, dtype="float64")
+    close = pd.Series(adj if adj is not None else q.get("close"), index=idx, dtype="float64")
+    factor = (close / raw_close).where(lambda s: (s > 0) & np.isfinite(s), 1.0)
+    df = pd.DataFrame(
+        {
+            "open": pd.Series(q["open"], index=idx, dtype="float64") * factor,
+            "high": pd.Series(q["high"], index=idx, dtype="float64") * factor,
+            "low": pd.Series(q["low"], index=idx, dtype="float64") * factor,
+            "close": close,
+            "volume": pd.Series(q["volume"], index=idx, dtype="float64"),
+        }
+    )
+    df = df[~df.index.duplicated(keep="last")].sort_index()
+    df = df[df["close"].notna() & (df["close"] > 0)]
+    last_session = expected_last_session()
+    return df[df.index <= last_session]
+
+
 def _download_one(
     ticker: str,
     start: str,
@@ -176,6 +231,11 @@ def _download_one(
             last_err = e
         time.sleep(backoff * (attempt + 1))
     else:
+        # Yahoo exhausted -- try the Stooq fallback before giving up
+        alt = _download_yahoo_direct(ticker, start, end)
+        if len(alt):
+            print(f"[data_layer] {ticker}: yfinance failed, served {len(alt)} rows via chart API")
+            return alt
         raise RuntimeError(f"failed to download {ticker} after {retries} tries: {last_err}")
 
     # yfinance may return a MultiIndex (field, ticker) column frame
@@ -335,8 +395,22 @@ def build_panel(cfg: DataConfig | None = None, force_refresh: bool = False) -> p
         assert_panel_integrity(cached, cfg)  # re-validate on every load
         return cached
 
+    # a non-primary asset that neither feed can serve is recovered from the
+    # previous cache (frozen + ffilled) rather than dropped -- features.py
+    # depends on every macro column being present.
+    prev_cache = pd.read_parquet(panel_path) if panel_path.exists() else None
+
+    def _from_prev_cache(key: str) -> pd.DataFrame | None:
+        if prev_cache is None:
+            return None
+        cols = {f"{key}_{c}": c for c in OHLCV_FIELDS if f"{key}_{c}" in prev_cache.columns}
+        if "close" not in cols.values():
+            return None
+        return prev_cache[list(cols)].rename(columns=cols).dropna(how="all")
+
     frames: dict[str, pd.DataFrame] = {}
     dropped: list[str] = []
+    frozen: list[str] = []
     for key, ticker in cfg.tickers.items():
         try:
             df = _download_one(
@@ -350,14 +424,24 @@ def build_panel(cfg: DataConfig | None = None, force_refresh: bool = False) -> p
         except Exception as e:  # noqa: BLE001
             if key == cfg.primary_key:
                 raise
-            dropped.append(f"{key} ({ticker}): {e}")
-            continue
+            df = _from_prev_cache(key)
+            if df is None or len(df) < cfg.min_history_rows:
+                dropped.append(f"{key} ({ticker}): {e}")
+                continue
+            frozen.append(key)
         if len(df) < cfg.min_history_rows:
             if key == cfg.primary_key:
                 raise RuntimeError(f"primary asset {ticker} has only {len(df)} rows")
-            dropped.append(f"{key} ({ticker}): only {len(df)} rows")
-            continue
+            fb = _from_prev_cache(key)
+            if fb is not None and len(fb) >= cfg.min_history_rows:
+                df = fb
+                frozen.append(key)
+            else:
+                dropped.append(f"{key} ({ticker}): only {len(df)} rows")
+                continue
         frames[key] = df
+    if frozen:
+        print(f"[data_layer] frozen from previous cache (no fresh feed): {frozen}")
 
     panel = _assemble_panel(frames, cfg)
     assert_panel_integrity(panel, cfg)
