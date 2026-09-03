@@ -560,6 +560,33 @@ class LiveQuote:
     epoch: float = 0.0  # time.time() at fetch (freshness clock)
 
 
+def _live_quote_direct(ticker: str) -> dict:
+    """Real-time quote fields from Yahoo's chart `meta` block (browser UA, no
+    library) -- the fallback when `yfinance.fast_info` is blocked, e.g. on a
+    cloud host. Returns {} on any failure."""
+    if not HAS_URLLIB:
+        return {}
+    url = (
+        _YF_CHART.format(sym=quote(ticker))
+        + "?range=1d&interval=1d&includePrePost=true"
+    )
+    try:
+        req = Request(url, headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"})
+        with urlopen(req, timeout=15) as resp:  # noqa: S310 -- fixed https host
+            m = json.loads(resp.read().decode())["chart"]["result"][0]["meta"]
+    except Exception:  # noqa: BLE001
+        return {}
+    return {
+        "price": m.get("regularMarketPrice"),
+        "prev": m.get("previousClose") or m.get("chartPreviousClose"),
+        "day_high": m.get("regularMarketDayHigh"),
+        "day_low": m.get("regularMarketDayLow"),
+        "volume": m.get("regularMarketVolume"),
+        "year_high": m.get("fiftyTwoWeekHigh"),
+        "year_low": m.get("fiftyTwoWeekLow"),
+    }
+
+
 def live_quote(ticker: str = "MSTR") -> LiveQuote:
     """Best-effort *real-time* quote, separate from the daily panel. For display and
     the live ticker -- the model always runs on completed daily bars.
@@ -592,6 +619,14 @@ def live_quote(ticker: str = "MSTR") -> LiveQuote:
             d_high = float(intra["high"].iloc[-1]) if "high" in intra else None
             d_low = float(intra["low"].iloc[-1]) if "low" in intra else None
             src = "yahoo 1h bar"
+    if price is None:  # last resort: Yahoo chart meta (works where the library is blocked)
+        md = _live_quote_direct(ticker)
+        if md.get("price") is not None:
+            price, prev = md["price"], md.get("prev")
+            d_high, d_low = md.get("day_high"), md.get("day_low")
+            vol = md.get("volume")
+            y_high, y_low = md.get("year_high"), md.get("year_low")
+            src = "yahoo chart meta"
 
     def _f(v):
         try:
