@@ -1323,14 +1323,20 @@ elif section == "Monte Carlo":
     def _sync_from_slider():
         st.session_state.mc_date = add_trading_days(_today, st.session_state.mc_h).date()
 
-    presets = st.columns(6)
-    for i, (lbl, d) in enumerate(
-        [("1M", 21), ("3M", 63), ("6M", 126), ("אפריל 2027", 155), ("1Y", 252), ("2Y", 504)]
-    ):
-        if presets[i].button(lbl, width="stretch"):
-            st.session_state.mc_h = d
-            st.session_state.mc_date = add_trading_days(_today, d).date()
-            st.rerun()
+    _preset_days = {"1M": 21, "3M": 63, "6M": 126, "אפריל 2027": 155, "1Y": 252, "2Y": 504}
+    _pick = st.pills(
+        "טווח מהיר",
+        list(_preset_days),
+        selection_mode="single",
+        default=None,
+        key="mc_preset",
+        label_visibility="collapsed",
+    )
+    if _pick and st.session_state.mc_h != _preset_days[_pick]:
+        d = _preset_days[_pick]
+        st.session_state.mc_h = d
+        st.session_state.mc_date = add_trading_days(_today, d).date()
+        st.rerun()
 
     c = st.columns([2, 1.4, 1.2, 1.2])
     horizon = c[0].slider(
