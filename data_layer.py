@@ -557,6 +557,8 @@ class LiveQuote:
     year_high: float | None = None
     year_low: float | None = None
     market_state: str = "unknown"
+    extended_price: float | None = None  # pre-/post-market last trade
+    extended_change_pct: float | None = None  # vs the regular-session close
     epoch: float = 0.0  # time.time() at fetch (freshness clock)
 
 
@@ -566,25 +568,48 @@ def _live_quote_direct(ticker: str) -> dict:
     cloud host. Returns {} on any failure."""
     if not HAS_URLLIB:
         return {}
-    url = (
-        _YF_CHART.format(sym=quote(ticker))
-        + "?range=1d&interval=1d&includePrePost=true"
-    )
+    url = _YF_CHART.format(sym=quote(ticker)) + "?range=1d&interval=1d&includePrePost=true"
     try:
         req = Request(url, headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"})
         with urlopen(req, timeout=15) as resp:  # noqa: S310 -- fixed https host
             m = json.loads(resp.read().decode())["chart"]["result"][0]["meta"]
     except Exception:  # noqa: BLE001
         return {}
-    return {
-        "price": m.get("regularMarketPrice"),
+    reg_price = m.get("regularMarketPrice")
+    out = {
+        "price": reg_price,
         "prev": m.get("previousClose") or m.get("chartPreviousClose"),
         "day_high": m.get("regularMarketDayHigh"),
         "day_low": m.get("regularMarketDayLow"),
         "volume": m.get("regularMarketVolume"),
         "year_high": m.get("fiftyTwoWeekHigh"),
         "year_low": m.get("fiftyTwoWeekLow"),
+        "extended_price": None,
+        "extended_change_pct": None,
     }
+    # last trade outside the regular session (pre-market / after-hours)
+    try:
+        u2 = _YF_CHART.format(sym=quote(ticker)) + "?range=1d&interval=5m&includePrePost=true"
+        req2 = Request(u2, headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"})
+        with urlopen(req2, timeout=15) as r2:  # noqa: S310 -- fixed https host
+            d2 = json.loads(r2.read().decode())["chart"]["result"][0]
+        cp = d2["meta"].get("currentTradingPeriod", {})
+        reg = cp.get("regular", {})
+        r_start, r_end = reg.get("start"), reg.get("end")
+        ts2 = d2["timestamp"]
+        cl2 = d2["indicators"]["quote"][0]["close"]
+        ext_px = None
+        for t, c in zip(ts2, cl2):
+            if c is None:
+                continue
+            if r_start and r_end and (t < r_start or t >= r_end):
+                ext_px = float(c)
+        if ext_px is not None and reg_price:
+            out["extended_price"] = ext_px
+            out["extended_change_pct"] = (ext_px / reg_price - 1.0) * 100.0
+    except Exception:  # noqa: BLE001 -- extended-hours data is best-effort
+        pass
+    return out
 
 
 def live_quote(ticker: str = "MSTR") -> LiveQuote:
@@ -619,14 +644,15 @@ def live_quote(ticker: str = "MSTR") -> LiveQuote:
             d_high = float(intra["high"].iloc[-1]) if "high" in intra else None
             d_low = float(intra["low"].iloc[-1]) if "low" in intra else None
             src = "yahoo 1h bar"
-    if price is None:  # last resort: Yahoo chart meta (works where the library is blocked)
-        md = _live_quote_direct(ticker)
-        if md.get("price") is not None:
-            price, prev = md["price"], md.get("prev")
-            d_high, d_low = md.get("day_high"), md.get("day_low")
-            vol = md.get("volume")
-            y_high, y_low = md.get("year_high"), md.get("year_low")
-            src = "yahoo chart meta"
+    # one call to the raw chart endpoint: fills the price if the library is
+    # blocked, and carries the pre-/post-market print for equities
+    md = _live_quote_direct(ticker)
+    if price is None and md.get("price") is not None:
+        price, prev = md["price"], md.get("prev")
+        d_high, d_low = md.get("day_high"), md.get("day_low")
+        vol = md.get("volume")
+        y_high, y_low = md.get("year_high"), md.get("year_low")
+        src = "yahoo chart meta"
 
     def _f(v):
         try:
@@ -636,6 +662,9 @@ def live_quote(ticker: str = "MSTR") -> LiveQuote:
 
     price, prev = _f(price), _f(prev)
     chg = ((price / prev - 1.0) * 100.0) if (price and prev) else None
+    ext_px = _f(md.get("extended_price"))
+    ext_chg = md.get("extended_change_pct")
+
     return LiveQuote(
         ticker=ticker,
         price=price,
@@ -650,6 +679,8 @@ def live_quote(ticker: str = "MSTR") -> LiveQuote:
         year_high=_f(y_high),
         year_low=_f(y_low),
         market_state=market_status(ticker),
+        extended_price=ext_px,
+        extended_change_pct=ext_chg,
         epoch=time.time(),
     )
 

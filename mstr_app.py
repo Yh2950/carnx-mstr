@@ -255,10 +255,13 @@ def _live_ticker():
             continue
         with row.container(border=True):
             spark = spark_map.get(tk)
+            _ext = q.market_state in ("pre", "post") and q.extended_price is not None
+            _shown = q.extended_price if _ext else q.price
+            _delta = q.extended_change_pct if _ext else q.change_pct
             st.metric(
                 f"{name}  ·  {tk.replace('-USD', '')}",
-                f"${q.price:,.2f}",
-                f"{q.change_pct:+.2f}%" if q.change_pct is not None else None,
+                f"${_shown:,.2f}",
+                f"{_delta:+.2f}%" if _delta is not None else None,
                 chart_data=list(spark.values) if spark is not None and len(spark) else None,
                 chart_type="area",
             )
@@ -269,9 +272,10 @@ def _live_ticker():
                 else ""
             )
             _vol = f" · מחזור {q.volume / 1e6:,.1f}M" if q.volume else ""
+            _close_note = rf" &nbsp; סגירה \${q.price:,.2f}" if _ext else ""
             st.markdown(
                 f"<span style='color:{_col};font-weight:600'>● {_lbl}</span>"
-                f"<span style='color:#8B93B8'> &nbsp; {_rng}{_vol}</span>",
+                f"<span style='color:#8B93B8'>{_close_note} &nbsp; {_rng}{_vol}</span>",
                 unsafe_allow_html=True,
             )
     _age = max(0, int(time.time() - (qs.get("MSTR").epoch if qs.get("MSTR") else time.time())))
