@@ -327,14 +327,17 @@ def _cache_is_fresh(meta_path: Path, cfg: DataConfig) -> bool:
         return False
     if meta.get("fingerprint") != _config_fingerprint(cfg):
         return False
-    # invalidate if a newer trading session has completed since the last fetch
+    age_h = (time.time() - meta.get("fetched_at", 0)) / 3600.0
+    if age_h >= cfg.max_staleness_hours:
+        return False
+    # on a laptop, also refetch as soon as a newer trading session completes; on a
+    # managed host Yahoo would just block that fetch, so trust the cache instead
+    if _ON_CLOUD:
+        return True
     try:
-        if pd.Timestamp(meta.get("date_max")) < expected_last_session():
-            return False
+        return pd.Timestamp(meta.get("date_max")) >= expected_last_session()
     except Exception:
         return False
-    age_h = (time.time() - meta.get("fetched_at", 0)) / 3600.0
-    return age_h < cfg.max_staleness_hours
 
 
 # ---------------------------------------------------------------------------
