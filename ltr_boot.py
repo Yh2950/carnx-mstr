@@ -35,7 +35,7 @@ _SNIPPET = (
     "var L='en-US';"
     "Object.defineProperty(navigator,'language',{get:function(){return L;},configurable:true});"
     "Object.defineProperty(navigator,'languages',{get:function(){return [L];},configurable:true});"
-    "}}catch(e){}}})();</script>"
+    "}catch(e){}})();</script>"
 )
 
 
