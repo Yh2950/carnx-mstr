@@ -3,7 +3,7 @@
 # CPU-only PyTorch: the --extra-index-url keeps the wheel small so the cloud
 # build stays inside its time / disk budget.
 --extra-index-url https://download.pytorch.org/whl/cpu
-torch
+torch>=2.2  # resolves to the small CPU wheel from the index above
 
 # scientific stack
 numpy

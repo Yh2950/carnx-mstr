@@ -19,9 +19,21 @@ def _missing() -> list[str]:
     return [m for m in _REQUIRED if importlib.util.find_spec(m) is None]
 
 
+def _under_streamlit() -> bool:
+    # running inside `streamlit run` (local or Streamlit Community Cloud)
+    return "streamlit" in sys.modules or bool(
+        os.environ.get("STREAMLIT_SERVER_PORT") or os.environ.get("STREAMLIT_RUNTIME_ENV")
+    )
+
+
 def ensure() -> None:
     miss = _missing()
     if not miss:
+        return
+    if _under_streamlit():
+        # a bare sys.exit() here just yields Streamlit's opaque "Error running
+        # app".  Let the real ``import torch`` fail a few lines later with a
+        # traceback the deploy logs can show.
         return
     here = os.path.dirname(os.path.abspath(__file__))
     venv_py = os.path.join(here, ".venv", "bin", "python")

@@ -98,7 +98,7 @@ def _install_assets(static_dir: str) -> bool:
                 shutil.copyfile(p, os.path.join(dst, b))
         with open(os.path.join(dst, "manifest.webmanifest"), "w", encoding="utf-8") as fh:
             fh.write(_MANIFEST)
-    except OSError:
+    except Exception:
         return False
     return True
 
@@ -108,7 +108,7 @@ def _patch_index(static_dir: str) -> bool:
     try:
         with open(path, encoding="utf-8") as fh:
             html = fh.read()
-    except OSError:
+    except Exception:
         return False
     if _MARKER in html:
         return False
@@ -122,7 +122,7 @@ def _patch_index(static_dir: str) -> bool:
     try:
         with open(path, "w", encoding="utf-8") as fh:
             fh.write(patched)
-    except OSError:
+    except Exception:
         return False
     return True
 
@@ -137,4 +137,7 @@ def apply() -> bool:
     return a or b
 
 
-_APPLIED = apply()
+try:
+    _APPLIED = apply()
+except Exception:  # a cosmetic patch must never break app startup
+    _APPLIED = False

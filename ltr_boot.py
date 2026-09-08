@@ -56,7 +56,7 @@ def apply() -> bool:
     try:
         with open(path, encoding="utf-8") as fh:
             html = fh.read()
-    except OSError:
+    except Exception:
         return False
     if _MARKER in html:
         return False
@@ -68,9 +68,12 @@ def apply() -> bool:
     try:
         with open(path, "w", encoding="utf-8") as fh:
             fh.write(patched)
-    except OSError:
+    except Exception:
         return False
     return True
 
 
-_PATCHED = apply()
+try:
+    _PATCHED = apply()
+except Exception:  # a cosmetic patch must never break app startup
+    _PATCHED = False
