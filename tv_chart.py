@@ -28,35 +28,38 @@ import pandas as pd
 
 _LWC_CDN = "https://cdn.jsdelivr.net/npm/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js"
 
+# deep-navy plate, antique-gold accent -- matches theme.py
 _DARK = dict(
-    bg="#0A0F26",
-    grid="rgba(150,170,255,0.055)",
-    border="rgba(150,170,255,0.14)",
-    text="#8B93B8",
-    strong="#EAF2FF",
-    panel="#0C1130",
-    up="#26C281",
-    down="#F0616D",
-    accent="#38E8FF",
-    violet="#A855F7",
-    amber="#FBBF24",
-    pink="#F472B6",
-    wm="rgba(150,170,255,0.045)",
+    bg="#080C17",
+    grid="rgba(150,168,214,0.06)",
+    border="#1B2740",
+    text="#8A94AC",
+    strong="#DBE1EF",
+    panel="#0C1322",
+    up="#57B98A",
+    down="#D9694F",
+    accent="#C6A052",
+    violet="#8C86C9",
+    amber="#C6A052",
+    pink="#C98BA6",
+    wm="rgba(198,160,82,0.05)",
 )
+# the instrument commits to one look; kept identical so an unexpected
+# "light" theme signal can never flash a white chart
 _LIGHT = dict(
-    bg="#FFFFFF",
-    grid="rgba(20,25,45,0.06)",
-    border="rgba(20,25,45,0.12)",
-    text="#5B6178",
-    strong="#141826",
-    panel="#F6F7FB",
-    up="#0E9F6E",
-    down="#E02424",
-    accent="#0E7490",
-    violet="#7C3AED",
-    amber="#B45309",
-    pink="#BE185D",
-    wm="rgba(20,25,45,0.05)",
+    bg="#080C17",
+    grid="rgba(150,168,214,0.06)",
+    border="#1B2740",
+    text="#8A94AC",
+    strong="#DBE1EF",
+    panel="#0C1322",
+    up="#57B98A",
+    down="#D9694F",
+    accent="#C6A052",
+    violet="#8C86C9",
+    amber="#C6A052",
+    pink="#C98BA6",
+    wm="rgba(198,160,82,0.05)",
 )
 
 

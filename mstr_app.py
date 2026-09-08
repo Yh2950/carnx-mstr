@@ -14,6 +14,8 @@ Run:
 from __future__ import annotations
 
 import envcheck  # noqa: F401  (must precede heavy imports)
+import ltr_boot  # noqa: F401  (patches static/index.html -> LTR sliders on RTL browsers)
+import brand_boot  # noqa: F401  (installs the favicon / iOS-home-screen icon + manifest)
 
 import glob
 import os
@@ -24,9 +26,15 @@ import numpy as np
 import pandas as pd
 import streamlit as st
 
-st.set_page_config(page_title="MSTR · CARN-X", layout="wide", page_icon="📈")
+_ICON = os.path.join(os.path.dirname(__file__), "assets", "favicon_64.png")
+st.set_page_config(
+    page_title="CARN-X · probabilistic forecasting",
+    layout="wide",
+    page_icon=_ICON if os.path.isfile(_ICON) else "📈",
+    initial_sidebar_state="collapsed",
+)
 
-from theme import inject_theme, hero  # visual layer only — no logic
+from theme import inject_theme, hero, header_nav  # visual layer only — no logic
 import charts as C  # themed chart builders — visual only
 
 inject_theme()
@@ -129,41 +137,7 @@ def model_mtime() -> float:
 # sidebar
 # ---------------------------------------------------------------------------
 
-st.sidebar.markdown(
-    """
-    <div style="display:flex;align-items:center;gap:.6rem;margin:.2rem 0 .1rem;">
-      <div style="width:34px;height:34px;border-radius:11px;
-                  background:linear-gradient(135deg,#38E8FF,#A855F7 55%,#F472B6);
-                  box-shadow:0 8px 20px -6px rgba(168,85,247,.7);
-                  display:flex;align-items:center;justify-content:center;
-                  font-weight:800;color:#061024;font-family:'Space Grotesk',sans-serif;">CX</div>
-      <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.15rem;
-                  background:linear-gradient(100deg,#38E8FF,#A855F7);-webkit-background-clip:text;
-                  background-clip:text;-webkit-text-fill-color:transparent;">MSTR · CARN-X</div>
-    </div>
-    <div style="color:#9AA5D6;font-size:.8rem;margin-bottom:.4rem;">
-      מודל הסתברותי לניתוח מניית MicroStrategy
-    </div>
-    """,
-    unsafe_allow_html=True,
-)
-
-section = st.sidebar.radio(
-    "מסך",
-    [
-        "סקירה",
-        "טרמינל מסחר",
-        "מחשבון הסתברויות",
-        "אבחון סטטיסטי",
-        "תחזית הסתברותית",
-        "Monte Carlo",
-        "מבנים מתמטיים",
-        "מחזור ביטקוין → MSTR",
-        "ראיות Walk-Forward",
-        "סיכון ומינוף",
-        "הגדרות",
-    ],
-)
+section = header_nav()
 
 data = load_data()
 panel = get_panel()
@@ -224,15 +198,16 @@ if _sync_on:
 else:
     st.session_state["sync_every"] = None
 
-_THEME_DARK = str(getattr(getattr(st.context, "theme", None), "type", "dark")) != "light"
+# the instrument is a single dark look (see theme.py) -- charts never go light
+_THEME_DARK = True
 
 _MKT_LABEL = {
-    "regular": ("שוק פתוח", "#34E5B0"),
-    "pre": ("טרום-מסחר", "#FBBF24"),
-    "post": ("אחרי-מסחר", "#FBBF24"),
-    "closed": ("שוק סגור", "#8B93B8"),
-    "holiday": ("חג — שוק סגור", "#8B93B8"),
-    "unknown": ("—", "#8B93B8"),
+    "regular": ("שוק פתוח", "#57B98A"),
+    "pre": ("טרום-מסחר", "#C6A052"),
+    "post": ("אחרי-מסחר", "#C6A052"),
+    "closed": ("שוק סגור", "#8A94AC"),
+    "holiday": ("חג — שוק סגור", "#8A94AC"),
+    "unknown": ("—", "#8A94AC"),
 }
 
 
@@ -330,14 +305,14 @@ if section == "סקירה":
                 {
                     "time": "2024-08-07",
                     "position": "aboveBar",
-                    "color": "#FBBF24",
+                    "color": "#C6A052",
                     "shape": "arrowDown",
                     "text": "10:1 split",
                 }
             ],
             price_lines=[
-                {"price": float(close.tail(252).max()), "title": "52w high", "color": "#8B93B8"},
-                {"price": float(close.tail(252).min()), "title": "52w low", "color": "#8B93B8"},
+                {"price": float(close.tail(252).max()), "title": "52w high", "color": "#8A94AC"},
+                {"price": float(close.tail(252).min()), "title": "52w low", "color": "#8A94AC"},
             ],
         ),
         height=560,
@@ -556,8 +531,8 @@ elif section == "מחשבון הסתברויות":
         area = (
             alt.Chart(d)
             .mark_area(
-                line={"strokeWidth": 2, "color": "#38E8FF"},
-                color="#38E8FF33",
+                line={"strokeWidth": 2, "color": "#7FB4D6"},
+                color="#7FB4D633",
                 interpolate="monotone",
             )
             .encode(
@@ -568,7 +543,7 @@ elif section == "מחשבון הסתברויות":
         )
         rule = (
             alt.Chart(pd.DataFrame({"יום": [int(horizon)]}))
-            .mark_rule(strokeDash=[4, 4], color="#FBBF24")
+            .mark_rule(strokeDash=[4, 4], color="#C6A052")
             .encode(x="יום:Q")
         )
         st.altair_chart((area + rule).properties(height=240, title=title), width="stretch")
@@ -627,7 +602,7 @@ elif section == "מחשבון הסתברויות":
         pmf = pd.DataFrame({"יום": days, "p": [p_day * (1 - p_day) ** (int(t) - 1) for t in days]})
         st.altair_chart(
             alt.Chart(pmf)
-            .mark_bar(color="#A855F7")
+            .mark_bar(color="#8C86C9")
             .encode(
                 x=alt.X("יום:Q", title="ימי מסחר"),
                 y=alt.Y("p:Q", title="P(הנגיעה הראשונה בדיוק ביום t)", axis=alt.Axis(format="%")),
@@ -657,7 +632,7 @@ elif section == "מחשבון הסתברויות":
         kk = np.arange(0, max(int(lam * 3) + 4, 8))
         st.altair_chart(
             alt.Chart(pd.DataFrame({"k": kk, "p": stats.poisson.pmf(kk, lam)}))
-            .mark_bar(color="#A855F7")
+            .mark_bar(color="#8C86C9")
             .encode(
                 x=alt.X("k:Q", title="מספר חציות"),
                 y=alt.Y("p:Q", axis=alt.Axis(format="%")),
@@ -731,13 +706,13 @@ elif section == "מחשבון הסתברויות":
         st.altair_chart(
             (
                 alt.Chart(pd.DataFrame({"מחיר": xs, "p": pv}))
-                .mark_line(color="#38E8FF")
+                .mark_line(color="#7FB4D6")
                 .encode(
                     x=alt.X("מחיר:Q", scale=alt.Scale(zero=False)),
                     y=alt.Y("p:Q", title="P(המחיר לפחות X)", axis=alt.Axis(format="%")),
                 )
                 + alt.Chart(pd.DataFrame({"מחיר": [target]}))
-                .mark_rule(strokeDash=[4, 4], color="#FBBF24")
+                .mark_rule(strokeDash=[4, 4], color="#C6A052")
                 .encode(x="מחיר:Q")
             ).properties(height=240, title="P(המחיר ≥ X) לפי אחיד רציף"),
             width="stretch",
@@ -1171,9 +1146,9 @@ elif section == "טרמינל מסחר":
         "קו מחיר יעד", value=float(round(_lp * 1.1, 2)), step=1.0, help="מצויר כקו אופקי על הגרף"
     )
     _plines = [
-        {"price": float(ohlc["close"].tail(252).max()), "title": "52w high", "color": "#8B93B8"},
-        {"price": float(ohlc["close"].tail(252).min()), "title": "52w low", "color": "#8B93B8"},
-        {"price": _tgt, "title": "יעד", "color": "#FBBF24"},
+        {"price": float(ohlc["close"].tail(252).max()), "title": "52w high", "color": "#8A94AC"},
+        {"price": float(ohlc["close"].tail(252).min()), "title": "52w low", "color": "#8A94AC"},
+        {"price": _tgt, "title": "יעד", "color": "#C6A052"},
     ]
     _ev = None
     if sym == "mstr":
@@ -1181,7 +1156,7 @@ elif section == "טרמינל מסחר":
             {
                 "time": "2024-08-07",
                 "position": "aboveBar",
-                "color": "#FBBF24",
+                "color": "#C6A052",
                 "shape": "arrowDown",
                 "text": "10:1 split",
             }
@@ -1193,7 +1168,7 @@ elif section == "טרמינל מסחר":
             {
                 "time": pd.Timestamp(h).strftime("%Y-%m-%d"),
                 "position": "belowBar",
-                "color": "#FBBF24",
+                "color": "#C6A052",
                 "shape": "arrowUp",
                 "text": "halving",
             }
@@ -1372,43 +1347,43 @@ elif section == "Monte Carlo":
             "**הנחות התרחיש** (BTC ×  mNAV  ×  אגרסיביות ATM). המחיר נבנה "
             "מ-`(BTC-per-share · BTC − Debt-per-share) · mNAV` בכל צעד."
         )
+        def _bounded_state(k: str, default: float, lo: int, hi: int) -> None:
+            """Seed the slider's session-state value once, and on every rerun
+            re-clamp it into freshly-computed bounds -- so moving one slider can
+            never shove a sibling out of range and crash the screen.  The value
+            lives only in session_state (no ``value=`` arg on the widget), which
+            also silences Streamlit's default-vs-session-state warning."""
+            cur = st.session_state.get(k, default)
+            st.session_state[k] = int(min(max(cur, lo), hi))
+
         b = st.columns(3)
+        _exp_lo, _exp_hi = int(btc_now * 0.5), 400_000
+        _bounded_state("hyb_btc_exp", round(btc_now * 1.3 / 5000) * 5000, _exp_lo, _exp_hi)
         btc_exp = b[0].slider(
-            "BTC צפוי באופק ($)",
-            int(btc_now * 0.5),
-            400_000,
-            int(round(btc_now * 1.3 / 5000) * 5000),
-            5_000,
-            key="hyb_btc_exp",
+            "BTC צפוי באופק ($)", _exp_lo, _exp_hi, step=5_000, key="hyb_btc_exp"
         )
+        _lo_lo, _lo_hi = int(btc_now * 0.35), int(btc_exp)
+        _bounded_state("hyb_btc_lo", round(btc_exp * 0.65 / 5000) * 5000, _lo_lo, _lo_hi)
         btc_lo = b[1].slider(
-            "BTC — קצה נמוך (~P10)",
-            int(btc_now * 0.35),
-            int(btc_exp),
-            int(round(btc_exp * 0.65 / 5000) * 5000),
-            5_000,
-            key="hyb_btc_lo",
+            "BTC — קצה נמוך (~P10)", _lo_lo, _lo_hi, step=5_000, key="hyb_btc_lo"
         )
+        _hi_lo, _hi_hi = int(btc_exp), 600_000
+        _bounded_state("hyb_btc_hi", round(btc_exp * 1.7 / 5000) * 5000, _hi_lo, _hi_hi)
         btc_hi = b[2].slider(
-            "BTC — קצה גבוה (~P90)",
-            int(btc_exp),
-            600_000,
-            int(round(btc_exp * 1.7 / 5000) * 5000),
-            5_000,
-            key="hyb_btc_hi",
+            "BTC — קצה גבוה (~P90)", _hi_lo, _hi_hi, step=5_000, key="hyb_btc_hi"
         )
         m = st.columns(3)
         mnav_exp = m[0].slider("mNAV צפוי (מכפיל)", 0.8, 2.5, 1.30, 0.05, key="hyb_mnav")
         mnav_rng = m[1].slider("טווח mNAV", 0.6, 3.0, (0.9, 2.2), 0.05, key="hyb_mnav_rng")
         accel = m[2].slider(
             "אגרסיביות ATM / accretion (BTC-yield שנתי)",
-            0.0,
-            0.20,
-            0.08,
-            0.01,
-            format="%.0f%%",
-            key="hyb_accel",
-        )
+            0,
+            20,
+            8,
+            1,
+            format="%d%%",
+            key="hyb_accel_pct",
+        ) / 100.0
         exp_prior = st.slider(
             "הטיית שעון ה-halving לכיוון expansion",
             0.0,
@@ -1602,7 +1577,7 @@ elif section == "Monte Carlo":
     )
     b90 = base.mark_area(opacity=0.18, color=C.CYAN).encode(y=_y("p05:Q"), y2="p95:Q")
     b50 = base.mark_area(opacity=0.32, color=C.CYAN).encode(y=_y("p25:Q"), y2="p75:Q")
-    median = base.mark_line(strokeWidth=2.5, color="#EAF2FF").encode(y=_y("p50:Q"))
+    median = base.mark_line(strokeWidth=2.5, color="#DBE1EF").encode(y=_y("p50:Q"))
     rules = (
         alt.Chart(pd.DataFrame({"y": [last_price, target], "label": ["מחיר נוכחי", "יעד"]}))
         .mark_rule(strokeDash=[4, 4], color=C.AMBER)
@@ -1739,7 +1714,7 @@ elif section == "מבנים מתמטיים":
 
     # ---- Pascal / CRR binomial lattice --------------------------------------
     with t_pascal:
-        steps = st.slider("צעדי סריג", 6, 60, min(int(hz), 40), key="ms_steps")
+        steps = st.slider("צעדי סריג", 6, 60, min(max(int(hz), 6), 40), key="ms_steps")
         lat = MS.crr_lattice(close, horizon_days=int(hz), steps=int(steps), lookback=int(lb))
         st.markdown(
             "עץ **Cox–Ross–Rubinstein**: ההסתברות להגיע לצומת הסופי `k` אחרי `n` "
@@ -1872,7 +1847,9 @@ elif section == "מבנים מתמטיים":
 
     # ---- Catalan / drawdown survival --------------------------------------
     with t_catalan:
-        floor = st.slider("רצפת drawdown", 0.05, 0.50, 0.20, 0.01, format="%.0f%%", key="ms_floor")
+        floor = st.slider(
+            "רצפת drawdown", 5, 50, 20, 1, format="%d%%", key="ms_floor_pct"
+        ) / 100.0
         ds = MS.drawdown_survival(
             close, floor_pct=float(floor), horizon_days=int(hz), lookback=int(lb)
         )
@@ -2194,7 +2171,7 @@ elif section == "מחזור ביטקוין → MSTR":
         {
             "time": h.strftime("%Y-%m-%d"),
             "position": "belowBar",
-            "color": "#FBBF24",
+            "color": "#C6A052",
             "shape": "arrowUp",
             "text": "halving",
         }
@@ -2282,7 +2259,7 @@ elif section == "מחזור ביטקוין → MSTR":
     med = base.mark_line(color=C.MAGENTA, strokeDash=[5, 3], strokeWidth=2).encode(y="p_median:Q")
     histline = (
         alt.Chart(hist_m)
-        .mark_line(color="#EAF2FF", strokeWidth=1.8)
+        .mark_line(color="#DBE1EF", strokeWidth=1.8)
         .encode(x="date:T", y=alt.Y("price:Q", scale=alt.Scale(zero=False)))
     )
     st.altair_chart((histline + band + med).resolve_scale(y="shared"), width="stretch")

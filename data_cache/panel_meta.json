@@ -17,9 +17,9 @@
     "qqq": "QQQ"
   },
   "ffill_limit": 3,
-  "fetched_at": 1788433638.897897,
-  "fetched_at_iso": "2026-09-03T14:07:18",
-  "rows": 1824,
+  "fetched_at": 1788864458.8519192,
+  "fetched_at_iso": "2026-09-08T13:47:38",
+  "rows": 1826,
   "columns": [
     "mstr_ffilled",
     "mstr_open",
@@ -111,18 +111,18 @@
   "assets_dropped": [],
   "asset_staleness_days": {
     "mstr": 0,
-    "btc": 0,
+    "btc": -3,
     "ibit": 0,
     "mstu": 0,
     "mstz": 0,
     "gld": 0,
-    "vix": 0,
+    "vix": -3,
     "tnx": 0,
-    "dxy": 0,
+    "dxy": -2,
     "spx": 0,
     "ndx": 0,
     "qqq": 0
   },
   "date_min": "2019-06-03",
-  "date_max": "2026-09-02"
+  "date_max": "2026-09-04"
 }

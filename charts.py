@@ -20,16 +20,22 @@ import numpy as np
 import pandas as pd
 
 # palette (kept in sync with theme.py) ------------------------------------------
-CYAN = "#38E8FF"
-VIOLET = "#A855F7"
-MAGENTA = "#F472B6"
-LIME = "#A3E635"
-AMBER = "#FBBF24"
-RED = "#FB7185"
-GREEN = "#34E5B0"
-INK_GRID = "rgba(150,170,255,0.10)"
-TEXT = "#C4CBEF"
-CATEGORICAL = [CYAN, VIOLET, MAGENTA, LIME, AMBER, "#22D3EE", "#818CF8", RED]
+# deep-navy plate, one antique-gold accent; semantics preserved (up=green,
+# down=red, AMBER=the gold accent used across the screens)
+CYAN = "#7FB4D6"       # secondary data series (ice blue)
+VIOLET = "#8C86C9"     # muted indigo
+MAGENTA = "#C98BA6"    # dusty rose
+LIME = "#8FBF6B"       # restrained green (rare)
+AMBER = "#C6A052"      # antique gold — the accent
+RED = "#D9694F"        # persimmon — down / loss
+GREEN = "#57B98A"      # viridian — up / gain
+INK_GRID = "rgba(150,168,214,0.09)"
+TEXT = "#DBE1EF"
+CATEGORICAL = [AMBER, CYAN, GREEN, MAGENTA, VIOLET, "#B9924A", "#6E7DA8", RED]
+
+# gold-anchored gradients for continuous encodings (replace Vega neon schemes)
+SEQ = ["#0B1222", "#233257", "#414A78", "#7A6A46", AMBER, "#E7CD8C"]
+DIV = [RED, "#33406A", AMBER]
 
 _UP = GREEN
 _DOWN = RED
@@ -155,7 +161,7 @@ def donut(
             innerRadius=0 if as_pie else inner,
             outerRadius=105,
             cornerRadius=3,
-            stroke="#0B1020",
+            stroke="#080C17",
             strokeWidth=2,
         )
         .encode(
@@ -173,7 +179,7 @@ def donut(
     if center and not as_pie:
         txt = (
             alt.Chart(pd.DataFrame({"t": [center]}))
-            .mark_text(fontSize=20, fontWeight="bold", color="#EAF2FF")
+            .mark_text(fontSize=20, fontWeight="bold", color=TEXT)
             .encode(text="t:N")
         )
         return arc + txt
@@ -207,7 +213,7 @@ def gauge(
 
     zdf = pd.DataFrame([{"t1": _t(z0), "t2": _t(z1), "c": col} for z0, z1, col in zones if z1 > z0])
     if zdf.empty:
-        zdf = pd.DataFrame([{"t1": start, "t2": start + span, "c": "#334155"}])
+        zdf = pd.DataFrame([{"t1": start, "t2": start + span, "c": "#2A3550"}])
     track = (
         alt.Chart(zdf)
         .mark_arc(innerRadius=58, outerRadius=88)
@@ -221,12 +227,12 @@ def gauge(
     val = (
         alt.Chart(pd.DataFrame({"t1": [start], "t2": [start + span * frac]}))
         .mark_arc(innerRadius=58, outerRadius=88, cornerRadius=6)
-        .encode(theta=alt.Theta("t1:Q", scale=None), theta2="t2:Q", color=alt.value(CYAN))
+        .encode(theta=alt.Theta("t1:Q", scale=None), theta2="t2:Q", color=alt.value(AMBER))
     )
     disp = label if label is not None else (f"{v:.0%}" if hi <= 1.0 else f"{v:,.2f}")
     txt = (
         alt.Chart(pd.DataFrame({"t": [disp]}))
-        .mark_text(fontSize=26, fontWeight="bold", color="#EAF2FF", dy=6)
+        .mark_text(fontSize=26, fontWeight="bold", color=TEXT, dy=6)
         .encode(text="t:N")
     )
     return (track + val + txt).properties(height=height, title=title)
@@ -323,7 +329,7 @@ def hbar_ranked(
         .encode(
             x=alt.X(f"{val}:Q", title=None, axis=_axis(percent)),
             y=alt.Y(f"{cat}:N", sort="-x" if descending else "x", title=None),
-            color=alt.Color(f"{val}:Q", scale=alt.Scale(scheme="viridis"), legend=None),
+            color=alt.Color(f"{val}:Q", scale=alt.Scale(range=SEQ), legend=None),
             tooltip=[
                 alt.Tooltip(f"{cat}:N", title=""),
                 alt.Tooltip(f"{val}:Q", format=".1%" if percent else ".3f"),
@@ -364,10 +370,10 @@ def bullet(
             ]
         )
         if bands
-        else pd.DataFrame({"s": [dlo], "e": [dhi], "c": ["#223"]})
+        else pd.DataFrame({"s": [dlo], "e": [dhi], "c": ["#1B2740"]})
     )
     if bnd.empty:
-        bnd = pd.DataFrame({"s": [dlo], "e": [dhi], "c": ["#223"]})
+        bnd = pd.DataFrame({"s": [dlo], "e": [dhi], "c": ["#1B2740"]})
     band = (
         alt.Chart(bnd)
         .mark_bar(height=26)
@@ -385,7 +391,7 @@ def bullet(
     )
     tgt = (
         alt.Chart(pd.DataFrame({"v": [target if np.isfinite(target) else dlo]}))
-        .mark_tick(thickness=3, size=34, color="#EAF2FF")
+        .mark_tick(thickness=3, size=34, color=TEXT)
         .encode(x=alt.X("v:Q", scale=sc))
     )
     return (band + meas + tgt).properties(height=height, title=title)
@@ -414,7 +420,7 @@ def reliability_bars(
         .encode(
             x=alt.X("bin:N", title="PIT"),
             y=alt.Y("freq:Q", title="שכיחות", axis=alt.Axis(format="%")),
-            color=alt.Color("freq:Q", scale=alt.Scale(scheme="tealblues"), legend=None),
+            color=alt.Color("freq:Q", scale=alt.Scale(range=SEQ), legend=None),
         )
     )
     ref = (
@@ -487,7 +493,7 @@ def heatmap(
             x=alt.X(f"{x}:O", title=None),
             y=alt.Y(f"{y}:O", title=None),
             color=alt.Color(
-                f"{val}:Q", scale=alt.Scale(scheme=scheme), legend=_legend(percent, title=None)
+                f"{val}:Q", scale=alt.Scale(range=DIV if scheme in ("redblue","blueorange","diverging") else SEQ), legend=_legend(percent, title=None)
             ),
             tooltip=[x, y, alt.Tooltip(f"{val}:Q", format=".1%" if percent else ".3f")],
         )
@@ -520,7 +526,7 @@ def fan(
             )
         )
     layers.append(
-        base.mark_line(color="#EAF2FF", strokeWidth=2.5).encode(
+        base.mark_line(color=TEXT, strokeWidth=2.5).encode(
             y=alt.Y(f"{median}:Q", scale=yscale)
         )
     )
@@ -603,7 +609,7 @@ def complex_plane(
             size=alt.Size(f"{size}:Q", legend=None, scale=alt.Scale(range=[30, 500]))
             if size in df
             else alt.value(90),
-            color=alt.Color(f"{re}:Q", scale=alt.Scale(scheme="turbo"), legend=None),
+            color=alt.Color(f"{re}:Q", scale=alt.Scale(range=SEQ), legend=None),
             tooltip=[alt.Tooltip(f"{re}:Q", format=".3f"), alt.Tooltip(f"{im}:Q", format=".3f")]
             + ([alt.Tooltip(f"{size}:Q", format=".3f")] if size in df else []),
         )
@@ -630,7 +636,7 @@ def surface_heat(
         .encode(
             x=alt.X(f"{x}:Q", bin=alt.Bin(maxbins=120), title=x_title or None),
             y=alt.Y(f"{y}:Q", bin=alt.Bin(maxbins=60), title=y_title or None),
-            color=alt.Color(f"{val}:Q", scale=alt.Scale(scheme=scheme), legend=_legend(title=None)),
+            color=alt.Color(f"{val}:Q", scale=alt.Scale(range=DIV if scheme in ("redblue","blueorange","diverging") else SEQ), legend=_legend(title=None)),
             tooltip=[
                 alt.Tooltip(f"{x}:Q", format=".3f"),
                 alt.Tooltip(f"{y}:Q", format=".3f"),
@@ -676,7 +682,7 @@ def line_with_levels(
     d = pd.DataFrame({"date": pd.to_datetime(s.index), "price": np.asarray(s, float)})
     line = (
         alt.Chart(d)
-        .mark_line(color="#EAF2FF", strokeWidth=2)
+        .mark_line(color=TEXT, strokeWidth=2)
         .encode(
             x=alt.X("date:T", title=None),
             y=alt.Y("price:Q", scale=alt.Scale(zero=False, nice=False), title=y_title),
@@ -690,7 +696,7 @@ def line_with_levels(
             y="y:Q",
             color=alt.Color(
                 "label:N",
-                scale=alt.Scale(scheme="plasma"),
+                scale=alt.Scale(range=SEQ),
                 legend=alt.Legend(orient="right", title="רמה"),
             ),
         )

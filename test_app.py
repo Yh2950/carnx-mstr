@@ -71,6 +71,8 @@ def _():
         "config",
         "carnx",
         "theme",
+        "ltr_boot",
+        "brand_boot",
         "charts",
         "tv_chart",
         "math_structures",
@@ -238,21 +240,37 @@ def _():
         "הגדרות",
     ]
     for sec in sections:
-        at.sidebar.radio[0].set_value(sec).run()
+        at.radio(key="cx_nav_radio").set_value(sec).run()
         errs = [f"{type(e).__name__}: {e}" for e in at.exception]
         assert not errs, f"[{sec}] {errs}"
-        # poke every slider / select / toggle on the page
-        for sl in at.slider:
-            try:
-                sl.set_value(sl.max if sl.value != sl.max else sl.min).run()
-            except Exception:
-                pass
-        assert not at.exception, f"[{sec}] slider interaction: {[str(e) for e in at.exception]}"
+        # sweep every slider to BOTH ends -- a right-drag must raise the value,
+        # a left-drag must lower it, and neither end may crash the screen
+        for i in range(len(at.slider)):
+            for end in ("max", "min"):
+                sl = at.slider[i]
+                assert sl.min <= sl.max, (
+                    f"[{sec}] slider '{sl.label}' has min {sl.min} > max {sl.max}"
+                )
+                try:
+                    sl.set_value(sl.max if end == "max" else sl.min).run()
+                except Exception:
+                    continue
+                assert not at.exception, (
+                    f"[{sec}] slider '{sl.label}' -> {end}: "
+                    f"{[str(e) for e in at.exception]}"
+                )
         for ss in at.select_slider:
-            try:
-                ss.set_value(ss.options[-1]).run()
-            except Exception:
-                pass
+            opts = list(ss.options)
+            num = [o for o in opts if isinstance(o, (int, float))]
+            assert num == sorted(num), (
+                f"[{sec}] select_slider '{ss.label}' options not ascending: {opts} "
+                f"-- a right-drag would DECREASE the value"
+            )
+            for tgt in (opts[-1], opts[0]):
+                try:
+                    ss.set_value(tgt).run()
+                except Exception:
+                    pass
         assert not at.exception, f"[{sec}] select_slider: {[str(e) for e in at.exception]}"
         for tg in at.toggle:
             try:
@@ -263,7 +281,7 @@ def _():
         print(f"    [{sec}] OK  metrics={len(at.metric)} sliders={len(at.slider)}")
 
     # --- the train button ---
-    at.sidebar.radio[0].set_value("הגדרות").run()
+    at.radio(key="cx_nav_radio").set_value("הגדרות").run()
     for sl in at.slider:
         lbl = sl.label or ""
         if "Ensemble" in lbl:

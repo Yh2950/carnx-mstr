@@ -620,7 +620,7 @@ def _():
 
     total_moves = 0
     for sec in secs:
-        at.sidebar.radio[0].set_value(sec).run()
+        at.radio(key="cx_nav_radio").set_value(sec).run()
         _check(not at.exception, f"[{sec}] select: {[str(e) for e in at.exception]}")
 
         # sliders: min, max, and midpoint
