@@ -25,6 +25,7 @@ page-load in a process whose ``index.html`` write lost the race.  A hard refresh
 from __future__ import annotations
 
 import os
+import re
 
 _MARKER = "carnx-ltr-boot"
 
@@ -58,13 +59,20 @@ def apply() -> bool:
             html = fh.read()
     except Exception:
         return False
-    if _MARKER in html:
+    # drop any earlier carnx-ltr-boot script so a corrected snippet always wins
+    cleaned = re.sub(
+        r"\s*<script>/\* " + _MARKER + r" \*/.*?</script>", "", html, flags=re.S
+    )
+    if _SNIPPET in cleaned:
+        patched = cleaned
+    else:
+        anchor = "<head>"
+        i = cleaned.find(anchor)
+        if i == -1:
+            return False
+        patched = cleaned[: i + len(anchor)] + "\n    " + _SNIPPET + cleaned[i + len(anchor) :]
+    if patched == html:
         return False
-    anchor = "<head>"
-    i = html.find(anchor)
-    if i == -1:
-        return False
-    patched = html[: i + len(anchor)] + "\n    " + _SNIPPET + html[i + len(anchor) :]
     try:
         with open(path, "w", encoding="utf-8") as fh:
             fh.write(patched)

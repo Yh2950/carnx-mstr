@@ -18,6 +18,7 @@ Nothing here touches the model, the screens, or any widget behaviour.
 from __future__ import annotations
 
 import os
+import re
 import shutil
 
 _MARKER = "carnx-brand-boot"
@@ -110,15 +111,25 @@ def _patch_index(static_dir: str) -> bool:
             html = fh.read()
     except Exception:
         return False
-    if _MARKER in html:
-        return False
-    anchor = "<head>"
-    i = html.find(anchor)
-    if i == -1:
-        return False
-    patched = html[: i + len(anchor)] + "\n    " + _HEAD + html[i + len(anchor):]
+    # drop any earlier carnx-brand-boot block so an updated one always wins
+    cleaned = re.sub(
+        r"\s*<!-- " + _MARKER + r" -->.*?black-translucent\">\n?",
+        "",
+        html,
+        flags=re.S,
+    )
+    if _HEAD.strip() in cleaned:
+        patched = cleaned
+    else:
+        anchor = "<head>"
+        i = cleaned.find(anchor)
+        if i == -1:
+            return False
+        patched = cleaned[: i + len(anchor)] + "\n    " + _HEAD + cleaned[i + len(anchor):]
     # our favicon links should win over Streamlit's default shortcut icon
     patched = patched.replace('<link rel="shortcut icon" href="./favicon.png" />', "")
+    if patched == html:
+        return False
     try:
         with open(path, "w", encoding="utf-8") as fh:
             fh.write(patched)
