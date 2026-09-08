@@ -4,7 +4,6 @@ emoji: "∫"
 colorFrom: indigo
 colorTo: yellow
 sdk: streamlit
-sdk_version: 1.42.0
 app_file: mstr_app.py
 python_version: "3.11"
 pinned: false
