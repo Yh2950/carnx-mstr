@@ -21,11 +21,6 @@ chartCategoricalColors = [
   "#C6A052", "#7FB4D6", "#57B98A", "#C98BA6",
   "#8C86C9", "#B9924A", "#6E7DA8", "#D9694F",
 ]
-# this Streamlit build wants exactly 10 sequential stops (navy -> gold)
-chartSequentialColors = [
-  "#0B1222", "#152238", "#213453", "#33406E", "#4A4C7F",
-  "#6B5C7C", "#8F6E6A", "#AC8654", "#C6A052", "#E7CD8C",
-]
 
 [theme.sidebar]
 backgroundColor = "#05080F"

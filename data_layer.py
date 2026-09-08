@@ -21,8 +21,20 @@ from __future__ import annotations
 import envcheck  # noqa: F401  (must precede heavy imports)
 
 import json
+import os
 import time
 import warnings
+
+# a managed host (HF Spaces sets SPACE_ID, Streamlit Cloud sets STREAMLIT_*) gets a
+# datacenter IP that Yahoo rate-limits hard -- so there we trust the committed
+# panel cache for a week and only refetch when it is really stale.  A laptop still
+# refetches within the day.
+_ON_CLOUD = bool(
+    os.environ.get("SPACE_ID")
+    or os.environ.get("STREAMLIT_RUNTIME_ENV")
+    or os.environ.get("STREAMLIT_SHARING_MODE")
+)
+_DEFAULT_STALENESS_H = "168" if _ON_CLOUD else "6"
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Dict, List, Optional
@@ -86,12 +98,17 @@ class DataConfig:
     start: str = "2019-06-01"  # a year of pre-BTC-treasury context
     end: str | None = None  # None -> today
     cache_dir: str = "./data_cache"
-    max_staleness_hours: float = 6.0  # refetch if the cache is older than this
+    # a datacenter IP (Streamlit Cloud, HF Spaces, ...) is heavily rate-limited by
+    # Yahoo, so on a cloud host we serve the committed cache for up to a week and
+    # only reach out to Yahoo when it is genuinely stale -- and then fail fast.
+    max_staleness_hours: float = float(
+        os.environ.get("CARNX_MAX_STALENESS_H", _DEFAULT_STALENESS_H)
+    )
     min_history_rows: int = 250  # a ticker with fewer rows is dropped
     ffill_limit: int = 3  # max consecutive trading days to carry a stale price
     patch_with_intraday: bool = True  # backfill missing recent daily bars from 1h data
-    retries: int = 4
-    retry_backoff_sec: float = 2.0
+    retries: int = int(os.environ.get("CARNX_FETCH_RETRIES", "2"))
+    retry_backoff_sec: float = float(os.environ.get("CARNX_FETCH_BACKOFF_S", "1"))
     primary_key: str = "mstr"
 
 
