@@ -621,6 +621,90 @@ img, iframe, canvas, svg {{ max-width: 100%; }}
   .st-key-cx_nav [role="radiogroup"] {{ justify-content: flex-start; overflow-x: auto; flex-wrap: nowrap; }}
   .st-key-cx_nav [role="radiogroup"] > label {{ flex: 0 0 auto; }}
 }}
+/* ---------- mobile navigation dial (iOS camera-zoom-wheel style) ---------- */
+.cx-wheel {{ display: none; }}
+@media (max-width: 820px) {{
+  /* keep the radio in the DOM (JS clicks it) but out of sight */
+  .st-key-cx_nav {{
+    position: absolute !important; left: -9999px !important; top: 0 !important;
+    width: 1px !important; height: 0 !important; overflow: hidden !important;
+    opacity: 0 !important; pointer-events: none !important; margin: 0 !important; border: 0 !important;
+  }}
+  [data-testid="stMain"] .block-container {{ padding-bottom: 9rem !important; }}
+
+  .cx-wheel {{
+    display: block; position: fixed; left: 50%;
+    bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+    transform: translateX(-50%); z-index: 1200; width: 320px; max-width: 94vw;
+    text-align: center; touch-action: none; padding-top: 46px;
+    -webkit-user-select: none; user-select: none;
+    transition: opacity .3s ease;
+  }}
+  .cx-wheel::before {{
+    content: ""; position: absolute; left: 50%; bottom: -20px; transform: translateX(-50%);
+    width: 260px; height: 210px; pointer-events: none; z-index: -1;
+    background: radial-gradient(60% 62% at 50% 76%, rgba(5,7,14,0.92) 0%, rgba(5,7,14,0.62) 46%, rgba(5,7,14,0) 78%);
+  }}
+  .cx-wheel.scrolling {{ opacity: .42; }}
+  .cx-wheel-reel {{
+    display: flex; align-items: center; justify-content: center; gap: .5rem;
+    margin: 0 auto .55rem; height: 1.5rem; padding: 0 .2rem;
+    font-family: var(--display); pointer-events: none; direction: ltr;
+  }}
+  .cx-wheel-reel .adj {{
+    flex: 1 1 0; min-width: 0; color: var(--text-faint); font-size: .68rem;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; opacity: .5;
+  }}
+  .cx-wheel-reel .prev {{ text-align: right; }}
+  .cx-wheel-reel .next {{ text-align: left; }}
+  .cx-wheel-reel .cur {{
+    color: var(--gold-bright); font-weight: 600; font-size: 1rem; white-space: nowrap;
+    text-shadow: 0 0 18px rgba(216,178,92,.35); flex: 0 0 auto;
+  }}
+  .cx-dial {{
+    position: relative; width: 96px; height: 96px; margin: 0 auto; border-radius: 50%;
+    background:
+      radial-gradient(circle at 50% 32%, rgba(255,255,255,0.07), rgba(255,255,255,0) 58%),
+      radial-gradient(circle at 50% 50%, #111a30 0%, #0a0e1c 68%, #05070f 100%);
+    box-shadow: 0 10px 34px rgba(0,0,0,0.55), 0 2px 8px rgba(0,0,0,0.4),
+                inset 0 1px 0 rgba(255,255,255,0.09), inset 0 0 0 1px rgba(216,178,92,0.24);
+    -webkit-backdrop-filter: blur(7px); backdrop-filter: blur(7px);
+    cursor: grab;
+  }}
+  .cx-dial:active {{ cursor: grabbing; }}
+  .cx-dial::after {{  /* the fixed index mark at 12 o'clock */
+    content: ""; position: absolute; left: 50%; top: -1px; width: 3px; height: 13px;
+    margin-left: -1.5px; background: var(--gold-bright); border-radius: 2px;
+    box-shadow: 0 0 12px var(--gold);
+  }}
+  .cx-dial-ticks {{
+    position: absolute; inset: 0; border-radius: 50%;
+    transition: transform .34s cubic-bezier(.2,.8,.25,1); will-change: transform;
+  }}
+  .cx-dial.spin .cx-dial-ticks {{ transition: none; }}
+  .cx-dial-ticks i {{
+    position: absolute; left: 50%; top: 5px; width: 2px; height: 7px; margin-left: -1px;
+    background: rgba(216,178,92,0.34); border-radius: 1px; transform-origin: 1px 43px;
+  }}
+  .cx-dial-ticks i.on {{
+    background: var(--gold-bright); height: 11px; width: 2.5px; margin-left: -1.25px;
+    box-shadow: 0 0 9px var(--gold);
+  }}
+  .cx-dial-hub {{
+    position: absolute; inset: 27px; border-radius: 50%; overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,.5), inset 0 0 0 2px rgba(0,0,0,.25);
+  }}
+  .cx-dial-hub svg {{ width: 100%; height: 100%; display: block; }}
+  .cx-wheel-hint {{
+    margin-top: .5rem; font-family: var(--mono); font-size: .58rem; letter-spacing: .16em;
+    text-transform: uppercase; color: var(--text-faint); transition: opacity .4s ease;
+  }}
+  .cx-wheel.touched .cx-wheel-hint {{ opacity: 0; }}
+}}
+@media (max-width: 820px) and (prefers-reduced-motion: reduce) {{
+  .cx-dial-ticks {{ transition: none !important; }}
+}}
+
 @media (max-width: 560px) {{
   [data-testid="stMainBlockContainer"], .block-container {{ padding: .7rem .6rem 3rem !important; }}
   [data-testid="stColumn"] {{ flex: 1 1 100% !important; min-width: 100% !important; width: 100% !important; }}
