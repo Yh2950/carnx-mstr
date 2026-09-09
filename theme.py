@@ -248,6 +248,7 @@ def _css() -> str:
 @import url('{_FONTS}');
 
 @property --cx-sec-i {{ syntax: "<number>"; inherits: true; initial-value: 0; }}
+@property --cx-aura-h {{ syntax: "<angle>"; inherits: true; initial-value: 0deg; }}
 
 :root {{
   --ink:{INK}; --ink-edge:{INK_EDGE}; --panel:{PANEL}; --panel-hi:{PANEL_HI};
@@ -274,16 +275,18 @@ body::before {{
   content: ""; position: fixed; inset: -12vmax; z-index: 0; pointer-events: none;
   --a1x: 22%; --a1y: 16%; --a2x: 82%; --a2y: 30%; --a3x: 52%; --a3y: 88%;
   background:
-    radial-gradient(38vmax 34vmax at calc(var(--a1x) + var(--cx-amx,0px)) var(--a1y),
-      rgba(216,178,92,0.10) 0%, rgba(216,178,92,0) 62%),
-    radial-gradient(44vmax 40vmax at calc(var(--a2x) - var(--cx-amx,0px)) var(--a2y),
-      rgba(58,74,132,0.20) 0%, rgba(58,74,132,0) 60%),
-    radial-gradient(50vmax 46vmax at var(--a3x) calc(var(--a3y) + var(--cx-amy,0px)),
-      rgba(120,96,168,0.12) 0%, rgba(120,96,168,0) 64%);
-  filter: hue-rotate(var(--cx-hue,0deg)) saturate(var(--cx-sat,1));
+    radial-gradient(40vmax 36vmax at calc(var(--a1x) + var(--cx-amx,0px)) calc(var(--a1y) + var(--cx-amy,0px)),
+      rgba(216,178,92,0.20) 0%, rgba(216,178,92,0) 60%),
+    radial-gradient(48vmax 44vmax at calc(var(--a2x) - var(--cx-amx,0px)) var(--a2y),
+      rgba(58,74,132,0.34) 0%, rgba(58,74,132,0) 58%),
+    radial-gradient(54vmax 50vmax at var(--a3x) calc(var(--a3y) + var(--cx-amy,0px)),
+      rgba(126,98,172,0.22) 0%, rgba(126,98,172,0) 62%),
+    radial-gradient(34vmax 30vmax at calc(70% + var(--cx-amx,0px)) 8%,
+      rgba(131,189,224,0.14) 0%, rgba(131,189,224,0) 60%);
+  filter: hue-rotate(calc(var(--cx-hue,0deg) + var(--cx-aura-h,0deg))) saturate(var(--cx-sat,1));
   transition: filter 1.1s ease;
-  animation: cx-aurora 46s ease-in-out infinite alternate;
-  will-change: transform;
+  animation: cx-aurora 32s ease-in-out infinite alternate, cx-aura-hue 60s linear infinite;
+  will-change: transform, filter;
 }}
 .stApp::before {{
   content: ""; position: fixed; inset: 0; z-index: 0; pointer-events: none;
@@ -291,11 +294,12 @@ body::before {{
     linear-gradient(178deg, rgba(20,29,54,0.42) 0%, rgba(10,14,28,0) 34%),
     url("{eng}") center top / cover no-repeat;
   transform: translate3d(var(--cx-mx,0px), calc(var(--cx-plate,0px) + var(--cx-my,0px)), 0)
-             rotate(var(--cx-rot,0deg)) scale(var(--cx-scale,1.08));
-  filter: hue-rotate(calc(var(--cx-hue,0deg) * .55)) saturate(var(--cx-sat,1));
-  transition: transform .16s linear, filter .8s ease;
-  will-change: transform;
+             rotate(var(--cx-rot,0deg)) scale(calc(var(--cx-scale,1.08) * var(--cx-kick,1)));
+  filter: hue-rotate(calc(var(--cx-hue,0deg) * .6)) saturate(var(--cx-sat,1)) brightness(var(--cx-kick-b,1));
+  transition: transform .18s cubic-bezier(.2,.8,.2,1), filter .7s ease;
+  will-change: transform, filter;
 }}
+html.cx-js.cx-kick .stApp::before {{ animation: cx-plate-kick .62s cubic-bezier(.2,.8,.2,1); }}
 .stApp::after {{
   content: ""; position: fixed; inset: 0; z-index: 0; pointer-events: none;
   background:
@@ -304,32 +308,55 @@ body::before {{
 
 /* one gilt sweep across the plate whenever the section changes */
 .cx-wipe {{
-  position: fixed; inset: 0 -40vw; z-index: 4; pointer-events: none;
-  opacity: 0; transform: translateX(-120%) skewX(-14deg);
+  position: fixed; inset: 0 -46vw; z-index: 6; pointer-events: none;
+  opacity: 0; transform: translateX(-125%) skewX(-15deg);
   background: linear-gradient(90deg,
-    rgba(216,178,92,0) 0%, rgba(216,178,92,0.05) 38%,
-    rgba(244,225,172,0.16) 50%, rgba(216,178,92,0.05) 62%, rgba(216,178,92,0) 100%);
+    rgba(216,178,92,0) 0%, rgba(216,178,92,0.06) 30%,
+    rgba(244,225,172,0.10) 44%, rgba(255,244,214,0.42) 50%,
+    rgba(244,225,172,0.10) 56%, rgba(216,178,92,0.06) 70%, rgba(216,178,92,0) 100%);
+  box-shadow: 0 0 60px 10px rgba(244,225,172,0.10);
 }}
-.cx-wipe.run {{ animation: cx-wipe .66s cubic-bezier(.66,0,.30,1); }}
+.cx-wipe.run {{ animation: cx-wipe .82s cubic-bezier(.62,0,.28,1); }}
+/* a brief tint of the new section's hue */
+.cx-flash {{
+  position: fixed; inset: 0; z-index: 5; pointer-events: none; opacity: 0;
+  background: radial-gradient(120% 120% at 50% 30%,
+    hsla(calc(42deg + var(--cx-hue,0deg)), 60%, 55%, 0.14) 0%,
+    hsla(calc(42deg + var(--cx-hue,0deg)), 60%, 45%, 0) 62%);
+}}
+.cx-flash.run {{ animation: cx-flash .7s ease-out; }}
 
 @keyframes cx-aurora {{
-  0%   {{ transform: translate3d(0,0,0) scale(1); }}
-  50%  {{ transform: translate3d(2.4vmax,-1.8vmax,0) scale(1.05) rotate(1.4deg); }}
-  100% {{ transform: translate3d(-2vmax,2vmax,0) scale(1.08) rotate(-1.2deg); }}
+  0%   {{ transform: translate3d(0,0,0) scale(1) rotate(0deg); }}
+  33%  {{ transform: translate3d(4vmax,-3vmax,0) scale(1.08) rotate(2.4deg); }}
+  66%  {{ transform: translate3d(-2vmax,3.4vmax,0) scale(1.12) rotate(-2deg); }}
+  100% {{ transform: translate3d(-4vmax,-1.4vmax,0) scale(1.06) rotate(1.4deg); }}
+}}
+@keyframes cx-aura-hue {{
+  0% {{ --cx-aura-h: -14deg; }}  50% {{ --cx-aura-h: 14deg; }}  100% {{ --cx-aura-h: -14deg; }}
 }}
 @keyframes cx-wipe {{
-  0%   {{ opacity: 0; transform: translateX(-120%) skewX(-14deg); }}
-  22%  {{ opacity: 1; }}
-  100% {{ opacity: 0; transform: translateX(120%) skewX(-14deg); }}
+  0%   {{ opacity: 0; transform: translateX(-125%) skewX(-15deg); }}
+  18%  {{ opacity: 1; }}
+  100% {{ opacity: 0; transform: translateX(125%) skewX(-15deg); }}
+}}
+@keyframes cx-flash {{
+  0% {{ opacity: 0; }}  18% {{ opacity: 1; }}  100% {{ opacity: 0; }}
+}}
+@keyframes cx-plate-kick {{
+  0%   {{ transform: translate3d(var(--cx-mx,0px), var(--cx-plate,0px), 0) rotate(var(--cx-rot,0deg)) scale(calc(var(--cx-scale,1.08) * 1.0)); }}
+  30%  {{ transform: translate3d(var(--cx-mx,0px), var(--cx-plate,0px), 0) rotate(calc(var(--cx-rot,0deg) - 2.4deg)) scale(calc(var(--cx-scale,1.08) * 1.055)); }}
+  100% {{ transform: translate3d(var(--cx-mx,0px), var(--cx-plate,0px), 0) rotate(var(--cx-rot,0deg)) scale(var(--cx-scale,1.08)); }}
 }}
 
 /* per-section: shift the whole plate's hue + the engraving's rest pose.
    --cx-sec-i (0..10) is set on <html> by scroll_boot from the active menu item. */
 :root {{
-  --cx-hue: calc((var(--cx-sec-i, 0) - 5) * 5deg);
-  --cx-sat: calc(1 + (var(--cx-sec-i, 0) - 5) * 0.015);
-  --cx-rot: calc((var(--cx-sec-i, 0) - 5) * 0.5deg);
-  --cx-scale: calc(1.065 + var(--cx-sec-i, 0) * 0.006);
+  --cx-aura-h: 0deg;
+  --cx-hue: calc((var(--cx-sec-i, 0) - 5) * 9deg);
+  --cx-sat: calc(1 + (var(--cx-sec-i, 0) - 5) * 0.03);
+  --cx-rot: calc((var(--cx-sec-i, 0) - 5) * 1.1deg);
+  --cx-scale: calc(1.06 + var(--cx-sec-i, 0) * 0.009);
 }}
 body::before {{
   --a1x: calc(20% + var(--cx-sec-i, 0) * 3.4%);
@@ -735,23 +762,21 @@ body::after {{
   transform-origin: 0 50%; transform: scaleX(var(--cx-progress, 0));
   transition: transform .12s linear;
 }}
-html.cx-js .stApp::before {{
-  transform: translate3d(0, var(--cx-plate, 0px), 0) scale(1.06);
-  transition: transform .18s linear; will-change: transform;
-}}
+/* (the full plate transform lives on .stApp::before above; nothing to override) */
 
 @media (prefers-reduced-motion: no-preference) {{
   html.cx-js [data-testid="stMain"] .block-container [data-testid="stElementContainer"].cx-hide,
   html.cx-js [data-testid="stMain"] .block-container [data-testid="stHorizontalBlock"].cx-hide {{
-    opacity: 0; transform: translateY(20px);
+    opacity: 0; transform: translateY(34px) scale(.985); filter: blur(3px);
   }}
-  html.cx-js .cx-hero.cx-hide {{ opacity: 0; transform: translateY(24px); }}
+  html.cx-js .cx-hero.cx-hide {{ opacity: 0; transform: translateY(40px); filter: blur(4px); }}
   html.cx-js .cx-hero.cx-hide .cx-hero-title {{ letter-spacing: .03em; filter: blur(2px); }}
   html.cx-js .cx-hide {{
-    transition: opacity .62s cubic-bezier(.16,.72,.24,1),
-                transform .62s cubic-bezier(.16,.72,.24,1),
-                letter-spacing .62s ease, filter .62s ease;
+    transition: opacity .7s cubic-bezier(.16,.72,.24,1),
+                transform .7s cubic-bezier(.16,.72,.24,1),
+                letter-spacing .7s ease, filter .7s ease;
   }}
+  html.cx-js .cx-rev {{ filter: blur(0) !important; }}
   html.cx-js .cx-hide .cx-hero-title {{
     transition: letter-spacing .7s ease, filter .7s ease;
   }}
