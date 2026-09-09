@@ -30,7 +30,9 @@ import warnings
 # panel cache for a week and only refetch when it is really stale.  A laptop still
 # refetches within the day.
 _ON_CLOUD = bool(
-    os.environ.get("SPACE_ID")
+    os.environ.get("CARNX_ON_CLOUD")
+    or os.environ.get("SPACE_ID")
+    or os.environ.get("SPACE_HOST")
     or os.environ.get("STREAMLIT_RUNTIME_ENV")
     or os.environ.get("STREAMLIT_SHARING_MODE")
 )

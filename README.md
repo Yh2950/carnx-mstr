@@ -3,9 +3,8 @@ title: CARN-X
 emoji: "∫"
 colorFrom: indigo
 colorTo: yellow
-sdk: streamlit
-app_file: mstr_app.py
-python_version: "3.11"
+sdk: docker
+app_port: 8501
 pinned: false
 license: mit
 short_description: Calibrated probabilistic forecasts for MSTR and Bitcoin
