@@ -1,28 +1,30 @@
 # CARN-X  --  visual theme only (no behaviour / no logic touched)
-# Deep-navy instrument plate, one antique-gold accent.
+# Midnight-blue lacquer, one metallic gilt.  The engraved backplate, the
+# menu bar and the fine detailing live in theme.py.
 
 [theme]
 base = "dark"
-primaryColor = "#C6A052"                 # antique gold -- widgets / accents
-backgroundColor = "#080C17"              # the plate
-secondaryBackgroundColor = "#0C1322"     # raised panels
-textColor = "#DBE1EF"
-linkColor = "#E7CD8C"
-font = "sans-serif"
-headingFont = "serif"
-codeFont = "monospace"
-baseRadius = "0.6rem"
-borderColor = "#1B2740"
+primaryColor = "#D8B25C"                 # gilt — widgets / accents
+backgroundColor = "#0A0E1C"              # the plate
+secondaryBackgroundColor = "#0F1528"     # raised panels
+textColor = "#E7EAF5"
+linkColor = "#F4E1AC"
+borderColor = "#1F2A47"
 showWidgetBorder = true
+baseRadius = "0.28rem"
 baseFontSize = 15
+
+font = "'IBM Plex Sans':https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap"
+headingFont = "Fraunces:https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&display=swap"
+codeFont = "'IBM Plex Mono':https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap"
 
 # native st.line_chart / st.bar_chart / st.area_chart pick these up
 chartCategoricalColors = [
-  "#C6A052", "#7FB4D6", "#57B98A", "#C98BA6",
-  "#8C86C9", "#B9924A", "#6E7DA8", "#D9694F",
+  "#D8B25C", "#83BDE0", "#58BE8B", "#D291B0",
+  "#9A93D8", "#B9924A", "#6E7DA8", "#DE6B54",
 ]
 
 [theme.sidebar]
-backgroundColor = "#05080F"
-secondaryBackgroundColor = "#0C1322"
-borderColor = "#1B2740"
+backgroundColor = "#05070F"
+secondaryBackgroundColor = "#0F1528"
+borderColor = "#141C31"

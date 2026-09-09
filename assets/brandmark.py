@@ -15,18 +15,18 @@ wordmark SVG live (its serif loads through the page's own @font-face).
 
 from __future__ import annotations
 
-NAVY_0 = "#0B1222"       # plate centre
-NAVY_1 = "#070C17"       # plate edge
-GOLD = "#C6A052"         # antique gold — the linework
-GOLD_HI = "#E9CD8B"      # engraved highlight
-GOLD_LO = "#A07E37"      # engraved shadow
-PATH_GOLD = "#D8BE83"    # the price path
+NAVY_0 = "#0E1428"       # plate centre
+NAVY_1 = "#05070F"       # plate edge
+GOLD = "#D8B25C"         # gilt — the linework
+GOLD_HI = "#F4E1AC"      # struck highlight
+GOLD_LO = "#8A6A2E"      # engraved shadow
+PATH_GOLD = "#E6CF98"    # the price path
 DIM = "#8A94AC"
 
-SERIF = "Spectral, 'EB Garamond', Georgia, 'Times New Roman', serif"
+SERIF = "Fraunces, Spectral, 'EB Garamond', Georgia, 'Times New Roman', serif"
 _FONT_IMPORT = (
     "@import url('https://fonts.googleapis.com/css2?"
-    "family=Spectral:ital,wght@0,400;0,500;1,400&display=swap');"
+    "family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,400&display=swap');"
 )
 
 
@@ -122,8 +122,8 @@ def svg_wordmark(w: int = 540, h: int = 128) -> str:
   <text x="{tx}" y="{h*0.50:.0f}" font-family={SERIF!r} font-weight="500"
         font-size="{h*0.37:.0f}" letter-spacing="0.5" fill="{GOLD_HI}">CARN<tspan fill="{GOLD_LO}" dx="1">-</tspan>X</text>
   <line x1="{tx+1}" y1="{h*0.61:.0f}" x2="{w-16}" y2="{h*0.61:.0f}" stroke="{GOLD}" stroke-width="1" opacity="0.35"/>
-  <text x="{tx+1}" y="{h*0.80:.0f}" font-family="Inter, system-ui, sans-serif"
-        font-size="{h*0.125:.0f}" letter-spacing="0.4" fill="{DIM}">probabilistic forecasting instrument</text>
+  <text x="{tx+1}" y="{h*0.80:.0f}" font-family="'IBM Plex Mono', ui-monospace, monospace"
+        font-size="{h*0.115:.0f}" letter-spacing="1.6" fill="{DIM}">PROBABILISTIC · FORECASTING</text>
 </svg>"""
 
 

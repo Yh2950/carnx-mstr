@@ -73,6 +73,7 @@ def _():
         "theme",
         "ltr_boot",
         "brand_boot",
+        "scroll_boot",
         "charts",
         "tv_chart",
         "math_structures",

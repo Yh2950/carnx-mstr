@@ -22,20 +22,20 @@ import pandas as pd
 # palette (kept in sync with theme.py) ------------------------------------------
 # deep-navy plate, one antique-gold accent; semantics preserved (up=green,
 # down=red, AMBER=the gold accent used across the screens)
-CYAN = "#7FB4D6"       # secondary data series (ice blue)
-VIOLET = "#8C86C9"     # muted indigo
-MAGENTA = "#C98BA6"    # dusty rose
-LIME = "#8FBF6B"       # restrained green (rare)
-AMBER = "#C6A052"      # antique gold — the accent
-RED = "#D9694F"        # persimmon — down / loss
-GREEN = "#57B98A"      # viridian — up / gain
-INK_GRID = "rgba(150,168,214,0.09)"
-TEXT = "#DBE1EF"
+CYAN = "#83BDE0"       # secondary data series (ice blue)
+VIOLET = "#9A93D8"     # muted indigo
+MAGENTA = "#D291B0"    # dusty rose
+LIME = "#95C46F"       # restrained green (rare)
+AMBER = "#D8B25C"      # metallic gilt — the accent
+RED = "#DE6B54"        # persimmon — down / loss
+GREEN = "#58BE8B"      # viridian — up / gain
+INK_GRID = "rgba(150,168,214,0.08)"
+TEXT = "#E7EAF5"
 CATEGORICAL = [AMBER, CYAN, GREEN, MAGENTA, VIOLET, "#B9924A", "#6E7DA8", RED]
 
 # gold-anchored gradients for continuous encodings (replace Vega neon schemes)
-SEQ = ["#0B1222", "#233257", "#414A78", "#7A6A46", AMBER, "#E7CD8C"]
-DIV = [RED, "#33406A", AMBER]
+SEQ = ["#080B15", "#1F2A47", "#414A78", "#7A6A46", AMBER, "#F4E1AC"]
+DIV = [RED, "#2A3557", AMBER]
 
 _UP = GREEN
 _DOWN = RED

@@ -23,8 +23,8 @@ import shutil
 
 _MARKER = "carnx-brand-boot"
 _APP_NAME = "CARN-X"
-_THEME = "#0B1222"       # the navy plate -- matches theme.py --ink-raised
-_BG = "#080C17"          # splash background -- matches theme.py --ink
+_THEME = "#0A0E1C"       # the navy plate -- matches theme.py --ink
+_BG = "#05070F"          # splash background -- matches theme.py --ink-edge
 
 # project assets  ->  name inside  static/carnx/
 _ICONS = {
