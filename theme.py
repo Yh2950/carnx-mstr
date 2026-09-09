@@ -1,12 +1,10 @@
 """
 CARN-X  --  presentation layer  (visual only; no logic, no data, no decisions)
 =============================================================================
-A lacquered midnight-blue instrument face.  Behind everything sits ONE large,
-hand-composed engraving in gilt -- a Gaussian sweep with its Riemann sum, an
-integral, a fragment of Pascal's triangle, a Fibonacci run, a small graph,
-matrix rules, a few notes of music -- placed once and bled off every edge, so it
-reads as an engraved plate rather than a tiled pattern.  Display type is a
-cut-serif (Fraunces); the working type is IBM Plex Sans / Plex Mono.
+"Aurora glass": a near-black ground under a live indigo->violet->cyan colour
+mesh that drifts and shifts hue forever; frosted translucent panels over it;
+one electric-violet accent with a soft glow.  Display type Space Grotesk,
+working type Inter, Hebrew Rubik, numerals IBM Plex Mono.
 
 Public surface (unchanged):
     inject_theme()               once, right after st.set_page_config
@@ -26,45 +24,47 @@ import math
 import streamlit as st
 
 # --------------------------------------------------------------------------- #
-# palette  --  near-black navy lacquer, one metallic gilt
+# palette  --  "aurora glass": near-black under a live indigo->violet->cyan
+# mesh, frosted translucent panels, one electric-violet accent.
+# (var NAMES kept as GOLD*/INK* so every downstream rule keeps working -- the
+#  values are the new palette.)
 # --------------------------------------------------------------------------- #
-INK = "#0A0E1C"          # plate centre
-INK_EDGE = "#05070F"     # plate rim / deepest well
-PANEL = "#0F1528"        # a raised card
-PANEL_HI = "#141D33"     # raised + hover
-SUNK = "#080B15"         # sunk well / code
-LINE = "#1F2A47"         # hairline
-LINE_SOFT = "#141C31"    # faint hairline
+INK = "#0A0A14"          # the ground
+INK_EDGE = "#060610"     # deepest
+PANEL = "rgba(255,255,255,0.045)"   # frosted glass fill
+PANEL_HI = "rgba(255,255,255,0.075)"
+SUNK = "rgba(6,6,16,0.55)"          # sunk well / code
+LINE = "rgba(255,255,255,0.10)"     # hairline
+LINE_SOFT = "rgba(255,255,255,0.055)"
 
-GOLD = "#D8B25C"         # the accent
-GOLD_BRIGHT = "#F4E1AC"  # struck highlight
-GOLD_DEEP = "#8A6A2E"    # engraved shadow
-GOLD_TEXT = "#E6CF98"    # gilt used as text on dark (a shade lighter, for legibility)
+GOLD = "#8E7BF0"         # the accent  (electric violet)
+GOLD_BRIGHT = "#BCA9FF"  # bright accent / glow
+GOLD_DEEP = "#5A49C6"    # deep accent
+GOLD_TEXT = "#CBBFFF"    # accent used as text on dark
 
-TEXT = "#E7EAF5"
-TEXT_DIM = "#98A2C0"
-TEXT_FAINT = "#5F6A8C"
+TEXT = "#ECEDF6"
+TEXT_DIM = "#9DA1C6"
+TEXT_FAINT = "#6A6F92"
 
-UP = "#58BE8B"
-DOWN = "#DE6B54"
+UP = "#34D399"
+DOWN = "#FB7185"
 
-CYAN = "#83BDE0"
-VIOLET = "#9A93D8"
-MAGENTA = "#D291B0"
-LIME = "#95C46F"
+CYAN = "#38E0F0"
+VIOLET = "#A78BFA"
+MAGENTA = "#F472B6"
+LIME = "#A3E635"
 AMBER = GOLD
-CATEGORICAL = [GOLD, CYAN, UP, MAGENTA, VIOLET, "#C7A24E", "#7A88C0", DOWN]
+CATEGORICAL = [GOLD, CYAN, UP, MAGENTA, VIOLET, "#818CF8", "#22D3EE", DOWN]
 
-_DISPLAY = "'Fraunces', 'Frank Ruhl Libre', 'Spectral', 'EB Garamond', Georgia, serif"
-_SANS = "'IBM Plex Sans', 'Heebo', system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif"
+_DISPLAY = "'Space Grotesk', 'Rubik', system-ui, -apple-system, 'Segoe UI', sans-serif"
+_SANS = "'Inter', 'Rubik', system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif"
 _MONO = "'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace"
 
 _FONTS = (
     "https://fonts.googleapis.com/css2?"
-    "family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400"
-    "&family=Frank+Ruhl+Libre:wght@500;600;700"
-    "&family=Heebo:wght@400;500;600;700"
-    "&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400"
+    "family=Space+Grotesk:wght@400;500;600;700"
+    "&family=Inter:wght@400;500;600;700;800"
+    "&family=Rubik:wght@400;500;600;700"
     "&family=IBM+Plex+Mono:wght@400;500;600"
     "&display=swap"
 )
@@ -242,7 +242,6 @@ def _engraving_uri() -> str:
 
 
 def _css() -> str:
-    eng = _engraving_uri()
     return f"""
 <style>
 @import url('{_FONTS}');
@@ -254,7 +253,8 @@ def _css() -> str:
   --ink:{INK}; --ink-edge:{INK_EDGE}; --panel:{PANEL}; --panel-hi:{PANEL_HI};
   --sunk:{SUNK}; --line:{LINE}; --line-soft:{LINE_SOFT};
   --gold:{GOLD}; --gold-bright:{GOLD_BRIGHT}; --gold-deep:{GOLD_DEEP}; --gold-text:{GOLD_TEXT};
-  --gold-wash:rgba(216,178,92,0.09); --gold-line:rgba(216,178,92,0.28);
+  --gold-wash:rgba(142,123,240,0.15); --gold-line:rgba(142,123,240,0.38);
+  --glow:0 0 0 1px rgba(142,123,240,.35), 0 0 24px -2px rgba(142,123,240,.45);
   --text:{TEXT}; --text-dim:{TEXT_DIM}; --text-faint:{TEXT_FAINT};
   --up:{UP}; --down:{DOWN};
   --display:{_DISPLAY}; --sans:{_SANS}; --mono:{_MONO};
@@ -262,40 +262,43 @@ def _css() -> str:
   transition: --cx-sec-i .9s cubic-bezier(.16,.72,.24,1);
 }}
 
-/* ---------- the living plate ---------- *
- * back -> front:  aurora mesh (body::before, always drifting)
- *                 engraved plate (.stApp::before, scroll + pointer parallax,
- *                                 hue/scale shift per section)
- *                 vignette (.stApp::after)
- *                 transition wipe (.cx-wipe, one sweep on section change)      */
+/* ---------- aurora ground ---------- *
+ * back -> front:  the live colour mesh (body::before)
+ *                 a finer mesh that leans with the pointer (.stApp::before)
+ *                 grain + vignette (.stApp::after)
+ *                 the section-change sweep + flash (.cx-wipe / .cx-flash)       */
 html, body, [class*="stApp"] {{ font-family: var(--sans); }}
-.stApp {{ background: {INK}; color: var(--text); }}
+html, body {{ background: {INK}; }}
+.stApp {{ background: transparent; color: var(--text); }}
 
 body::before {{
-  content: ""; position: fixed; inset: -12vmax; z-index: 0; pointer-events: none;
-  --a1x: 22%; --a1y: 16%; --a2x: 82%; --a2y: 30%; --a3x: 52%; --a3y: 88%;
+  content: ""; position: fixed; inset: -14vmax; z-index: 0; pointer-events: none;
   background:
-    radial-gradient(40vmax 36vmax at calc(var(--a1x) + var(--cx-amx,0px)) calc(var(--a1y) + var(--cx-amy,0px)),
-      rgba(216,178,92,0.20) 0%, rgba(216,178,92,0) 60%),
-    radial-gradient(48vmax 44vmax at calc(var(--a2x) - var(--cx-amx,0px)) var(--a2y),
-      rgba(58,74,132,0.34) 0%, rgba(58,74,132,0) 58%),
-    radial-gradient(54vmax 50vmax at var(--a3x) calc(var(--a3y) + var(--cx-amy,0px)),
-      rgba(126,98,172,0.22) 0%, rgba(126,98,172,0) 62%),
-    radial-gradient(34vmax 30vmax at calc(70% + var(--cx-amx,0px)) 8%,
-      rgba(131,189,224,0.14) 0%, rgba(131,189,224,0) 60%);
-  filter: hue-rotate(calc(var(--cx-hue,0deg) + var(--cx-aura-h,0deg))) saturate(var(--cx-sat,1));
+    radial-gradient(48vmax 44vmax at calc(18% + var(--cx-amx,0px)) calc(14% + var(--cx-amy,0px)),
+      rgba(99,102,241,0.62) 0%, rgba(99,102,241,0) 58%),
+    radial-gradient(54vmax 50vmax at calc(86% - var(--cx-amx,0px)) 22%,
+      rgba(168,85,247,0.58) 0%, rgba(168,85,247,0) 56%),
+    radial-gradient(60vmax 54vmax at 46% calc(100% + var(--cx-amy,0px)),
+      rgba(34,211,238,0.46) 0%, rgba(34,211,238,0) 58%),
+    radial-gradient(42vmax 38vmax at calc(74% + var(--cx-amx,0px)) 2%,
+      rgba(244,114,182,0.40) 0%, rgba(244,114,182,0) 58%),
+    radial-gradient(46vmax 42vmax at 4% 82%,
+      rgba(59,224,240,0.36) 0%, rgba(59,224,240,0) 60%),
+    radial-gradient(70vmax 66vmax at 50% 50%,
+      rgba(20,16,44,0.0) 40%, rgba(10,10,20,0.55) 100%);
+  filter: hue-rotate(calc(var(--cx-hue,0deg) + var(--cx-aura-h,0deg))) saturate(1.25);
   transition: filter 1.1s ease;
-  animation: cx-aurora 32s ease-in-out infinite alternate, cx-aura-hue 60s linear infinite;
+  animation: cx-aurora 34s ease-in-out infinite alternate, cx-aura-hue 48s linear infinite;
   will-change: transform, filter;
 }}
 .stApp::before {{
-  content: ""; position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  content: ""; position: fixed; inset: -8vmax; z-index: 0; pointer-events: none;
   background:
-    linear-gradient(178deg, rgba(20,29,54,0.42) 0%, rgba(10,14,28,0) 34%),
-    url("{eng}") center top / cover no-repeat;
+    radial-gradient(30vmax 28vmax at 62% 40%, rgba(191,169,255,0.20) 0%, rgba(191,169,255,0) 58%),
+    radial-gradient(26vmax 24vmax at 30% 70%, rgba(56,224,240,0.16) 0%, rgba(56,224,240,0) 60%);
   transform: translate3d(var(--cx-mx,0px), calc(var(--cx-plate,0px) + var(--cx-my,0px)), 0)
-             rotate(var(--cx-rot,0deg)) scale(calc(var(--cx-scale,1.08) * var(--cx-kick,1)));
-  filter: hue-rotate(calc(var(--cx-hue,0deg) * .6)) saturate(var(--cx-sat,1)) brightness(var(--cx-kick-b,1));
+             rotate(var(--cx-rot,0deg)) scale(calc(1.04 * var(--cx-kick,1)));
+  filter: hue-rotate(calc(var(--cx-hue,0deg) * .7)) blur(6px);
   transition: transform .18s cubic-bezier(.2,.8,.2,1), filter .7s ease;
   will-change: transform, filter;
 }}
@@ -303,37 +306,36 @@ html.cx-js.cx-kick .stApp::before {{ animation: cx-plate-kick .62s cubic-bezier(
 .stApp::after {{
   content: ""; position: fixed; inset: 0; z-index: 0; pointer-events: none;
   background:
-    radial-gradient(160% 130% at 50% 4%, rgba(6,8,15,0) 55%, rgba(5,7,14,0.5) 100%);
+    radial-gradient(150% 110% at 50% 0%, rgba(10,10,20,0) 55%, rgba(6,6,16,0.45) 100%);
 }}
 
-/* one gilt sweep across the plate whenever the section changes */
+/* section-change sweep -- an electric prism edge */
 .cx-wipe {{
   position: fixed; inset: 0 -46vw; z-index: 6; pointer-events: none;
   opacity: 0; transform: translateX(-125%) skewX(-15deg);
   background: linear-gradient(90deg,
-    rgba(216,178,92,0) 0%, rgba(216,178,92,0.06) 30%,
-    rgba(244,225,172,0.10) 44%, rgba(255,244,214,0.42) 50%,
-    rgba(244,225,172,0.10) 56%, rgba(216,178,92,0.06) 70%, rgba(216,178,92,0) 100%);
-  box-shadow: 0 0 60px 10px rgba(244,225,172,0.10);
+    rgba(142,123,240,0) 0%, rgba(142,123,240,0.10) 28%,
+    rgba(56,224,240,0.16) 42%, rgba(255,255,255,0.5) 50%,
+    rgba(168,85,247,0.16) 58%, rgba(142,123,240,0.10) 72%, rgba(142,123,240,0) 100%);
+  box-shadow: 0 0 80px 12px rgba(142,123,240,0.16);
 }}
-.cx-wipe.run {{ animation: cx-wipe .82s cubic-bezier(.62,0,.28,1); }}
-/* a brief tint of the new section's hue */
+.cx-wipe.run {{ animation: cx-wipe .8s cubic-bezier(.62,0,.28,1); }}
 .cx-flash {{
   position: fixed; inset: 0; z-index: 5; pointer-events: none; opacity: 0;
   background: radial-gradient(120% 120% at 50% 30%,
-    hsla(calc(42deg + var(--cx-hue,0deg)), 60%, 55%, 0.14) 0%,
-    hsla(calc(42deg + var(--cx-hue,0deg)), 60%, 45%, 0) 62%);
+    hsla(calc(258deg + var(--cx-hue,0deg)), 80%, 62%, 0.16) 0%,
+    hsla(calc(258deg + var(--cx-hue,0deg)), 80%, 50%, 0) 62%);
 }}
 .cx-flash.run {{ animation: cx-flash .7s ease-out; }}
 
 @keyframes cx-aurora {{
   0%   {{ transform: translate3d(0,0,0) scale(1) rotate(0deg); }}
-  33%  {{ transform: translate3d(4vmax,-3vmax,0) scale(1.08) rotate(2.4deg); }}
-  66%  {{ transform: translate3d(-2vmax,3.4vmax,0) scale(1.12) rotate(-2deg); }}
-  100% {{ transform: translate3d(-4vmax,-1.4vmax,0) scale(1.06) rotate(1.4deg); }}
+  33%  {{ transform: translate3d(5vmax,-4vmax,0) scale(1.1) rotate(3deg); }}
+  66%  {{ transform: translate3d(-3vmax,4vmax,0) scale(1.16) rotate(-2.6deg); }}
+  100% {{ transform: translate3d(-5vmax,-2vmax,0) scale(1.08) rotate(1.8deg); }}
 }}
 @keyframes cx-aura-hue {{
-  0% {{ --cx-aura-h: -14deg; }}  50% {{ --cx-aura-h: 14deg; }}  100% {{ --cx-aura-h: -14deg; }}
+  0% {{ --cx-aura-h: -20deg; }}  50% {{ --cx-aura-h: 22deg; }}  100% {{ --cx-aura-h: -20deg; }}
 }}
 @keyframes cx-wipe {{
   0%   {{ opacity: 0; transform: translateX(-125%) skewX(-15deg); }}
@@ -344,9 +346,9 @@ html.cx-js.cx-kick .stApp::before {{ animation: cx-plate-kick .62s cubic-bezier(
   0% {{ opacity: 0; }}  18% {{ opacity: 1; }}  100% {{ opacity: 0; }}
 }}
 @keyframes cx-plate-kick {{
-  0%   {{ transform: translate3d(var(--cx-mx,0px), var(--cx-plate,0px), 0) rotate(var(--cx-rot,0deg)) scale(calc(var(--cx-scale,1.08) * 1.0)); }}
-  30%  {{ transform: translate3d(var(--cx-mx,0px), var(--cx-plate,0px), 0) rotate(calc(var(--cx-rot,0deg) - 2.4deg)) scale(calc(var(--cx-scale,1.08) * 1.055)); }}
-  100% {{ transform: translate3d(var(--cx-mx,0px), var(--cx-plate,0px), 0) rotate(var(--cx-rot,0deg)) scale(var(--cx-scale,1.08)); }}
+  0%   {{ transform: translate3d(var(--cx-mx,0px), var(--cx-plate,0px), 0) rotate(var(--cx-rot,0deg)) scale(1.04); }}
+  30%  {{ transform: translate3d(var(--cx-mx,0px), var(--cx-plate,0px), 0) rotate(calc(var(--cx-rot,0deg) - 3deg)) scale(1.1); }}
+  100% {{ transform: translate3d(var(--cx-mx,0px), var(--cx-plate,0px), 0) rotate(var(--cx-rot,0deg)) scale(1.04); }}
 }}
 
 /* per-section: shift the whole plate's hue + the engraving's rest pose.
@@ -370,7 +372,7 @@ body::before {{
 [data-testid="stAppDeployButton"], [data-testid="stDeployButton"] {{ display: none !important; }}
 [data-testid="stMain"] .block-container {{ padding-top: 1.1rem; max-width: 1180px; }}
 [data-testid="stSidebarCollapsedControl"] {{ opacity: .5; }}
-[data-testid="stSidebar"] {{ background: var(--ink-edge); border-right: 1px solid var(--line-soft); }}
+[data-testid="stSidebar"] {{ background: rgba(8,8,18,0.75); backdrop-filter: blur(20px); border-right: 1px solid var(--line-soft); }}
 
 /* ---------- masthead ---------- */
 .cx-mast {{
@@ -386,15 +388,16 @@ body::before {{
 .st-key-cx_refresh button, .cx-reload button {{
   font-family: var(--sans) !important; font-size: .78rem !important; font-weight: 600 !important;
   letter-spacing: .01em !important; text-transform: none !important;
-  padding: .32rem .8rem !important; border-radius: 6px !important;
+  padding: .38rem .95rem !important; border-radius: 10px !important;
   color: #fff !important; -webkit-text-fill-color: #fff !important;
-  background: #238636 !important;
-  border: 1px solid rgba(240,246,252,0.10) !important;
-  box-shadow: 0 1px 0 rgba(27,31,36,0.10), inset 0 1px 0 rgba(255,255,255,0.06) !important;
+  background: linear-gradient(180deg,#2ea043,#218139) !important;
+  border: 1px solid rgba(52,211,153,0.30) !important;
+  box-shadow: 0 4px 18px -4px rgba(46,160,67,0.55), inset 0 1px 0 rgba(255,255,255,0.14) !important;
   transition: background .12s ease, transform .06s ease !important;
 }}
 .st-key-cx_refresh button:hover, .cx-reload button:hover {{
-  background: #2ea043 !important; border-color: rgba(240,246,252,0.13) !important;
+  background: linear-gradient(180deg,#3fb958,#268f43) !important; border-color: rgba(52,211,153,0.45) !important;
+  box-shadow: 0 6px 24px -4px rgba(46,160,67,0.7), inset 0 1px 0 rgba(255,255,255,0.18) !important;
   color: #fff !important; -webkit-text-fill-color: #fff !important;
 }}
 .st-key-cx_refresh button:active, .cx-reload button:active {{
@@ -406,15 +409,18 @@ body::before {{
 .st-key-cx_refresh button p, .cx-reload button p {{ color: #fff !important; }}
 
 /* ---------- the menu (a keyed radio, drawn as a centred bar) ---------- */
-.st-key-cx_nav {{ margin: .1rem 0 1.7rem; border-bottom: 1px solid var(--line); }}
+.st-key-cx_nav {{ margin: .3rem 0 1.8rem; display: flex; justify-content: center; }}
 .st-key-cx_nav [role="radiogroup"] {{
   flex-direction: row; flex-wrap: wrap; justify-content: center;
-  gap: 0 .1rem; padding: .2rem 0 0;
+  gap: .28rem; padding: .34rem;
+  background: rgba(255,255,255,0.04); backdrop-filter: blur(16px) saturate(1.3);
+  border: 1px solid var(--line); border-radius: 999px;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.06), 0 10px 40px -16px rgba(0,0,0,0.6);
 }}
 .st-key-cx_nav [role="radiogroup"] > label {{
-  margin: 0; padding: .5rem .7rem .58rem; border-radius: 0; cursor: pointer;
-  border-bottom: 2px solid transparent; margin-bottom: -1px;
-  transition: color .12s ease, border-color .12s ease;
+  margin: 0; padding: .42rem .9rem; border-radius: 999px; cursor: pointer;
+  border: 1px solid transparent;
+  transition: color .16s ease, background .16s ease, border-color .16s ease, box-shadow .16s ease;
 }}
 .st-key-cx_nav [data-testid="stRadioOption"] > div > div > div:first-child {{
   display: none !important;
@@ -426,17 +432,20 @@ body::before {{
 .st-key-cx_nav [role="radiogroup"] > label:hover div[data-testid="stMarkdownContainer"] p {{
   color: var(--text) !important;
 }}
-.st-key-cx_nav [role="radiogroup"] > label:has(input:checked) {{ border-bottom-color: var(--gold); }}
+.st-key-cx_nav [role="radiogroup"] > label:has(input:checked) {{
+  background: linear-gradient(180deg, rgba(142,123,240,0.32), rgba(142,123,240,0.16));
+  border-color: rgba(142,123,240,0.45);
+  box-shadow: 0 0 20px -2px rgba(142,123,240,0.5), inset 0 1px 0 rgba(255,255,255,0.14);
+}}
 .st-key-cx_nav [role="radiogroup"] > label:has(input:checked) div[data-testid="stMarkdownContainer"] p {{
-  color: var(--gold-bright) !important; font-weight: 600;
+  color: #F1EEFF !important; font-weight: 600;
 }}
 
 /* ---------- typography ---------- */
 h1, h2, h3, h4, h5 {{
-  font-family: var(--display); letter-spacing: -0.006em; text-wrap: balance;
-  font-optical-sizing: auto;
+  font-family: var(--display); letter-spacing: -0.02em; text-wrap: balance; font-weight: 600;
 }}
-h1, h2 {{ color: var(--gold-bright); font-weight: 600; }}
+h1, h2 {{ color: #F3F1FF; font-weight: 700; }}
 h3, h4, h5 {{ color: var(--text); font-weight: 600; }}
 h1 {{ font-size: 1.95rem; }}  h2 {{ font-size: 1.5rem; }}
 h3 {{ font-size: 1.18rem; }}  h4 {{ font-size: 1.02rem; }}
@@ -455,26 +464,30 @@ code, pre, kbd, [data-testid="stMetricValue"], [data-testid="stMetricDelta"],
 .cx-num {{ font-family: var(--mono); font-variant-numeric: tabular-nums; }}
 :not(pre) > code {{
   background: var(--gold-wash); color: var(--gold-bright);
-  border: 1px solid var(--gold-line); border-radius: 4px; padding: .05em .38em; font-size: .84em;
+  border: 1px solid var(--gold-line); border-radius: 6px; padding: .05em .38em; font-size: .84em;
 }}
 pre, [data-testid="stCode"] {{
-  background: var(--sunk) !important; border: 1px solid var(--line); border-radius: 6px;
+  background: rgba(6,6,16,0.6) !important; -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+  border: 1px solid var(--line); border-radius: 12px;
 }}
 .katex {{ color: var(--text); }}
 
 /* ---------- chapter opening ---------- */
 .cx-hero {{ position: relative; margin: .2rem 0 1.6rem; padding: 0 0 .9rem; }}
 .cx-hero::after {{
-  content: ""; position: absolute; inset-inline: 0; bottom: 0; height: 1px;
-  background: linear-gradient(90deg, var(--gold) 0 54px, var(--line) 54px 100%);
+  content: ""; position: absolute; inset-inline: 0; bottom: 0; height: 2px; border-radius: 2px;
+  background: linear-gradient(90deg, var(--gold) 0%, var(--cyan, #38E0F0) 30%, transparent 72%);
+  opacity: .8;
 }}
 .cx-hero-eyebrow {{
-  display: block; margin: 0 0 .35rem; font-family: var(--mono);
-  font-size: .72rem; letter-spacing: .22em; text-transform: uppercase; color: var(--gold);
+  display: inline-block; margin: 0 0 .55rem; font-family: var(--mono);
+  font-size: .66rem; letter-spacing: .16em; text-transform: uppercase; color: var(--gold-text);
+  background: var(--gold-wash); border: 1px solid var(--gold-line);
+  padding: .2rem .55rem; border-radius: 999px;
 }}
 .cx-hero-title {{
-  font-family: var(--display); font-weight: 600; color: var(--gold-bright);
-  font-size: clamp(1.55rem, 2.4vw, 2.15rem); line-height: 1.14; letter-spacing: -0.01em;
+  font-family: var(--display); font-weight: 700; color: #F3F1FF;
+  font-size: clamp(1.7rem, 2.7vw, 2.5rem); line-height: 1.1; letter-spacing: -0.03em;
 }}
 .cx-hero-sub {{
   margin-top: .45rem; color: var(--text-dim); font-size: .92rem; max-width: 74ch;
@@ -483,19 +496,26 @@ pre, [data-testid="stCode"] {{
 
 /* ---------- metric  (an engraved plaque, no boxy border) ---------- */
 [data-testid="stMetric"] {{
-  background: linear-gradient(180deg, #121A31 0%, #0D1424 100%);
-  border: 1px solid var(--line-soft); border-top: 1px solid var(--gold-line);
-  border-radius: 3px; padding: .9rem 1rem .85rem;
+  background: var(--panel); -webkit-backdrop-filter: blur(16px) saturate(1.4);
+  backdrop-filter: blur(16px) saturate(1.4);
+  border: 1px solid var(--line); border-radius: 16px; padding: 1rem 1.15rem;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.07), 0 10px 34px -14px rgba(0,0,0,0.55);
+  transition: border-color .18s ease, box-shadow .18s ease, transform .18s ease;
 }}
-[data-testid="stMetric"]:hover {{ border-top-color: var(--gold); }}
+[data-testid="stMetric"]:hover {{
+  border-color: var(--gold-line);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.09), 0 0 28px -6px rgba(142,123,240,0.4), 0 14px 40px -16px rgba(0,0,0,0.6);
+  transform: translateY(-2px);
+}}
 [data-testid="stMetricLabel"], [data-testid="stMetricLabel"] p {{
-  text-transform: uppercase !important; letter-spacing: .1em !important;
-  font-size: .68rem !important; color: var(--gold-text) !important;
-  font-weight: 500; font-family: var(--mono);
+  text-transform: uppercase !important; letter-spacing: .09em !important;
+  font-size: .66rem !important; color: var(--text-dim) !important;
+  font-weight: 600; font-family: var(--mono);
 }}
 [data-testid="stMetricValue"] {{
-  font-weight: 500; color: var(--text); -webkit-text-fill-color: var(--text);
-  font-size: 1.62rem !important; letter-spacing: -0.01em; overflow-wrap: anywhere;
+  font-weight: 600; color: #F3F1FF; -webkit-text-fill-color: #F3F1FF;
+  font-family: var(--display);
+  font-size: 1.7rem !important; letter-spacing: -0.02em; overflow-wrap: anywhere;
 }}
 [data-testid="stMetricDelta"] {{ font-weight: 500; }}
 
@@ -511,8 +531,9 @@ pre, [data-testid="stCode"] {{
 }}
 .stTabs [data-baseweb="tab"]:hover {{ color: var(--gold-text); background: transparent; }}
 .stTabs [aria-selected="true"] {{
-  color: var(--gold-bright) !important; background: transparent !important;
+  color: #F1EEFF !important; background: transparent !important;
   box-shadow: inset 0 -2px 0 var(--gold);
+  text-shadow: 0 0 16px rgba(142,123,240,0.6);
 }}
 .stTabs [data-baseweb="tab-highlight"], .stTabs [data-baseweb="tab-border"] {{
   background: transparent !important;
@@ -520,20 +541,25 @@ pre, [data-testid="stCode"] {{
 
 /* ---------- buttons ---------- */
 .stButton > button, .stDownloadButton > button, [data-testid="stFormSubmitButton"] > button {{
-  border-radius: 4px; font-weight: 600; letter-spacing: .01em; font-family: var(--sans);
+  border-radius: 11px; font-weight: 600; letter-spacing: .005em; font-family: var(--sans);
   border: 1px solid var(--gold-line); background: var(--panel); color: var(--gold-text);
-  box-shadow: none; transition: border-color .12s ease, color .12s ease, background .12s ease;
+  -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.06);
+  transition: border-color .14s ease, color .14s ease, background .14s ease, box-shadow .14s ease;
 }}
 .stButton > button:hover, .stDownloadButton > button:hover,
 [data-testid="stFormSubmitButton"] > button:hover {{
-  border-color: var(--gold); color: var(--gold-bright); background: var(--gold-wash);
+  border-color: var(--gold); color: #F1EEFF; background: var(--gold-wash);
+  box-shadow: 0 0 24px -4px rgba(142,123,240,0.5), inset 0 1px 0 rgba(255,255,255,0.1);
 }}
 .stButton > button[kind="primary"], [data-testid="stFormSubmitButton"] > button {{
-  background: linear-gradient(180deg, var(--gold-bright) 0%, var(--gold) 60%, var(--gold-deep) 100%);
-  color: #1A1503; border-color: var(--gold-deep); text-shadow: none;
+  background: linear-gradient(135deg, #9E8CFF 0%, #7B67EC 55%, #5F4BD6 100%);
+  color: #fff; -webkit-text-fill-color: #fff; border-color: rgba(191,169,255,0.5);
+  box-shadow: 0 8px 28px -6px rgba(123,103,236,0.65), inset 0 1px 0 rgba(255,255,255,0.22);
 }}
 .stButton > button[kind="primary"]:hover, [data-testid="stFormSubmitButton"] > button:hover {{
-  filter: brightness(1.06); color: #1A1503;
+  filter: brightness(1.08); color: #fff;
+  box-shadow: 0 10px 36px -6px rgba(123,103,236,0.85), inset 0 1px 0 rgba(255,255,255,0.28);
 }}
 
 /* ---------- sidebar (utility drawer, collapsed) ---------- */
@@ -569,11 +595,12 @@ pre, [data-testid="stCode"] {{
 [data-testid="stWidgetLabel"] p, label p {{ color: var(--gold-text) !important; font-weight: 500; }}
 [data-baseweb="input"], [data-baseweb="select"] > div, [data-baseweb="textarea"],
 [data-testid="stNumberInput"] input, [data-testid="stTextInput"] input, [data-testid="stDateInput"] input {{
-  border-radius: 4px !important; border-color: var(--line) !important;
-  background: var(--sunk) !important; color: var(--text) !important; font-family: var(--mono);
+  border-radius: 10px !important; border-color: var(--line) !important;
+  background: rgba(6,6,16,0.5) !important; color: var(--text) !important; font-family: var(--mono);
 }}
 [data-baseweb="input"]:focus-within, [data-baseweb="select"] > div:focus-within {{
   border-color: var(--gold) !important;
+  box-shadow: 0 0 0 3px var(--gold-wash), 0 0 22px -6px rgba(142,123,240,0.6) !important;
 }}
 [data-testid="stToggle"] [data-baseweb="toggle"][aria-checked="true"] > div {{ background: var(--gold) !important; }}
 [data-testid="stSegmentedControl"] button[aria-checked="true"],
@@ -595,30 +622,38 @@ pre, [data-testid="stCode"] {{
 [data-testid="stAlert"] [data-baseweb="notification"], [data-testid="stAlertContainer"],
 [data-testid="stNotificationContentInfo"], [data-testid="stNotificationContentWarning"],
 [data-testid="stNotificationContentError"], [data-testid="stNotificationContentSuccess"] {{
-  border-radius: 4px; background: var(--panel) !important;
+  border-radius: 14px; background: var(--panel) !important;
+  -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
 }}
 [data-testid="stAlert"] {{ border: 1px solid var(--line); border-inline-start: 3px solid var(--gold); }}
 [data-testid="stAlert"] [data-testid="stMarkdownContainer"] p, [data-testid="stAlertContainer"] p {{
   color: var(--text) !important;
 }}
 [data-testid="stExpander"] {{
-  border-radius: 4px; border: 1px solid var(--line); background: #0E1526; overflow: hidden;
+  border-radius: 16px; border: 1px solid var(--line); overflow: hidden;
+  background: var(--panel); -webkit-backdrop-filter: blur(16px) saturate(1.3); backdrop-filter: blur(16px) saturate(1.3);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.06);
 }}
 [data-testid="stExpander"] summary:hover {{ background: var(--gold-wash); }}
-[data-testid="stForm"] {{ border-radius: 5px; border: 1px solid var(--line); background: #0E1526; }}
-/* bordered container -> a raised card off the plate */
+[data-testid="stForm"] {{
+  border-radius: 18px; border: 1px solid var(--line);
+  background: var(--panel); -webkit-backdrop-filter: blur(18px) saturate(1.3); backdrop-filter: blur(18px) saturate(1.3);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.06), 0 16px 50px -20px rgba(0,0,0,0.6);
+}}
+/* bordered container -> a frosted card floating over the mesh */
 div[data-testid="stVerticalBlockBorderWrapper"] {{
-  border-radius: 5px;
-  background: linear-gradient(180deg, #121A31 0%, #0D1424 100%);
+  border-radius: 18px;
+  background: var(--panel); -webkit-backdrop-filter: blur(18px) saturate(1.35); backdrop-filter: blur(18px) saturate(1.35);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.07), 0 16px 50px -20px rgba(0,0,0,0.6);
 }}
 /* st.metric built-in sparkline: sit it on the card, not on a black rectangle */
 [data-testid="stMetricChart"], [data-testid="stMetricChart"] canvas,
 [data-testid="stMetricChart"] svg {{ background: transparent !important; }}
 [data-testid="stMetricChart"] {{ opacity: .9; }}
 [data-testid="stDataFrame"], [data-testid="stTable"] {{
-  border-radius: 4px; overflow: hidden; border: 1px solid var(--line);
+  border-radius: 14px; overflow: hidden; border: 1px solid var(--line);
 }}
-[data-testid="stVegaLiteChart"], [data-testid="stArrowVegaLiteChart"], .stPlotlyChart {{ border-radius: 4px; }}
+[data-testid="stVegaLiteChart"], [data-testid="stArrowVegaLiteChart"], .stPlotlyChart {{ border-radius: 14px; }}
 hr {{ border-color: var(--line); }}
 
 /* ---------- scrollbars ---------- */
@@ -686,15 +721,15 @@ img, iframe, canvas, svg {{ max-width: 100%; }}
   .cx-wheel-reel .next {{ text-align: left; }}
   .cx-wheel-reel .cur {{
     color: var(--gold-bright); font-weight: 600; font-size: 1rem; white-space: nowrap;
-    text-shadow: 0 0 18px rgba(216,178,92,.35); flex: 0 0 auto;
+    text-shadow: 0 0 20px rgba(142,123,240,.5); flex: 0 0 auto;
   }}
   .cx-dial {{
     position: relative; width: 96px; height: 96px; margin: 0 auto; border-radius: 50%;
     background:
       radial-gradient(circle at 50% 32%, rgba(255,255,255,0.07), rgba(255,255,255,0) 58%),
-      radial-gradient(circle at 50% 50%, #111a30 0%, #0a0e1c 68%, #05070f 100%);
+      radial-gradient(circle at 50% 50%, #1a1830 0%, #0c0c18 66%, #060610 100%);
     box-shadow: 0 10px 34px rgba(0,0,0,0.55), 0 2px 8px rgba(0,0,0,0.4),
-                inset 0 1px 0 rgba(255,255,255,0.09), inset 0 0 0 1px rgba(216,178,92,0.24);
+                inset 0 1px 0 rgba(255,255,255,0.12), inset 0 0 0 1px rgba(142,123,240,0.35), 0 0 30px -6px rgba(142,123,240,0.4);
     -webkit-backdrop-filter: blur(7px); backdrop-filter: blur(7px);
     cursor: grab;
   }}
@@ -711,7 +746,7 @@ img, iframe, canvas, svg {{ max-width: 100%; }}
   .cx-dial.spin .cx-dial-ticks {{ transition: none; }}
   .cx-dial-ticks i {{
     position: absolute; left: 50%; top: 5px; width: 2px; height: 7px; margin-left: -1px;
-    background: rgba(216,178,92,0.34); border-radius: 1px; transform-origin: 1px 43px;
+    background: rgba(180,170,255,0.38); border-radius: 1px; transform-origin: 1px 43px;
   }}
   .cx-dial-ticks i.on {{
     background: var(--gold-bright); height: 11px; width: 2.5px; margin-left: -1.25px;
@@ -908,9 +943,9 @@ def _register_altair_theme() -> None:
                 "font": _SANS,
                 "title": {"color": GOLD_TEXT, "fontSize": 14, "font": _DISPLAY, "fontWeight": 600},
                 "axis": {
-                    "domainColor": "rgba(160,175,220,0.20)",
-                    "gridColor": "rgba(160,175,220,0.07)",
-                    "tickColor": "rgba(160,175,220,0.20)",
+                    "domainColor": "rgba(180,170,255,0.20)",
+                    "gridColor": "rgba(180,170,255,0.07)",
+                    "tickColor": "rgba(180,170,255,0.20)",
                     "labelColor": TEXT_DIM,
                     "titleColor": TEXT_DIM,
                     "labelFont": _MONO,
@@ -924,8 +959,8 @@ def _register_altair_theme() -> None:
                 },
                 "range": {
                     "category": CATEGORICAL,
-                    "heatmap": ["#0C1435", "#3C3E7E", GOLD],
-                    "ramp": ["#0C1435", "#5E5A93", GOLD],
+                    "heatmap": ["#12121F", "#4C3AA8", GOLD, CYAN],
+                    "ramp": ["#12121F", "#5A49C6", GOLD, "#BCA9FF"],
                 },
             }
         }

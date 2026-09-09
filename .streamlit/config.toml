@@ -1,30 +1,29 @@
-# CARN-X  --  visual theme only (no behaviour / no logic touched)
-# Midnight-blue lacquer, one metallic gilt.  The engraved backplate, the
-# menu bar and the fine detailing live in theme.py.
+# CARN-X  --  "aurora glass" visual theme only (no behaviour / no logic touched).
+# Near-black ground, one electric-violet accent, frosted glass; the live colour
+# mesh + glass detailing live in theme.py.
 
 [theme]
 base = "dark"
-primaryColor = "#D8B25C"                 # gilt — widgets / accents
-backgroundColor = "#0A0E1C"              # the plate
-secondaryBackgroundColor = "#0F1528"     # raised panels
-textColor = "#E7EAF5"
-linkColor = "#F4E1AC"
-borderColor = "#1F2A47"
+primaryColor = "#8E7BF0"
+backgroundColor = "#0A0A14"
+secondaryBackgroundColor = "#12121F"
+textColor = "#ECEDF6"
+linkColor = "#BCA9FF"
+borderColor = "#2A2A3E"
 showWidgetBorder = true
-baseRadius = "0.28rem"
+baseRadius = "0.85rem"
 baseFontSize = 15
 
-font = "'IBM Plex Sans':https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap"
-headingFont = "Fraunces:https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&display=swap"
+font = "'Inter':https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+headingFont = "'Space Grotesk':https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap"
 codeFont = "'IBM Plex Mono':https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap"
 
-# native st.line_chart / st.bar_chart / st.area_chart pick these up
 chartCategoricalColors = [
-  "#D8B25C", "#83BDE0", "#58BE8B", "#D291B0",
-  "#9A93D8", "#B9924A", "#6E7DA8", "#DE6B54",
+  "#8E7BF0", "#38E0F0", "#34D399", "#F472B6",
+  "#A78BFA", "#818CF8", "#22D3EE", "#FB7185",
 ]
 
 [theme.sidebar]
-backgroundColor = "#05070F"
-secondaryBackgroundColor = "#0F1528"
-borderColor = "#141C31"
+backgroundColor = "#080812"
+secondaryBackgroundColor = "#12121F"
+borderColor = "#22222F"

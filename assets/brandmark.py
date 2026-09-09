@@ -15,12 +15,12 @@ wordmark SVG live (its serif loads through the page's own @font-face).
 
 from __future__ import annotations
 
-NAVY_0 = "#0E1428"       # plate centre
-NAVY_1 = "#05070F"       # plate edge
-GOLD = "#D8B25C"         # gilt — the linework
-GOLD_HI = "#F4E1AC"      # struck highlight
-GOLD_LO = "#8A6A2E"      # engraved shadow
-PATH_GOLD = "#E6CF98"    # the price path
+NAVY_0 = "#141426"       # plate centre
+NAVY_1 = "#08070F"       # plate edge
+GOLD = "#9E8CFF"         # electric violet — the mark
+GOLD_HI = "#C9BCFF"      # bright
+GOLD_LO = "#4FD8EC"      # cyan foot
+PATH_GOLD = "#7FE9F5"    # the curve
 DIM = "#8A94AC"
 
 SERIF = "Fraunces, Spectral, 'EB Garamond', Georgia, 'Times New Roman', serif"
@@ -37,15 +37,15 @@ def _defs(uid: str) -> str:
       <stop offset="0.62" stop-color="#0A0E1C"/>
       <stop offset="1" stop-color="{NAVY_1}"/>
     </radialGradient>
-    <linearGradient id="gd{uid}" x1="0.2" y1="0" x2="0.5" y2="1">
+    <linearGradient id="gd{uid}" x1="0.15" y1="0" x2="0.6" y2="1">
       <stop offset="0" stop-color="{GOLD_HI}"/>
-      <stop offset="0.46" stop-color="{GOLD}"/>
-      <stop offset="1" stop-color="{GOLD_LO}"/>
+      <stop offset="0.45" stop-color="{GOLD}"/>
+      <stop offset="1" stop-color="#4FD8EC"/>
     </linearGradient>
-    <radialGradient id="bl{uid}" cx="50%" cy="50%" r="50%">
-      <stop offset="0" stop-color="{GOLD}" stop-opacity="0.22"/>
-      <stop offset="0.55" stop-color="{GOLD}" stop-opacity="0.05"/>
-      <stop offset="1" stop-color="{GOLD}" stop-opacity="0"/>
+    <radialGradient id="bl{uid}" cx="46%" cy="42%" r="55%">
+      <stop offset="0" stop-color="#8E7BF0" stop-opacity="0.40"/>
+      <stop offset="0.5" stop-color="#A855F7" stop-opacity="0.12"/>
+      <stop offset="1" stop-color="#A855F7" stop-opacity="0"/>
     </radialGradient>
     <radialGradient id="vg{uid}" cx="50%" cy="46%" r="62%">
       <stop offset="0" stop-color="#000" stop-opacity="0"/>
