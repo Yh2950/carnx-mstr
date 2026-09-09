@@ -52,15 +52,12 @@ _ENGINE = r"""
       for(var i=0;i<c.length;i++){ if(c[i].scrollHeight-c[i].clientHeight>40) return c[i]; }
       return d.scrollingElement||d.documentElement;
     }
-    var scT;
     function onScroll(){
       var s=scroller();
       var mx=Math.max(1, s.scrollHeight - s.clientHeight);
       var p=Math.min(1, Math.max(0, (s.scrollTop||0)/mx));
       r.style.setProperty('--cx-progress', p.toFixed(4));
       r.style.setProperty('--cx-plate', (-42*p).toFixed(1)+'px');
-      if(wheel){ wheel.classList.add('scrolling'); clearTimeout(scT);
-        scT=setTimeout(function(){ wheel.classList.remove('scrolling'); }, 550); }
     }
     var bound=null;
     function bindScroll(){
@@ -137,8 +134,8 @@ _ENGINE = r"""
     function syncSection(){
       var i=navIndex();
       if(i<0) return;
-      if(lastSec===null){ lastSec=i; r.style.setProperty('--cx-sec-i', i); r.dataset.cxSection=i; wheelSync(i); return; }
-      if(i===lastSec){ wheelSync(i); return; }
+      if(lastSec===null){ lastSec=i; r.style.setProperty('--cx-sec-i', i); r.dataset.cxSection=i; orbitSync(i); return; }
+      if(i===lastSec){ orbitSync(i); return; }
       lastSec=i;
       r.style.setProperty('--cx-sec-i', i);
       r.dataset.cxSection=i;
@@ -150,7 +147,7 @@ _ENGINE = r"""
       if(navigator.vibrate) navigator.vibrate([4,18,8]);
       // re-arm the reveal cascade for the "new page"
       window.__cxReady=false; clearTimeout(rt);
-      pass(true); bumpReady(); wheelSync(i);
+      pass(true); bumpReady(); orbitSync(i);
       setTimeout(function(){ window.__cxReady=true;
         d.querySelectorAll('.cx-hide').forEach(function(el){
           var b=el.getBoundingClientRect();
@@ -160,7 +157,7 @@ _ENGINE = r"""
     }
 
 
-    /* ---- mobile navigation dial (iOS camera-zoom-wheel style) ---- */
+    /* ---- orbital navigation: page buttons on a ring around the Bitcoin hub ---- */
     var BTC='<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">'
       +'<circle cx="32" cy="32" r="31" fill="#F7931A"/>'
       +'<text x="32" y="47" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" '
@@ -174,129 +171,156 @@ _ENGINE = r"""
     function navNames(){
       var out=[], L=navLabels();
       for(var i=0;i<L.length;i++){
-        var pnode=L[i].querySelector('[data-testid=stMarkdownContainer] p') || L[i];
-        out.push((pnode.textContent||'').trim());
+        var pn=L[i].querySelector('[data-testid=stMarkdownContainer] p') || L[i];
+        out.push((pn.textContent||'').trim());
       }
       return out;
     }
+    function shortName(n){
+      n=(n||'').trim();
+      if(/^Monte/i.test(n)) return 'Monte';
+      if(/Walk-Forward/i.test(n)) return 'Walk-Fwd';
+      var w=n.split(/[ ·–—>]/).filter(Boolean);
+      return w[0]||n;
+    }
 
-    var wheel=d.querySelector('.cx-wheel'), ticks, reelPrev, reelCur, reelNext, dial;
-    var wSel=0, wN=0, STEP=32.72, dragging=false, navT=null;
+    var orbit=d.querySelector('.cx-orbit'), oRing, oHub, oName, oItems=[];
+    var oSel=0, oN=0, STEP=32.72, dragging=false, navT=null, rot=0;
 
-    function buildWheel(){
+    function buildOrbit(){
       var names=navNames();
-      if(names.length<2){ return false; }
-      wN=names.length; STEP=360/wN;
-      if(!wheel){
-        wheel=d.createElement('div'); wheel.className='cx-wheel';
-        wheel.innerHTML=
-          '<div class="cx-wheel-reel"><span class="adj prev"></span>'
-         +'<span class="cur"></span><span class="adj next"></span></div>'
-         +'<div class="cx-dial"><div class="cx-dial-ticks"></div>'
-         +'<div class="cx-dial-hub">'+BTC+'</div></div>'
-         +'<div class="cx-wheel-hint">סובב לניווט</div>';
-        d.body.appendChild(wheel);
-        dial=wheel.querySelector('.cx-dial');
-        ticks=wheel.querySelector('.cx-dial-ticks');
-        reelPrev=wheel.querySelector('.prev');
-        reelCur=wheel.querySelector('.cur');
-        reelNext=wheel.querySelector('.next');
-        bindDial();
+      if(names.length<2) return false;
+      oN=names.length; STEP=360/oN;
+      if(!orbit){
+        orbit=d.createElement('div'); orbit.className='cx-orbit';
+        orbit.innerHTML='<div class="cx-orbit-ring"></div>'
+          +'<div class="cx-orbit-hub">'+BTC+'</div>'
+          +'<div class="cx-orbit-name"></div>'
+          +'<div class="cx-orbit-hint">סובב · גרור · בחר</div>';
+        var mast=d.querySelector('.cx-mast');
+        var row=mast && mast.closest('[data-testid=stHorizontalBlock]');
+        var host=(row && row.closest('[data-testid=stElementContainer]')) || row;
+        if(host && host.parentElement) host.parentElement.insertBefore(orbit, host.nextSibling);
+        else (d.querySelector('[data-testid=stMain] .block-container [data-testid=stVerticalBlock]')||d.body).prepend(orbit);
+        oRing=orbit.querySelector('.cx-orbit-ring');
+        oHub=orbit.querySelector('.cx-orbit-hub');
+        oName=orbit.querySelector('.cx-orbit-name');
+        bindOrbit();
       }
-      if(ticks.children.length!==wN){
-        ticks.innerHTML='';
-        for(var i=0;i<wN;i++){
-          var t=d.createElement('i');
-          t.style.transform='rotate('+(i*STEP)+'deg)';
-          ticks.appendChild(t);
+      if(oItems.length!==oN){
+        oRing.innerHTML=''; oItems=[];
+        for(var i=0;i<oN;i++){
+          var it=d.createElement('div'); it.className='cx-orbit-item';
+          it.style.setProperty('--a', (i*STEP)+'deg');
+          var bt=d.createElement('button'); bt.type='button';
+          bt.textContent=shortName(names[i]);
+          (function(idx){ bt.addEventListener('click', function(ev){
+            ev.stopPropagation();
+            if(!dragging){ oSel=idx; renderOrbit(idx); goTo(idx,true); }
+          }); })(i);
+          it.appendChild(bt); oRing.appendChild(it); oItems.push(it);
         }
       }
-      renderWheel(wSel);
+      renderOrbit(oSel);
       return true;
     }
 
-    function renderWheel(sel){
-      if(!ticks) return;
-      var names=navNames(); if(names.length!==wN){ buildWheel(); return; }
-      wSel=Math.max(0,Math.min(wN-1,sel|0));
-      reelCur.textContent=names[wSel]||'';
-      reelPrev.textContent=wSel>0?names[wSel-1]:'';
-      reelNext.textContent=wSel<wN-1?names[wSel+1]:'';
-      for(var i=0;i<ticks.children.length;i++) ticks.children[i].classList.toggle('on', i===wSel);
-      ticks.style.transform='rotate('+(-wSel*STEP)+'deg)';
+    function renderOrbit(sel){
+      if(!oRing) return;
+      var names=navNames(); if(names.length!==oN){ buildOrbit(); return; }
+      oSel=Math.max(0,Math.min(oN-1,sel|0));
+      rot = -oSel*STEP;
+      orbit.style.setProperty('--orbit-rot', rot+'deg');
+      oName.textContent = names[oSel]||'';
+      for(var i=0;i<oItems.length;i++) oItems[i].classList.toggle('on', i===oSel);
     }
 
     function goTo(sel, now){
-      sel=Math.max(0,Math.min(wN-1,sel|0));
+      sel=Math.max(0,Math.min(oN-1,sel|0));
       var fire=function(){
         var L=navLabels();
         if(L[sel] && !L[sel].querySelector('input:checked')) L[sel].click();
       };
       clearTimeout(navT);
-      if(now) fire(); else navT=setTimeout(fire, 190);
+      if(now) fire(); else navT=setTimeout(fire, 200);
     }
 
-    function bindDial(){
-      var a0=0, sel0=0, acc=0, aPrev=0;
+    function bindOrbit(){
+      var aPrev=0, sel0=0, acc=0, hoverT=null;
       function ang(e){
-        var t=e.touches?e.touches[0]:e, R=dial.getBoundingClientRect();
+        var t=e.touches?e.touches[0]:e, R=orbit.getBoundingClientRect();
         return Math.atan2(t.clientY-(R.top+R.height/2), t.clientX-(R.left+R.width/2))*180/Math.PI;
       }
       function down(e){
-        dragging=true; dial.classList.add('spin'); wheel.classList.add('touched');
-        a0=aPrev=ang(e); sel0=wSel; acc=0;
-        e.preventDefault();
+        dragging=true; orbit.classList.remove('spinning'); orbit.classList.add('dragging','touched');
+        aPrev=ang(e); sel0=oSel; acc=0;
       }
       function move(e){
         if(!dragging) return;
         var a=ang(e), da=a-aPrev;
         if(da>180) da-=360; else if(da<-180) da+=360;
         acc+=da; aPrev=a;
-        ticks.style.transform='rotate('+((-sel0*STEP)-acc)+'deg)';
-        var tgt=Math.max(0,Math.min(wN-1, Math.round(sel0 + acc/STEP)));
-        if(tgt!==wSel){
-          wSel=tgt;
+        orbit.style.setProperty('--orbit-rot', ((-sel0*STEP)+acc)+'deg');
+        var tgt=Math.max(0,Math.min(oN-1, Math.round(sel0 - acc/STEP)));
+        if(tgt!==oSel){
+          oSel=tgt;
           var names=navNames();
-          reelCur.textContent=names[wSel]||'';
-          reelPrev.textContent=wSel>0?names[wSel-1]:'';
-          reelNext.textContent=wSel<wN-1?names[wSel+1]:'';
-          for(var i=0;i<ticks.children.length;i++) ticks.children[i].classList.toggle('on', i===wSel);
-          if(navigator.vibrate) navigator.vibrate(6);
-          goTo(wSel, false);
+          oName.textContent=names[oSel]||'';
+          for(var i=0;i<oItems.length;i++) oItems[i].classList.toggle('on', i===oSel);
+          if(navigator.vibrate) navigator.vibrate(5);
+          goTo(oSel, false);
         }
-        e.preventDefault();
+        if(e.cancelable) e.preventDefault();
       }
       function up(){
         if(!dragging) return;
-        dragging=false; dial.classList.remove('spin');
-        renderWheel(wSel);
-        goTo(wSel, true);
+        dragging=false; orbit.classList.remove('dragging');
+        renderOrbit(oSel); goTo(oSel, true);
       }
-      dial.addEventListener('touchstart', down, {passive:false});
-      dial.addEventListener('touchmove', move, {passive:false});
-      dial.addEventListener('touchend', up);
-      dial.addEventListener('touchcancel', up);
-      dial.addEventListener('pointerdown', function(e){ if(e.pointerType!=='touch'){ down(e); } });
+      orbit.addEventListener('touchstart', down, {passive:true});
+      orbit.addEventListener('touchmove', move, {passive:false});
+      orbit.addEventListener('touchend', up);
+      orbit.addEventListener('touchcancel', up);
+      orbit.addEventListener('pointerdown', function(e){ if(e.pointerType!=='touch') down(e); });
       window.addEventListener('pointermove', function(e){ if(e.pointerType!=='touch') move(e); });
       window.addEventListener('pointerup', function(e){ if(e.pointerType!=='touch') up(e); });
-      reelPrev.addEventListener('click', function(){ var n=wSel-1; if(n>=0){ renderWheel(n); goTo(n,true);} });
-      reelNext.addEventListener('click', function(){ var n=wSel+1; if(n<wN){ renderWheel(n); goTo(n,true);} });
-      reelPrev.style.pointerEvents='auto'; reelNext.style.pointerEvents='auto'; reelPrev.style.cursor='pointer'; reelNext.style.cursor='pointer';
-      dial.addEventListener('wheel', function(e){
+
+      // hover -> the ring spins; leave -> it eases back to rest
+      orbit.addEventListener('pointerenter', function(e){
+        if(e.pointerType==='touch') return;
+        clearTimeout(hoverT); orbit.classList.add('spinning','touched');
+      });
+      orbit.addEventListener('pointerleave', function(e){
+        if(e.pointerType==='touch') return;
+        clearTimeout(hoverT);
+        hoverT=setTimeout(function(){ orbit.classList.remove('spinning'); renderOrbit(oSel); }, 120);
+      });
+      // long-press on touch also spins
+      orbit.addEventListener('touchstart', function(){
+        clearTimeout(hoverT);
+        hoverT=setTimeout(function(){ if(!dragging) orbit.classList.add('spinning'); }, 420);
+      }, {passive:true});
+      orbit.addEventListener('touchend', function(){
+        clearTimeout(hoverT);
+        setTimeout(function(){ orbit.classList.remove('spinning'); renderOrbit(oSel); }, 200);
+      });
+
+      orbit.addEventListener('wheel', function(e){
         e.preventDefault();
-        goTo(wSel + (e.deltaY>0?1:-1), false);
-        renderWheel(wSel + (e.deltaY>0?1:-1));
+        var n=oSel + (e.deltaY>0?1:-1);
+        if(n<0) n=oN-1; else if(n>=oN) n=0;
+        renderOrbit(n); goTo(n, false);
       }, {passive:false});
     }
 
-    function wheelSync(i){
+    function orbitSync(i){
       if(dragging) return;
-      if(!wheel && !buildWheel()) return;
-      if(i!==wSel) renderWheel(i);
+      if(!orbit && !buildOrbit()) return;
+      if(i!==oSel) renderOrbit(i);
     }
 
     pass(true); bumpReady(); syncSection();
-    buildWheel();
+    buildOrbit();
 
     var mo=new MutationObserver(function(){
       syncSection();

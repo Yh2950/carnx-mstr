@@ -1,15 +1,15 @@
-# CARN-X  --  "aurora glass" visual theme only (no behaviour / no logic touched).
-# Near-black ground, one electric-violet accent, frosted glass; the live colour
-# mesh + glass detailing live in theme.py.
+# CARN-X  --  "light glass" visual theme only (no behaviour / no logic touched).
+# Pale-grey ground, frosted white panels, one indigo accent, Bitcoin roundel at
+# the orbital-nav hub.  Mesh + glass + orbit detailing live in theme.py.
 
 [theme]
-base = "dark"
-primaryColor = "#8E7BF0"
-backgroundColor = "#0A0A14"
-secondaryBackgroundColor = "#12121F"
-textColor = "#ECEDF6"
-linkColor = "#BCA9FF"
-borderColor = "#2A2A3E"
+base = "light"
+primaryColor = "#5B54E8"
+backgroundColor = "#EBECF2"
+secondaryBackgroundColor = "#F4F5FA"
+textColor = "#191B29"
+linkColor = "#4A43C8"
+borderColor = "#D3D5E4"
 showWidgetBorder = true
 baseRadius = "0.85rem"
 baseFontSize = 15
@@ -19,11 +19,11 @@ headingFont = "'Space Grotesk':https://fonts.googleapis.com/css2?family=Space+Gr
 codeFont = "'IBM Plex Mono':https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap"
 
 chartCategoricalColors = [
-  "#8E7BF0", "#38E0F0", "#34D399", "#F472B6",
-  "#A78BFA", "#818CF8", "#22D3EE", "#FB7185",
+  "#5B54E8", "#0BA5C4", "#0E9F6E", "#D6409F",
+  "#7C6BF0", "#6366F1", "#0891B2", "#E5484D",
 ]
 
 [theme.sidebar]
-backgroundColor = "#080812"
-secondaryBackgroundColor = "#12121F"
-borderColor = "#22222F"
+backgroundColor = "#F1F2F8"
+secondaryBackgroundColor = "#F7F8FC"
+borderColor = "#DCDEEA"
