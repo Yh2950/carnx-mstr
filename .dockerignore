@@ -7,6 +7,8 @@ __pycache__
 .pytest_cache
 runs/
 _imported/
+carnx_checkpoints/best.pt
+data_cache/*.csv
 *.pdf
 CARN-X_Dossier.html
 assets/*.svg
