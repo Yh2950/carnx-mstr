@@ -247,6 +247,8 @@ def _css() -> str:
 <style>
 @import url('{_FONTS}');
 
+@property --cx-sec-i {{ syntax: "<number>"; inherits: true; initial-value: 0; }}
+
 :root {{
   --ink:{INK}; --ink-edge:{INK_EDGE}; --panel:{PANEL}; --panel-hi:{PANEL_HI};
   --sunk:{SUNK}; --line:{LINE}; --line-soft:{LINE_SOFT};
@@ -255,22 +257,84 @@ def _css() -> str:
   --text:{TEXT}; --text-dim:{TEXT_DIM}; --text-faint:{TEXT_FAINT};
   --up:{UP}; --down:{DOWN};
   --display:{_DISPLAY}; --sans:{_SANS}; --mono:{_MONO};
+  --cx-sec-i: 0;
+  transition: --cx-sec-i .9s cubic-bezier(.16,.72,.24,1);
 }}
 
-/* ---------- the plate ---------- */
+/* ---------- the living plate ---------- *
+ * back -> front:  aurora mesh (body::before, always drifting)
+ *                 engraved plate (.stApp::before, scroll + pointer parallax,
+ *                                 hue/scale shift per section)
+ *                 vignette (.stApp::after)
+ *                 transition wipe (.cx-wipe, one sweep on section change)      */
 html, body, [class*="stApp"] {{ font-family: var(--sans); }}
 .stApp {{ background: {INK}; color: var(--text); }}
+
+body::before {{
+  content: ""; position: fixed; inset: -12vmax; z-index: 0; pointer-events: none;
+  --a1x: 22%; --a1y: 16%; --a2x: 82%; --a2y: 30%; --a3x: 52%; --a3y: 88%;
+  background:
+    radial-gradient(38vmax 34vmax at calc(var(--a1x) + var(--cx-amx,0px)) var(--a1y),
+      rgba(216,178,92,0.10) 0%, rgba(216,178,92,0) 62%),
+    radial-gradient(44vmax 40vmax at calc(var(--a2x) - var(--cx-amx,0px)) var(--a2y),
+      rgba(58,74,132,0.20) 0%, rgba(58,74,132,0) 60%),
+    radial-gradient(50vmax 46vmax at var(--a3x) calc(var(--a3y) + var(--cx-amy,0px)),
+      rgba(120,96,168,0.12) 0%, rgba(120,96,168,0) 64%);
+  filter: hue-rotate(var(--cx-hue,0deg)) saturate(var(--cx-sat,1));
+  transition: filter 1.1s ease;
+  animation: cx-aurora 46s ease-in-out infinite alternate;
+  will-change: transform;
+}}
 .stApp::before {{
   content: ""; position: fixed; inset: 0; z-index: 0; pointer-events: none;
   background:
     linear-gradient(178deg, rgba(20,29,54,0.42) 0%, rgba(10,14,28,0) 34%),
-    url("{eng}") center top / cover no-repeat,
-    {INK};
+    url("{eng}") center top / cover no-repeat;
+  transform: translate3d(var(--cx-mx,0px), calc(var(--cx-plate,0px) + var(--cx-my,0px)), 0)
+             rotate(var(--cx-rot,0deg)) scale(var(--cx-scale,1.08));
+  filter: hue-rotate(calc(var(--cx-hue,0deg) * .55)) saturate(var(--cx-sat,1));
+  transition: transform .16s linear, filter .8s ease;
+  will-change: transform;
 }}
 .stApp::after {{
   content: ""; position: fixed; inset: 0; z-index: 0; pointer-events: none;
   background:
     radial-gradient(160% 130% at 50% 4%, rgba(6,8,15,0) 55%, rgba(5,7,14,0.5) 100%);
+}}
+
+/* one gilt sweep across the plate whenever the section changes */
+.cx-wipe {{
+  position: fixed; inset: 0 -40vw; z-index: 4; pointer-events: none;
+  opacity: 0; transform: translateX(-120%) skewX(-14deg);
+  background: linear-gradient(90deg,
+    rgba(216,178,92,0) 0%, rgba(216,178,92,0.05) 38%,
+    rgba(244,225,172,0.16) 50%, rgba(216,178,92,0.05) 62%, rgba(216,178,92,0) 100%);
+}}
+.cx-wipe.run {{ animation: cx-wipe .66s cubic-bezier(.66,0,.30,1); }}
+
+@keyframes cx-aurora {{
+  0%   {{ transform: translate3d(0,0,0) scale(1); }}
+  50%  {{ transform: translate3d(2.4vmax,-1.8vmax,0) scale(1.05) rotate(1.4deg); }}
+  100% {{ transform: translate3d(-2vmax,2vmax,0) scale(1.08) rotate(-1.2deg); }}
+}}
+@keyframes cx-wipe {{
+  0%   {{ opacity: 0; transform: translateX(-120%) skewX(-14deg); }}
+  22%  {{ opacity: 1; }}
+  100% {{ opacity: 0; transform: translateX(120%) skewX(-14deg); }}
+}}
+
+/* per-section: shift the whole plate's hue + the engraving's rest pose.
+   --cx-sec-i (0..10) is set on <html> by scroll_boot from the active menu item. */
+:root {{
+  --cx-hue: calc((var(--cx-sec-i, 0) - 5) * 5deg);
+  --cx-sat: calc(1 + (var(--cx-sec-i, 0) - 5) * 0.015);
+  --cx-rot: calc((var(--cx-sec-i, 0) - 5) * 0.5deg);
+  --cx-scale: calc(1.065 + var(--cx-sec-i, 0) * 0.006);
+}}
+body::before {{
+  --a1x: calc(20% + var(--cx-sec-i, 0) * 3.4%);
+  --a2x: calc(84% - var(--cx-sec-i, 0) * 2.6%);
+  --a3y: calc(90% - var(--cx-sec-i, 0) * 2.4%);
 }}
 [data-testid="stAppViewContainer"], [data-testid="stMain"],
 [data-testid="stHeader"], [data-testid="stSidebarContent"] {{ background: transparent; }}
@@ -291,11 +355,28 @@ html, body, [class*="stApp"] {{ font-family: var(--sans); }}
   color: var(--text-faint); font-size: .74rem; letter-spacing: .14em;
   text-transform: uppercase; font-weight: 500;
 }}
-.cx-reload button {{
-  font-family: var(--sans) !important; font-size: .74rem !important;
-  letter-spacing: .06em !important; text-transform: uppercase;
-  padding: .34rem .85rem !important;
+/* the data-refresh control -- a small GitHub-green pill that reads as native */
+.st-key-cx_refresh button, .cx-reload button {{
+  font-family: var(--sans) !important; font-size: .78rem !important; font-weight: 600 !important;
+  letter-spacing: .01em !important; text-transform: none !important;
+  padding: .32rem .8rem !important; border-radius: 6px !important;
+  color: #fff !important; -webkit-text-fill-color: #fff !important;
+  background: #238636 !important;
+  border: 1px solid rgba(240,246,252,0.10) !important;
+  box-shadow: 0 1px 0 rgba(27,31,36,0.10), inset 0 1px 0 rgba(255,255,255,0.06) !important;
+  transition: background .12s ease, transform .06s ease !important;
 }}
+.st-key-cx_refresh button:hover, .cx-reload button:hover {{
+  background: #2ea043 !important; border-color: rgba(240,246,252,0.13) !important;
+  color: #fff !important; -webkit-text-fill-color: #fff !important;
+}}
+.st-key-cx_refresh button:active, .cx-reload button:active {{
+  background: #2c974b !important; transform: translateY(.5px);
+}}
+.st-key-cx_refresh button:focus-visible, .cx-reload button:focus-visible {{
+  outline: 2px solid rgba(46,160,67,.55) !important; outline-offset: 2px;
+}}
+.st-key-cx_refresh button p, .cx-reload button p {{ color: #fff !important; }}
 
 /* ---------- the menu (a keyed radio, drawn as a centred bar) ---------- */
 .st-key-cx_nav {{ margin: .1rem 0 1.7rem; border-bottom: 1px solid var(--line); }}
@@ -639,16 +720,14 @@ def _wordmark_svg() -> str:
 
 
 def refresh_button() -> None:
-    """A small reload control (clears the data caches and reruns)."""
-    st.markdown('<div class="cx-reload">', unsafe_allow_html=True)
-    if st.button("↻  רענן", key="cx_refresh"):
+    """A small GitHub-green reload control (clears the data caches and reruns)."""
+    if st.button(":material/refresh: רענן נתונים", key="cx_refresh"):
         for clr in (getattr(st, "cache_data", None), getattr(st, "cache_resource", None)):
             try:
                 clr.clear()
             except Exception:
                 pass
         st.rerun()
-    st.markdown("</div>", unsafe_allow_html=True)
 
 
 def header_nav(sections: list[str] | None = None, default: str = "סקירה") -> str:

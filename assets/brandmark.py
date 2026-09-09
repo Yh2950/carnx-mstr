@@ -32,46 +32,46 @@ _FONT_IMPORT = (
 
 def _defs(uid: str) -> str:
     return f"""<defs>
-    <radialGradient id="pl{uid}" cx="32%" cy="22%" r="98%">
-      <stop offset="0" stop-color="{NAVY_0}"/><stop offset="1" stop-color="{NAVY_1}"/>
+    <radialGradient id="pl{uid}" cx="38%" cy="30%" r="90%">
+      <stop offset="0" stop-color="{NAVY_0}"/>
+      <stop offset="0.62" stop-color="#0A0E1C"/>
+      <stop offset="1" stop-color="{NAVY_1}"/>
     </radialGradient>
-    <linearGradient id="gd{uid}" x1="0.15" y1="0" x2="0.4" y2="1">
+    <linearGradient id="gd{uid}" x1="0.2" y1="0" x2="0.5" y2="1">
       <stop offset="0" stop-color="{GOLD_HI}"/>
-      <stop offset="0.5" stop-color="{GOLD}"/>
+      <stop offset="0.46" stop-color="{GOLD}"/>
       <stop offset="1" stop-color="{GOLD_LO}"/>
     </linearGradient>
+    <radialGradient id="bl{uid}" cx="50%" cy="50%" r="50%">
+      <stop offset="0" stop-color="{GOLD}" stop-opacity="0.22"/>
+      <stop offset="0.55" stop-color="{GOLD}" stop-opacity="0.05"/>
+      <stop offset="1" stop-color="{GOLD}" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="vg{uid}" cx="50%" cy="46%" r="62%">
+      <stop offset="0" stop-color="#000" stop-opacity="0"/>
+      <stop offset="0.8" stop-color="#000" stop-opacity="0"/>
+      <stop offset="1" stop-color="#000" stop-opacity="0.34"/>
+    </radialGradient>
   </defs>"""
 
 
 def _scene(uid: str, scale: float = 1.0) -> str:
-    """Everything on the 512 grid, scaled about the centre if asked."""
-    # a de-trended close series — low amplitude, irregular step, sits on the
-    # upper counter of the ∫
-    pts = [
-        (70, 238), (92, 232), (114, 244), (140, 222), (164, 233), (190, 216),
-        (214, 230), (242, 240), (270, 220), (300, 234), (326, 226), (352, 246),
-        (382, 231), (410, 250), (440, 238), (452, 242),
-    ]
-    path = "M" + " L".join(f"{x} {y}" for x, y in pts)
-    bell = "M184 400 C222 400 232 332 262 332 C292 332 302 400 340 400"
+    """A single confident integral over a quiet Gaussian -- clean, luminous, centred."""
+    # one smooth Gaussian, low on the grid, thin gilt, quiet
+    bell = ("M64 372 C150 372 176 250 256 250 "
+            "C336 250 362 372 448 372")
+    axis = '<line x1="72" y1="356" x2="440" y2="356" stroke="%s" stroke-width="2" opacity="0.15"/>' % GOLD
 
     integral = (
-        f'<text x="250" y="374" text-anchor="middle" font-family={SERIF!r} '
-        f'font-weight="500" font-size="456" fill="url(#gd{uid})" '
-        f'stroke="{NAVY_1}" stroke-width="9" paint-order="stroke">∫</text>'
-    )
-    limits = (
-        f'<text x="338" y="176" font-family={SERIF!r} font-style="italic" '
-        f'font-size="47" fill="{GOLD}" opacity="0.85">T</text>'
-        f'<text x="150" y="408" font-family={SERIF!r} font-style="italic" '
-        f'font-size="47" fill="{GOLD}" opacity="0.85">0</text>'
+        f'<text x="256" y="372" text-anchor="middle" font-family={SERIF!r} '
+        f'font-weight="500" font-size="376" fill="url(#gd{uid})">∫</text>'
     )
     inner = f"""
-    <path d="{path}" fill="none" stroke="{GOLD}" stroke-width="2.4"
-          stroke-linejoin="round" stroke-linecap="round" opacity="0.42"/>
-    <path d="{bell}" fill="none" stroke="{GOLD}" stroke-width="2.4" opacity="0.55"/>
-    {integral}
-    {limits}"""
+    <circle cx="256" cy="252" r="188" fill="url(#bl{uid})"/>
+    <path d="{bell}" fill="none" stroke="{GOLD}" stroke-width="3"
+          stroke-linecap="round" opacity="0.34"/>
+    {axis}
+    {integral}"""
     if scale != 1.0:
         inner = f'<g transform="translate(256 256) scale({scale}) translate(-256 -256)">{inner}</g>'
     return inner
@@ -81,19 +81,19 @@ def _frame(size: int, inset: float) -> str:
     b = size * inset
     return (
         f'<rect x="{b:.1f}" y="{b:.1f}" width="{size-2*b:.1f}" height="{size-2*b:.1f}" '
-        f'rx="{size*0.014:.1f}" fill="none" stroke="{GOLD}" '
-        f'stroke-width="{max(1.0, size*0.0032):.2f}" opacity="0.34"/>'
+        f'rx="{size*0.05:.1f}" fill="none" stroke="{GOLD}" '
+        f'stroke-width="{max(1.0, size*0.0022):.2f}" opacity="0.12"/>'
     )
 
 
 def svg_app(size: int = 512) -> str:
-    r = size * 0.235
+    r = size * 0.225
     return (
         f'<svg xmlns="http://www.w3.org/2000/svg" width="{size}" height="{size}" '
         f'viewBox="0 0 {size} {size}"><style>{_FONT_IMPORT}</style>{_defs("a")}'
         f'<rect width="{size}" height="{size}" rx="{r:.1f}" fill="url(#pla)"/>'
-        f'{_frame(size, 0.085)}'
-        f'<g transform="scale({size/512})">{_scene("a")}</g></svg>'
+        f'<g transform="scale({size/512})">{_scene("a")}</g>'
+        f'<rect width="{size}" height="{size}" rx="{r:.1f}" fill="url(#vga)"/></svg>'
     )
 
 
@@ -102,7 +102,8 @@ def svg_maskable(size: int = 512) -> str:
         f'<svg xmlns="http://www.w3.org/2000/svg" width="{size}" height="{size}" '
         f'viewBox="0 0 {size} {size}"><style>{_FONT_IMPORT}</style>{_defs("m")}'
         f'<rect width="{size}" height="{size}" fill="url(#plm)"/>'
-        f'<g transform="scale({size/512})">{_scene("m", scale=0.63)}</g></svg>'
+        f'<g transform="scale({size/512})">{_scene("m", scale=0.66)}</g>'
+        f'<rect width="{size}" height="{size}" fill="url(#vgm)"/></svg>'
     )
 
 
@@ -111,9 +112,9 @@ def svg_wordmark(w: int = 540, h: int = 128) -> str:
     r = m * 0.235
     mark = (
         f'<g transform="translate(7 7)">'
-        f'<rect width="{m}" height="{m}" rx="{r:.1f}" fill="url(#plw)"/>'
-        f'{_frame(m, 0.085)}'
-        f'<g transform="scale({m/512})">{_scene("w", scale=0.92)}</g></g>'
+        f'<rect width="{m}" height="{m}" rx="{m*0.24:.1f}" fill="url(#plw)"/>'
+        f'<g transform="scale({m/512})">{_scene("w", scale=0.98)}</g>'
+        f'<rect width="{m}" height="{m}" rx="{m*0.24:.1f}" fill="url(#vgw)"/></g>'
     )
     tx = h + 8
     return f"""<svg xmlns="http://www.w3.org/2000/svg" width="{w}" height="{h}" viewBox="0 0 {w} {h}">
