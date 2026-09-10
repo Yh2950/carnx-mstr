@@ -563,9 +563,13 @@ def _logo_svg(size: int = 46) -> str:
 
 def render_sidebar(*, data, get_model, last_price: float,
                    live_price: float | None = None) -> None:
-    """Draw the CARN agent panel at the top of the sidebar.  The chat itself is
-    an st.fragment -- sending a message reruns ONLY the panel, not the whole app
-    (which would reload data + model + the current screen every time)."""
+    """Draw the CARN agent panel at the top of the sidebar.
+
+    Plain form + text_input + full st.rerun -- the reliable combo.  (st.chat_input
+    and st.container(height=) silently didn't render in the sidebar; a form inside
+    st.fragment made st.rerun(scope='fragment') raise, because a form submit does
+    a full rerun.)  data + model are @st.cache_resource so the full rerun is
+    cheap; reply() is the only real cost and it is unavoidable."""
     ss = st.session_state
     ss.setdefault("cx_agent_chat", [{"role": "assistant", "content": _GREET}])
 
@@ -576,50 +580,37 @@ def render_sidebar(*, data, get_model, last_price: float,
             f'<span>{brain_label()}</span></div></div>',
             unsafe_allow_html=True,
         )
-        _agent_chat_fragment(data, get_model, last_price, live_price)
+
+        # process a pending send BEFORE drawing the transcript so the new
+        # messages appear in this same run.
+        pending = ss.pop("cx_agent_send", None)
+        if pending:
+            ss["cx_agent_chat"].append({"role": "user", "content": pending})
+            with st.spinner("CARN מריץ את המודל…"):
+                try:
+                    ans = reply(pending, data=data, get_model=get_model,
+                                last_price=last_price, live_price=live_price)
+                except Exception as e:  # noqa: BLE001
+                    ans = f"נתקלתי בתקלה ({type(e).__name__}). נסה שוב."
+            ss["cx_agent_chat"].append({"role": "assistant", "content": ans})
+            ss["cx_agent_chat"] = ss["cx_agent_chat"][-24:]
+
+        for m in ss["cx_agent_chat"][-12:]:
+            who = "cx-a-me" if m["role"] == "user" else "cx-a-bot"
+            st.markdown(f'<div class="cx-a-msg {who}">{_md(m["content"])}</div>',
+                        unsafe_allow_html=True)
+
+        with st.form("cx_agent_form", clear_on_submit=True, border=False):
+            txt = st.text_input(
+                "הודעה", key="cx_agent_ta", label_visibility="collapsed",
+                placeholder="כמה שמת? באיזה שער? דבר חופשי…",
+            )
+            sent = st.form_submit_button("שלח  ⚡")
+        if sent and (txt or "").strip():
+            ss["cx_agent_send"] = txt.strip()
+            st.rerun()
+
         st.markdown('<div class="cx-agent-rule"></div>', unsafe_allow_html=True)
-
-
-@st.fragment
-def _agent_chat_fragment(data, get_model, last_price, live_price) -> None:
-    ss = st.session_state
-    log = ss["cx_agent_chat"]
-
-    # reserve the transcript slot, THEN read the input, THEN fill the slot -- so a
-    # new message shows at once and only the fragment reruns.
-    slot = st.container(height=440)
-    prompt = None
-    try:
-        prompt = st.chat_input("דבר עם CARN — כמה שמת, באיזה שער…", key="cx_agent_input")
-    except Exception:  # noqa: BLE001
-        with st.form("cx_agent_form", clear_on_submit=True):
-            txt = st.text_input("הודעה", key="cx_agent_ta", label_visibility="collapsed",
-                                placeholder="דבר עם CARN…")
-            if st.form_submit_button("שלח ➤") and (txt or "").strip():
-                prompt = txt
-
-    if prompt and prompt.strip():
-        log.append({"role": "user", "content": prompt.strip()})
-        with slot:
-            _bubbles(log)
-        with st.spinner("CARN מריץ את המודל…"):
-            try:
-                ans = reply(prompt.strip(), data=data, get_model=get_model,
-                            last_price=last_price, live_price=live_price)
-            except Exception as e:  # noqa: BLE001
-                ans = f"נתקלתי בתקלה בניתוח ({type(e).__name__}). נסה שוב."
-        log.append({"role": "assistant", "content": ans})
-        st.rerun(scope="fragment")
-
-    with slot:
-        _bubbles(log)
-
-
-def _bubbles(log: list[dict]) -> None:
-    for m in log:
-        who = "cx-a-me" if m["role"] == "user" else "cx-a-bot"
-        st.markdown(f'<div class="cx-a-msg {who}">{_md(m["content"])}</div>',
-                    unsafe_allow_html=True)
 
 
 def _md(text: str) -> str:

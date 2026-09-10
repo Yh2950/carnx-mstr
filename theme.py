@@ -41,10 +41,10 @@ SUNK = "rgba(6,6,8,0.42)"         # sunk well / code
 LINE = "rgba(150,190,255,0.17)"    # the lit glass rim
 LINE_SOFT = "rgba(150,190,255,0.09)"
 
-GOLD = "#4DA6FF"         # the accent (electric blue)
-GOLD_BRIGHT = "#8FD3FF"  # bright accent / specular
-GOLD_DEEP = "#2E6FE0"    # deep accent
-GOLD_TEXT = "#C3E0FF"    # accent as text on dark
+GOLD = "#58C6FF"         # the accent (bright sky-blue)
+GOLD_BRIGHT = "#A6E6FF"  # bright accent / specular
+GOLD_DEEP = "#2E9FE0"    # deep accent
+GOLD_TEXT = "#CBEDFF"    # accent as text on dark
 
 TEXT = "#F2F1FA"
 TEXT_DIM = "#A9ACCB"
@@ -63,9 +63,9 @@ CATEGORICAL = [GOLD, CYAN, UP, MAGENTA, VIOLET, "#6C8CFF", "#37D6E8", DOWN]
 # "electric ocean" backdrop -- a bright tropical-lagoon aqua the whole page
 # floats on, with lightning.  Content rides a dark translucent slab so text and
 # the section cards keep their contrast.
-OCEAN_TOP = "#0C0A1A"
-OCEAN_MID = "#0A0814"
-OCEAN_DEEP = "#07060E"
+OCEAN_TOP = "#0A1522"
+OCEAN_MID = "#08111C"
+OCEAN_DEEP = "#060C16"
 SLAB = "rgba(12,10,22,0.55)"      # dark glass over the plasma
 
 _BOLT_A = (
@@ -536,8 +536,8 @@ def _css() -> str:
   --ink:{INK}; --ink-edge:{INK_EDGE}; --panel:{PANEL}; --panel-hi:{PANEL_HI};
   --sunk:{SUNK}; --line:{LINE}; --line-soft:{LINE_SOFT};
   --gold:{GOLD}; --gold-bright:{GOLD_BRIGHT}; --gold-deep:{GOLD_DEEP}; --gold-text:{GOLD_TEXT};
-  --gold-wash:rgba(77,166,255,0.12); --gold-line:rgba(77,166,255,0.32);
-  --glow:0 0 0 1px rgba(77,166,255,.3), 0 0 24px -4px rgba(77,166,255,.4);
+  --gold-wash:rgba(88,198,255,0.13); --gold-line:rgba(88,198,255,0.34);
+  --glow:0 0 0 1px rgba(88,198,255,.32), 0 0 24px -4px rgba(88,198,255,.45);
   --text:{TEXT}; --text-dim:{TEXT_DIM}; --text-faint:{TEXT_FAINT};
   --up:{UP}; --down:{DOWN};
   --display:{_DISPLAY}; --sans:{_SANS}; --mono:{_MONO};
@@ -564,14 +564,13 @@ html, body {{
 body::before {{
   content: ""; position: fixed; inset: -16vmax; z-index: 0; pointer-events: none;
   background:
-    radial-gradient(48vmax 42vmax at 20% 28%, rgba(59,123,255,0.42), rgba(59,123,255,0) 58%),
-    radial-gradient(42vmax 38vmax at 10% 64%, rgba(90,200,255,0.32), rgba(90,200,255,0) 60%),
-    radial-gradient(50vmax 46vmax at 82% 40%, rgba(255,45,158,0.40), rgba(255,45,158,0) 58%),
-    radial-gradient(40vmax 36vmax at 74% 80%, rgba(255,95,180,0.28), rgba(255,95,180,0) 60%),
-    radial-gradient(42vmax 40vmax at 50% 48%, rgba(138,77,255,0.34), rgba(138,77,255,0) 55%),
-    radial-gradient(26vmax 22vmax at 50% 46%, rgba(247,147,26,0.13), rgba(247,147,26,0) 55%),
-    radial-gradient(120vmax 120vmax at 50% 46%, rgba(7,6,14,0) 20%, rgba(4,3,9,0.92) 100%);
-  filter: saturate(1.3) brightness(0.98) contrast(1.06);
+    radial-gradient(52vmax 44vmax at 22% 30%, rgba(90,200,255,0.30), rgba(90,200,255,0) 60%),
+    radial-gradient(46vmax 40vmax at 12% 66%, rgba(120,225,255,0.24), rgba(120,225,255,0) 62%),
+    radial-gradient(50vmax 46vmax at 80% 38%, rgba(70,175,255,0.26), rgba(70,175,255,0) 60%),
+    radial-gradient(40vmax 36vmax at 74% 80%, rgba(140,235,255,0.18), rgba(140,235,255,0) 62%),
+    radial-gradient(44vmax 40vmax at 50% 48%, rgba(100,210,255,0.20), rgba(100,210,255,0) 58%),
+    radial-gradient(120vmax 120vmax at 50% 46%, rgba(6,14,24,0) 34%, rgba(4,10,18,0.72) 100%);
+  filter: saturate(1.15) brightness(1.02);
   animation: cx-caustic 30s ease-in-out infinite alternate;
   transform: translateZ(0); will-change: transform; backface-visibility: hidden;
 }}
@@ -579,23 +578,23 @@ body::before {{
   content: ""; position: fixed; inset: -12vmax; z-index: 0; pointer-events: none;
   background:
     linear-gradient(116deg,
-      rgba(180,215,255,0) 36%, rgba(180,215,255,0.14) 47%,
-      rgba(235,244,255,0.34) 50%, rgba(255,120,210,0.12) 54%, rgba(180,215,255,0) 64%),
-    radial-gradient(30vmax 22vmax at 70% 26%, rgba(255,90,200,0.16), rgba(255,90,200,0) 60%);
+      rgba(190,235,255,0) 38%, rgba(190,235,255,0.12) 47%,
+      rgba(235,250,255,0.30) 50%, rgba(190,235,255,0.10) 53%, rgba(190,235,255,0) 63%),
+    radial-gradient(30vmax 22vmax at 70% 26%, rgba(120,220,255,0.14), rgba(120,220,255,0) 60%);
   transform: translate3d(calc(var(--cx-mx,0px) * 1.5), calc(var(--cx-plate,0px) + var(--cx-my,0px) * 1.5), 0) scale(1.06);
   transition: transform .2s cubic-bezier(.2,.8,.2,1);
   will-change: transform; backface-visibility: hidden;
 }}
 .stApp::after {{
   content: ""; position: fixed; inset: 0; z-index: 0; pointer-events: none;
-  background: radial-gradient(160% 130% at 50% 40%, rgba(6,26,36,0) 30%, rgba(6,24,34,0.36) 100%);
+  background: radial-gradient(170% 140% at 50% 38%, rgba(6,16,26,0) 44%, rgba(5,12,20,0.28) 100%);
   transform: translateZ(0); backface-visibility: hidden;
 }}
 
 /* the reading slab -- a single frosted panel the content rides over the water.
    ONE backdrop-filter on ONE element (not per-card) -> perf-safe. */
 [data-testid="stMain"] .block-container {{
-  background: {SLAB};
+  background: rgba(8,15,26,0.42);
   -webkit-backdrop-filter: blur(9px) saturate(1.15); backdrop-filter: blur(9px) saturate(1.15);
   border: 1px solid rgba(255,255,255,0.13);
   border-radius: 26px;
@@ -637,44 +636,12 @@ body::before {{
 }}
 
 /* ===================== the storm ===================== *
- * ambient bolts at the edges of the lagoon (.cx-storm, behind the slab) and a
- * strike on every click (.cx-strike-wrap, above everything).  Opacity-only
- * animations -- compositor cheap.  Both layers are built by scroll_boot.        */
-.cx-storm {{
-  position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden;
-  contain: strict;
-}}
-.cx-storm::before {{
-  content: ""; position: absolute; left: 50%; top: 46%; width: 150vmax; height: 150vmax;
-  transform: translate(-50%,-50%); mix-blend-mode: screen; opacity: .5;
-  background: conic-gradient(from 0deg at 50% 50%,
-    rgba(59,123,255,0.28), rgba(138,77,255,0.22) 22%, rgba(255,45,158,0.26) 44%,
-    rgba(255,110,200,0.16) 60%, rgba(59,123,255,0.28) 100%);
-  -webkit-mask: radial-gradient(circle, transparent 26%, #000 40%, #000 64%, transparent 82%);
-          mask: radial-gradient(circle, transparent 26%, #000 40%, #000 64%, transparent 82%);
-  animation: cx-swirl 48s linear infinite;
-}}
-@keyframes cx-swirl {{ to {{ transform: translate(-50%,-50%) rotate(360deg); }} }}
-.cx-storm i {{
-  position: absolute; top: -6vh; display: block; opacity: 0;
-  background: no-repeat center top / 100% 100%; will-change: opacity;
-}}
-.cx-storm .b1 {{ left: 2%;  width: 14vmin; height: 70vh; background-image: url("{_BOLT_A}"); filter: drop-shadow(0 0 12px rgba(90,180,255,.9)) hue-rotate(-8deg); animation: cx-ambient 6.5s linear infinite 1.2s; }}
-.cx-storm .b2 {{ right: 1%; width: 13vmin; height: 64vh; background-image: url("{_BOLT_B}"); filter: drop-shadow(0 0 12px rgba(255,90,200,.9)) hue-rotate(180deg) saturate(1.4); animation: cx-ambient 8s linear infinite 3.5s; }}
-.cx-storm .b3 {{ left: 40%; width: 10vmin; height: 46vh; background-image: url("{_BOLT_A}"); filter: drop-shadow(0 0 10px rgba(150,120,255,.85)); animation: cx-ambient 11s linear infinite 7s; }}
-.cx-storm .b4 {{ left: 68%; width: 9vmin;  height: 42vh; background-image: url("{_BOLT_B}"); filter: drop-shadow(0 0 10px rgba(255,120,210,.8)) hue-rotate(170deg); animation: cx-ambient 13s linear infinite 9.5s; }}
-.cx-storm .b5 {{ left: 20%; width: 8vmin;  height: 38vh; background-image: url("{_BOLT_A}"); filter: drop-shadow(0 0 9px rgba(90,180,255,.8)); animation: cx-ambient 15s linear infinite 5.5s; }}
-.cx-storm::after {{
-  content: ""; position: absolute; inset: 0; opacity: 0; mix-blend-mode: screen;
-  background: radial-gradient(120% 100% at 50% 0%, rgba(180,215,255,0.55), rgba(255,120,210,0.12) 45%, rgba(200,225,255,0) 75%);
-  animation: cx-ambient 6.5s linear infinite 1.5s;
-}}
-@keyframes cx-ambient {{
-  0%, 6%, 100% {{ opacity: 0; }}
-  1.4% {{ opacity: .95; }}
-  2.6% {{ opacity: .12; }}
-  3.6% {{ opacity: .8; }}
-  5% {{ opacity: 0; }}
+ * .cx-flow  -- a live <canvas> (scroll_boot.startFlow): a flow-field of water
+ *              particles, jagged arcs crossing from every edge, and shorts.
+ * .cx-strike-wrap -- a lightning strike on every click (above everything).      */
+.cx-flow {{
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  width: 100%; height: 100%; opacity: 1;
 }}
 .cx-strike-wrap {{ position: fixed; inset: 0; z-index: 1200; pointer-events: none; }}
 .cx-strike {{
@@ -698,7 +665,7 @@ body::before {{
   26% {{ opacity: .92; }} 55% {{ opacity: 0; }} 100% {{ opacity: 0; }}
 }}
 @media (prefers-reduced-motion: reduce) {{
-  .cx-storm, .cx-strike-wrap {{ display: none !important; }}
+  .cx-flow, .cx-strike-wrap {{ display: none !important; }}
 }}
 
 /* per-section hue shift for the section-change flash (cheap; one var). */

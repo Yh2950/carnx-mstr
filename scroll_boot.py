@@ -45,12 +45,113 @@ _ENGINE = r"""
     var flash=d.querySelector('.cx-flash');
     if(!flash){ flash=d.createElement('div'); flash.className='cx-flash'; d.body.appendChild(flash); }
 
-    // the storm: ambient bolts at the lagoon edges + a strike on every click
-    if(!d.querySelector('.cx-storm')){
-      var storm=d.createElement('div'); storm.className='cx-storm';
-      storm.innerHTML='<i class="b1"></i><i class="b2"></i><i class="b3"></i>'
-        +'<i class="b4"></i><i class="b5"></i>';
-      d.body.appendChild(storm);
+    /* ---- bright-aqua canvas: flowing water + crossing electric arcs + shorts ----
+       LIGHT: no shadowBlur, no DPR scaling, no per-frame gradients, ~32 fps cap,
+       small particle count, hard caps on arcs/sparks.  Everything sky-blue. */
+    function startFlow(){
+      var cv=d.createElement('canvas'); cv.className='cx-flow';
+      d.body.insertBefore(cv, d.body.firstChild);
+      var ctx=cv.getContext('2d'); if(!ctx) return;
+      var W,H;
+      function size(){ W=cv.width=window.innerWidth||1; H=cv.height=window.innerHeight||1; }
+      size();
+      var rz; window.addEventListener('resize', function(){ clearTimeout(rz); rz=setTimeout(size,220); }, {passive:true});
+
+      var N=Math.max(46, Math.min(110, Math.round((W*H)/17000)));
+      var P=[]; for(var i=0;i<N;i++) P.push({x:Math.random()*W, y:Math.random()*H, px:0, py:0, life:Math.random()*200});
+      var arcs=[], sparks=[];
+
+      function fang(x,y,t){
+        var s=0.0021;
+        return (Math.sin(x*s + t*0.00040) + Math.cos(y*s*1.3 - t*0.00050)
+              + Math.sin((x+y)*s*0.6 + t*0.00030)) * 1.7;
+      }
+      function jag(x1,y1,x2,y2,seg,amp,seed){
+        ctx.moveTo(x1,y1);
+        var nx=-(y2-y1), ny=(x2-x1), nl=Math.hypot(nx,ny)||1; nx/=nl; ny/=nl;
+        for(var i=1;i<seg;i++){
+          var f=i/seg, mx=x1+(x2-x1)*f, my=y1+(y2-y1)*f;
+          var off=(Math.sin(seed+i*2.7)+Math.sin(seed*1.7+i*1.3))*amp*(1-Math.abs(f-0.5)*1.2);
+          ctx.lineTo(mx+nx*off, my+ny*off);
+        }
+        ctx.lineTo(x2,y2);
+      }
+      function spawnArc(){
+        if(arcs.length>7) return;
+        var e=Math.floor(Math.random()*4), x1,y1;
+        if(e===0){ x1=Math.random()*W; y1=-16; }
+        else if(e===1){ x1=W+16; y1=Math.random()*H; }
+        else if(e===2){ x1=Math.random()*W; y1=H+16; }
+        else { x1=-16; y1=Math.random()*H; }
+        var x2=W*(0.26+Math.random()*0.48), y2=H*(0.24+Math.random()*0.52);
+        arcs.push({x1:x1,y1:y1,x2:x2,y2:y2,t:0,dur:6+Math.random()*8,seed:Math.random()*1e3,w:1.1+Math.random()*2});
+        for(var k=0;k<5+Math.random()*6;k++)
+          sparks.push({x:x2,y:y2,vx:(Math.random()-.5)*5,vy:(Math.random()-.5)*5,life:8+Math.random()*14});
+      }
+      function spawnShort(){
+        if(sparks.length>95) return;
+        var bx=Math.random()*W, by=Math.random()*H;
+        for(var k=0;k<3+Math.random()*4;k++)
+          sparks.push({x:bx,y:by,vx:(Math.random()-.5)*4,vy:(Math.random()-.5)*4,life:6+Math.random()*10});
+      }
+
+      var acc=0, gate=0;
+      function frame(ts){
+        requestAnimationFrame(frame);
+        if(d.hidden) return;
+        if(ts-gate < 30) return;           /* ~32 fps */
+        var dt=Math.min(60,(ts-gate)||30); gate=ts;
+
+        ctx.globalCompositeOperation='source-over';
+        ctx.fillStyle='rgba(6,12,22,0.19)'; ctx.fillRect(0,0,W,H);
+        ctx.globalCompositeOperation='lighter';
+
+        for(var i=0;i<P.length;i++){
+          var p=P[i]; p.px=p.x; p.py=p.y;
+          var a=fang(p.x,p.y,ts);
+          p.x+=Math.cos(a)*1.4; p.y+=Math.sin(a)*1.4 + 0.12; p.life--;
+          if(p.x<0||p.x>W||p.y<0||p.y>H||p.life<0){
+            p.x=Math.random()*W; p.y=Math.random()*H*0.5; p.life=130+Math.random()*140; continue;
+          }
+          ctx.strokeStyle='rgba(125,225,255,0.42)'; ctx.lineWidth=1.2;
+          ctx.beginPath(); ctx.moveTo(p.px,p.py); ctx.lineTo(p.x,p.y); ctx.stroke();
+        }
+
+        acc+=dt;
+        if(acc>110){ acc=0;
+          if(Math.random()<0.92) spawnArc();
+          if(Math.random()<0.5) spawnArc();
+          if(Math.random()<0.9) spawnShort();
+        }
+
+        for(var j=arcs.length-1;j>=0;j--){
+          var A=arcs[j]; A.t++;
+          if(A.t>A.dur+2){ arcs.splice(j,1); continue; }
+          var al=(A.t<A.dur)?((A.t%2)?0.5:0.95):0; if(al<=0) continue;
+          /* glow faked with 3 stroke passes -- no shadowBlur */
+          ctx.strokeStyle='rgba(120,215,255,'+(al*0.34)+')'; ctx.lineWidth=A.w*4.2;
+          ctx.beginPath(); jag(A.x1,A.y1,A.x2,A.y2,12,22,A.seed); ctx.stroke();
+          ctx.strokeStyle='rgba(175,235,255,'+al+')'; ctx.lineWidth=A.w;
+          ctx.beginPath(); jag(A.x1,A.y1,A.x2,A.y2,12,22,A.seed); ctx.stroke();
+          ctx.strokeStyle='rgba(244,252,255,'+(al*0.9)+')'; ctx.lineWidth=Math.max(0.7,A.w*0.4);
+          ctx.beginPath(); jag(A.x1,A.y1,A.x2,A.y2,12,22,A.seed); ctx.stroke();
+        }
+
+        for(var s=sparks.length-1;s>=0;s--){
+          var S=sparks[s]; S.x+=S.vx; S.y+=S.vy; S.vx*=0.9; S.vy*=0.9; S.life--;
+          if(S.life<0){ sparks.splice(s,1); continue; }
+          ctx.fillStyle='rgba(185,240,255,'+Math.min(1,S.life/9)+')';
+          ctx.fillRect(S.x,S.y,1.8,1.8);
+        }
+      }
+      requestAnimationFrame(frame);
+    }
+
+    // the storm: a live canvas of flowing water + crossing arcs + shorts,
+    // plus a lightning strike on every click.
+    var _reduceM = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if(!d.querySelector('.cx-flow') && !_reduceM){
+      try{ startFlow(); }catch(e){}
     }
     var strikeW=d.querySelector('.cx-strike-wrap');
     if(!strikeW){

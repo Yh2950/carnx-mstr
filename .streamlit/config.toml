@@ -4,12 +4,12 @@
 
 [theme]
 base = "dark"
-primaryColor = "#4DA6FF"
-backgroundColor = "#08070F"
-secondaryBackgroundColor = "#12101F"
-textColor = "#F2F1FA"
-linkColor = "#8FD3FF"
-borderColor = "#282740"
+primaryColor = "#58C6FF"
+backgroundColor = "#08111C"
+secondaryBackgroundColor = "#101B28"
+textColor = "#F2F6FA"
+linkColor = "#A6E6FF"
+borderColor = "#25384A"
 showWidgetBorder = true
 baseRadius = "0.9rem"
 baseFontSize = 15
@@ -19,8 +19,8 @@ headingFont = "'Playfair Display':https://fonts.googleapis.com/css2?family=Playf
 codeFont = "'IBM Plex Mono':https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap"
 
 chartCategoricalColors = [
-  "#4DA6FF", "#8FD3FF", "#B36BFF", "#FF4FB0",
-  "#5AC8FF", "#8A4DFF", "#37D6E8", "#FF6EC7",
+  "#58C6FF", "#8FE0FF", "#37D6E8", "#3DDC97",
+  "#7AB6FF", "#A6E6FF", "#5AC8FF", "#B36BFF",
 ]
 
 [theme.sidebar]
