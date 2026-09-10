@@ -907,6 +907,66 @@ body::after {{
   html.cx-js .cx-rev {{ opacity: 1 !important; transform: none !important; }}
   html.cx-js .cx-rev .cx-hero-title {{ letter-spacing: -0.01em; filter: none; }}
 }}
+
+/* ============================ Apple-style LIQUID GLASS ============================ *
+ * a refracting glass sheet (::before, backdrop-blur + SVG displacement) + a
+ * specular rim that catches light top-left (::after).  Added on top of the
+ * existing panels -- nothing else about the design changes.                        */
+[data-testid="stMetric"],
+div[data-testid="stVerticalBlockBorderWrapper"],
+[data-testid="stForm"],
+[data-testid="stExpander"],
+.cx-orbit-item > button,
+.cx-orbit-name,
+.st-key-cx_refresh button {{
+  position: relative; overflow: hidden; isolation: isolate;
+}}
+[data-testid="stMetric"]::before,
+div[data-testid="stVerticalBlockBorderWrapper"]::before,
+[data-testid="stForm"]::before,
+[data-testid="stExpander"]::before,
+.cx-orbit-item > button::before,
+.cx-orbit-name::before,
+.st-key-cx_refresh button::before {{
+  content: ""; position: absolute; inset: 0; z-index: -1; border-radius: inherit;
+  -webkit-backdrop-filter: blur(2px) saturate(1.6) brightness(1.06);
+          backdrop-filter: blur(2px) saturate(1.6) brightness(1.06);
+  filter: url(#cx-lg);
+}}
+[data-testid="stMetric"]::after,
+div[data-testid="stVerticalBlockBorderWrapper"]::after,
+[data-testid="stForm"]::after,
+[data-testid="stExpander"]::after,
+.cx-orbit-item > button::after,
+.cx-orbit-name::after,
+.st-key-cx_refresh button::after {{
+  content: ""; position: absolute; inset: 0; z-index: 1; border-radius: inherit;
+  padding: 1.2px; pointer-events: none; mix-blend-mode: screen;
+  background: linear-gradient(135deg,
+    rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.25) 18%,
+    rgba(255,255,255,0) 42%, rgba(255,255,255,0) 60%,
+    rgba(200,220,255,0.30) 84%, rgba(255,255,255,0.55) 100%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+          mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;  mask-composite: exclude;
+}}
+/* a faint edge-lens brightening just inside the rim */
+[data-testid="stMetric"],
+div[data-testid="stVerticalBlockBorderWrapper"],
+[data-testid="stForm"],
+[data-testid="stExpander"] {{
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.45),
+    inset 0 0 22px -4px rgba(255,255,255,0.18),
+    inset 0 -30px 60px -46px rgba(155,140,255,0.6),
+    0 26px 64px -24px rgba(0,0,0,0.6);
+}}
+.cx-orbit-name {{ overflow: visible; }}
+.cx-orbit-name::before {{ overflow: hidden; }}
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {{
+  [data-testid="stMetric"]::before, div[data-testid="stVerticalBlockBorderWrapper"]::before,
+  [data-testid="stForm"]::before, [data-testid="stExpander"]::before {{ background: rgba(20,18,42,0.7); }}
+}}
 </style>
 """
 
@@ -928,11 +988,26 @@ _LTR_SHIM = (
 )
 
 
+_LG_SVG = (
+    '<svg aria-hidden="true" width="0" height="0" '
+    'style="position:absolute;pointer-events:none">'
+    '<defs><filter id="cx-lg" x="-25%" y="-25%" width="150%" height="150%" '
+    'color-interpolation-filters="sRGB">'
+    '<feTurbulence type="fractalNoise" baseFrequency="0.011 0.013" numOctaves="2" '
+    'seed="11" result="n"/>'
+    '<feGaussianBlur in="n" stdDeviation="1.3" result="nb"/>'
+    '<feDisplacementMap in="SourceGraphic" in2="nb" scale="26" '
+    'xChannelSelector="R" yChannelSelector="G"/>'
+    '</filter></defs></svg>'
+)
+
+
 def inject_theme() -> None:
     """Inject the global skin.  Call once, immediately after set_page_config.
     The scroll engine is installed separately by ``scroll_boot`` (index.html),
     because Streamlit's ``st.html`` strips a raw <script> even with the flag."""
     st.markdown(_css(), unsafe_allow_html=True)
+    st.markdown(_LG_SVG, unsafe_allow_html=True)
     try:
         st.html(_LTR_SHIM, unsafe_allow_javascript=True)
     except TypeError:
