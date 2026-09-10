@@ -288,7 +288,7 @@ html[data-cx-section="0"] body::before{filter:saturate(.5) brightness(.52) contr
 html[data-cx-section="0"] .stApp::after{opacity:.2;}
 html[data-cx-section="0"] §CARDS§{
   background:rgba(255,255,255,.025)!important;border:1px solid rgba(255,255,255,.10)!important;
-  border-radius:8px!important;backdrop-filter:blur(5px)!important;-webkit-backdrop-filter:blur(5px)!important;
+  border-radius:8px!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
   box-shadow:none!important;
 }
 html[data-cx-section="0"] §CARDS§::before,html[data-cx-section="0"] §CARDS§::after{display:none!important;}
@@ -514,7 +514,6 @@ def _css() -> str:
 
 @property --cx-sec-i {{ syntax: "<number>"; inherits: true; initial-value: 0; }}
 @property --spin {{ syntax: "<angle>"; inherits: true; initial-value: 0deg; }}
-@property --cx-aura-h {{ syntax: "<angle>"; inherits: true; initial-value: 0deg; }}
 
 :root {{
   --ink:{INK}; --ink-edge:{INK_EDGE}; --panel:{PANEL}; --panel-hi:{PANEL_HI};
@@ -526,7 +525,6 @@ def _css() -> str:
   --up:{UP}; --down:{DOWN};
   --display:{_DISPLAY}; --sans:{_SANS}; --mono:{_MONO};
   --cx-sec-i: 0;
-  transition: --cx-sec-i .9s cubic-bezier(.16,.72,.24,1);
 }}
 
 /* ---------- aurora ground ---------- *
@@ -538,49 +536,43 @@ html, body, [class*="stApp"] {{ font-family: var(--sans); }}
 html, body {{ background: {INK}; }}
 .stApp {{ background: transparent; color: var(--text); }}
 
+/* One promoted, static gradient layer that drifts forever on the compositor
+   (transform-only animation -- never repaints).  No pointer-driven repaint. */
 body::before {{
   content: ""; position: fixed; inset: -16vmax; z-index: 0; pointer-events: none;
   background:
-    radial-gradient(52vmax 48vmax at calc(16% + var(--cx-amx,0px)) calc(10% + var(--cx-amy,0px)),
-      rgba(59,107,255,0.13) 0%, rgba(59,107,255,0) 56%),
-    radial-gradient(58vmax 54vmax at calc(88% - var(--cx-amx,0px)) 16%,
-      rgba(140,77,255,0.13) 0%, rgba(140,77,255,0) 54%),
-    radial-gradient(64vmax 58vmax at 44% calc(104% + var(--cx-amy,0px)),
-      rgba(45,224,240,0.09) 0%, rgba(45,224,240,0) 56%),
-    radial-gradient(46vmax 42vmax at calc(78% + var(--cx-amx,0px)) 92%,
-      rgba(255,61,166,0.09) 0%, rgba(255,61,166,0) 56%),
-    radial-gradient(40vmax 36vmax at 4% 62%,
-      rgba(108,140,255,0.08) 0%, rgba(108,140,255,0) 58%),
-    radial-gradient(120vmax 120vmax at 50% 42%,
-      rgba(8,7,15,0) 16%, rgba(4,3,9,0.94) 100%);
+    radial-gradient(52vmax 48vmax at 16% 10%,  rgba(59,107,255,0.13) 0%, rgba(59,107,255,0) 56%),
+    radial-gradient(58vmax 54vmax at 88% 16%,  rgba(140,77,255,0.13) 0%, rgba(140,77,255,0) 54%),
+    radial-gradient(64vmax 58vmax at 44% 104%, rgba(45,224,240,0.09) 0%, rgba(45,224,240,0) 56%),
+    radial-gradient(46vmax 42vmax at 78% 92%,  rgba(255,61,166,0.09) 0%, rgba(255,61,166,0) 56%),
+    radial-gradient(40vmax 36vmax at 4% 62%,   rgba(108,140,255,0.08) 0%, rgba(108,140,255,0) 58%),
+    radial-gradient(120vmax 120vmax at 50% 42%, rgba(8,7,15,0) 16%, rgba(4,3,9,0.94) 100%);
   filter: saturate(1.0) brightness(0.6) contrast(1.01);
-  transition: filter 1.1s ease;
-  animation: cx-aurora 32s ease-in-out infinite alternate, cx-aura-hue 44s linear infinite;
-  will-change: transform, filter;
+  transition: filter .6s ease;
+  animation: cx-aurora 40s ease-in-out infinite alternate;
+  transform: translateZ(0); will-change: transform; backface-visibility: hidden;
 }}
+/* the pointer/scroll parallax veil -- transform-only, own layer, no blur/filter */
 .stApp::before {{
   content: ""; position: fixed; inset: -10vmax; z-index: 0; pointer-events: none;
   background:
     linear-gradient(118deg,
-      rgba(200,220,255,0) 38%, rgba(200,220,255,0.045) 47%,
-      rgba(255,255,255,0.08) 50%, rgba(200,220,255,0.035) 54%, rgba(200,220,255,0) 62%),
-    radial-gradient(30vmax 26vmax at 66% 30%, rgba(120,180,255,0.09) 0%, rgba(120,180,255,0) 56%),
-    radial-gradient(24vmax 22vmax at 26% 74%, rgba(255,110,199,0.06) 0%, rgba(255,110,199,0) 60%);
-  transform: translate3d(calc(var(--cx-mx,0px) * 1.7), calc(var(--cx-plate,0px) + var(--cx-my,0px) * 1.7), 0)
-             rotate(var(--cx-rot,0deg)) scale(calc(1.06 * var(--cx-kick,1)));
-  filter: blur(3px);
-  transition: transform .18s cubic-bezier(.2,.8,.2,1), filter .7s ease;
-  will-change: transform, filter;
+      rgba(200,220,255,0) 38%, rgba(200,220,255,0.04) 47%,
+      rgba(255,255,255,0.07) 50%, rgba(200,220,255,0.03) 54%, rgba(200,220,255,0) 62%),
+    radial-gradient(30vmax 26vmax at 66% 30%, rgba(120,180,255,0.08) 0%, rgba(120,180,255,0) 56%),
+    radial-gradient(24vmax 22vmax at 26% 74%, rgba(255,110,199,0.05) 0%, rgba(255,110,199,0) 60%);
+  transform: translate3d(calc(var(--cx-mx,0px) * 1.4), calc(var(--cx-plate,0px) + var(--cx-my,0px) * 1.4), 0) scale(1.06);
+  transition: transform .2s cubic-bezier(.2,.8,.2,1);
+  will-change: transform; backface-visibility: hidden;
 }}
-html.cx-js.cx-kick .stApp::before {{ animation: cx-plate-kick .62s cubic-bezier(.2,.8,.2,1); }}
 .stApp::after {{
-  content: ""; position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  content: ""; position: fixed; inset: 0; z-index: 0; pointer-events: none; opacity: .34;
   background:
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E"),
     radial-gradient(150% 130% at 50% 0%, rgba(6,5,18,0) 46%, rgba(4,3,14,0.7) 100%);
   background-size: 150px 150px, cover;
+  transform: translateZ(0); backface-visibility: hidden;
 }}
-.stApp::after {{ opacity: .38; }}
 
 
 /* section-change sweep -- an electric prism edge */
@@ -608,9 +600,6 @@ html.cx-js.cx-kick .stApp::before {{ animation: cx-plate-kick .62s cubic-bezier(
   66%  {{ transform: translate3d(-3vmax,4vmax,0) scale(1.16) rotate(-2.6deg); }}
   100% {{ transform: translate3d(-5vmax,-2vmax,0) scale(1.08) rotate(1.8deg); }}
 }}
-@keyframes cx-aura-hue {{
-  0% {{ --cx-aura-h: -20deg; }}  50% {{ --cx-aura-h: 22deg; }}  100% {{ --cx-aura-h: -20deg; }}
-}}
 @keyframes cx-wipe {{
   0%   {{ opacity: 0; transform: translateX(-125%) skewX(-15deg); }}
   18%  {{ opacity: 1; }}
@@ -619,26 +608,9 @@ html.cx-js.cx-kick .stApp::before {{ animation: cx-plate-kick .62s cubic-bezier(
 @keyframes cx-flash {{
   0% {{ opacity: 0; }}  18% {{ opacity: 1; }}  100% {{ opacity: 0; }}
 }}
-@keyframes cx-plate-kick {{
-  0%   {{ transform: translate3d(var(--cx-mx,0px), var(--cx-plate,0px), 0) rotate(var(--cx-rot,0deg)) scale(1.04); }}
-  30%  {{ transform: translate3d(var(--cx-mx,0px), var(--cx-plate,0px), 0) rotate(calc(var(--cx-rot,0deg) - 3deg)) scale(1.1); }}
-  100% {{ transform: translate3d(var(--cx-mx,0px), var(--cx-plate,0px), 0) rotate(var(--cx-rot,0deg)) scale(1.04); }}
-}}
 
-/* per-section: shift the whole plate's hue + the engraving's rest pose.
-   --cx-sec-i (0..10) is set on <html> by scroll_boot from the active menu item. */
-:root {{
-  --cx-aura-h: 0deg;
-  --cx-hue: calc((var(--cx-sec-i, 0) - 5) * 9deg);
-  --cx-sat: calc(1 + (var(--cx-sec-i, 0) - 5) * 0.03);
-  --cx-rot: calc((var(--cx-sec-i, 0) - 5) * 1.1deg);
-  --cx-scale: calc(1.06 + var(--cx-sec-i, 0) * 0.009);
-}}
-body::before {{
-  --a1x: calc(20% + var(--cx-sec-i, 0) * 3.4%);
-  --a2x: calc(84% - var(--cx-sec-i, 0) * 2.6%);
-  --a3y: calc(90% - var(--cx-sec-i, 0) * 2.4%);
-}}
+/* per-section hue shift for the section-change flash (cheap; one var). */
+:root {{ --cx-hue: calc((var(--cx-sec-i, 0) - 5) * 9deg); }}
 [data-testid="stAppViewContainer"], [data-testid="stMain"],
 [data-testid="stHeader"], [data-testid="stSidebarContent"] {{ background: transparent; }}
 [data-testid="stAppViewContainer"] > .main, .block-container {{ position: relative; z-index: 1; }}
@@ -646,7 +618,7 @@ body::before {{
 [data-testid="stAppDeployButton"], [data-testid="stDeployButton"] {{ display: none !important; }}
 [data-testid="stMain"] .block-container {{ padding-top: 1.1rem; max-width: 1180px; }}
 [data-testid="stSidebarCollapsedControl"] {{ opacity: .5; }}
-[data-testid="stSidebar"] {{ background: rgba(8,8,18,0.75); backdrop-filter: blur(20px); border-right: 1px solid var(--line-soft); }}
+[data-testid="stSidebar"] {{ background: rgba(8,8,18,0.92); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); border-right: 1px solid var(--line-soft); }}
 
 /* ---------- masthead ---------- */
 .cx-mast {{
@@ -665,7 +637,7 @@ body::before {{
   padding: .38rem .95rem !important; border-radius: 10px !important;
   color: #fff !important; -webkit-text-fill-color: #fff !important;
   background: linear-gradient(180deg, rgba(61,220,151,0.9), rgba(38,180,120,0.85)) !important;
-  -webkit-backdrop-filter: blur(14px) saturate(1.6); backdrop-filter: blur(14px) saturate(1.6);
+  -webkit-backdrop-filter: blur(6px) saturate(1.4); backdrop-filter: blur(6px) saturate(1.4);
   border: 1px solid rgba(180,255,220,0.4) !important;
   box-shadow: inset 0 1px 0 rgba(255,255,255,0.5), 0 10px 30px -6px rgba(61,220,151,0.5) !important;
   transition: background .12s ease, transform .06s ease !important;
@@ -702,8 +674,8 @@ body::before {{
 /* the glass ring band */
 .cx-orbit::before {{
   content: ""; position: absolute; inset: 34px; border-radius: 50%;
-  background: rgba(255,255,255,0.05);
-  -webkit-backdrop-filter: blur(14px) saturate(1.5); backdrop-filter: blur(14px) saturate(1.5);
+  background: rgba(18,16,34,0.34);
+  -webkit-backdrop-filter: blur(5px) saturate(1.4); backdrop-filter: blur(5px) saturate(1.4);
   border: 1px solid rgba(255,255,255,0.14);
   box-shadow: inset 0 1px 0 rgba(255,255,255,0.35), inset 0 0 60px -20px rgba(155,140,255,0.5),
               0 30px 80px -30px rgba(0,0,0,0.6);
@@ -739,8 +711,8 @@ body::before {{
   white-space: nowrap; cursor: pointer; line-height: 1;
   font-family: var(--display); font-weight: 600; font-size: .76rem; letter-spacing: .005em;
   color: var(--text-dim);
-  background: rgba(255,255,255,0.08);
-  -webkit-backdrop-filter: blur(20px) saturate(1.7); backdrop-filter: blur(20px) saturate(1.7);
+  background: rgba(28,26,48,0.62);
+  -webkit-backdrop-filter: blur(6px) saturate(1.5); backdrop-filter: blur(6px) saturate(1.5);
   border: 1px solid rgba(255,255,255,0.16); border-radius: 999px; padding: .4rem .78rem;
   box-shadow: inset 0 1px 0 rgba(255,255,255,0.45), inset 0 0 16px -6px rgba(255,255,255,0.2),
               0 12px 30px -14px rgba(0,0,0,0.5);
@@ -791,7 +763,7 @@ body::before {{
   font-family: var(--display); font-weight: 700; font-size: 1.05rem; color: #fff;
   white-space: nowrap; letter-spacing: -.014em;
   background: rgba(255,255,255,0.10);
-  -webkit-backdrop-filter: blur(22px) saturate(1.7); backdrop-filter: blur(22px) saturate(1.7);
+  -webkit-backdrop-filter: blur(8px) saturate(1.5); backdrop-filter: blur(8px) saturate(1.5);
   border: 1px solid rgba(255,255,255,0.2); border-radius: 999px; padding: .34rem 1.15rem; z-index: 6;
   box-shadow: inset 0 1px 0 rgba(255,255,255,0.5), 0 0 34px -6px rgba(155,140,255,0.5), 0 14px 40px -14px rgba(0,0,0,0.55);
 }}
@@ -840,7 +812,7 @@ code, pre, kbd, [data-testid="stMetricValue"], [data-testid="stMetricDelta"],
   border: 1px solid var(--gold-line); border-radius: 6px; padding: .05em .38em; font-size: .84em;
 }}
 pre, [data-testid="stCode"] {{
-  background: rgba(255,255,255,0.7) !important; -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+  background: rgba(8,7,16,0.6) !important;
   border: 1px solid var(--line); border-radius: 12px;
 }}
 .katex {{ color: var(--text); }}
@@ -907,17 +879,19 @@ pre, [data-testid="stCode"] {{
   94% {{ clip-path: inset(42% 0 38% 0); }}  96% {{ clip-path: none; }}
 }}
 
-/* ---------- metric  (an engraved plaque, no boxy border) ---------- */
+/* ---------- metric  (translucent plaque -- NO backdrop-filter: there can be
+   30+ of these on one screen; a real blur per card destroys scroll) ---------- */
 [data-testid="stMetric"] {{
-  background: var(--panel); -webkit-backdrop-filter: blur(30px) saturate(1.28);
-  backdrop-filter: blur(30px) saturate(1.28);
+  background: linear-gradient(180deg, rgba(28,26,46,0.60), rgba(16,15,30,0.52));
   border: 1px solid var(--line); border-radius: 18px; padding: 1rem 1.15rem;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.45), inset 0 0 30px -8px rgba(255,255,255,0.14), inset 0 -24px 44px -34px rgba(155,140,255,0.5), 0 24px 60px -22px rgba(0,0,0,0.55);
-  transition: border-color .18s ease, box-shadow .18s ease, transform .18s ease;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.28), 0 18px 42px -22px rgba(0,0,0,0.6);
+  contain: layout style;
+  transition: border-color .16s ease, box-shadow .16s ease, transform .16s ease;
 }}
 [data-testid="stMetric"]:hover {{
-  background: rgba(255,255,255,0.50);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,1), inset 0 0 0 1px rgba(91,84,232,0.16), 0 0 24px -8px rgba(91,84,232,0.26), 0 18px 48px -18px rgba(0,0,0,0.26);
+  background: linear-gradient(180deg, rgba(38,35,60,0.68), rgba(22,20,40,0.58));
+  border-color: rgba(155,140,255,0.35);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.4), 0 0 22px -8px rgba(91,84,232,0.3), 0 20px 48px -20px rgba(0,0,0,0.5);
   transform: translateY(-2px);
 }}
 [data-testid="stMetricLabel"], [data-testid="stMetricLabel"] p {{
@@ -954,9 +928,8 @@ pre, [data-testid="stCode"] {{
 /* ---------- buttons ---------- */
 .stButton > button, .stDownloadButton > button, [data-testid="stFormSubmitButton"] > button {{
   border-radius: 11px; font-weight: 600; letter-spacing: .005em; font-family: var(--sans);
-  border: 1px solid var(--gold-line); background: var(--panel); color: var(--gold-text);
-  -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.75);
+  border: 1px solid var(--gold-line); background: rgba(255,255,255,0.06); color: var(--gold-text);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.22);
   transition: border-color .14s ease, color .14s ease, background .14s ease, box-shadow .14s ease;
 }}
 .stButton > button:hover, .stDownloadButton > button:hover,
@@ -1008,7 +981,7 @@ pre, [data-testid="stCode"] {{
 [data-baseweb="input"], [data-baseweb="select"] > div, [data-baseweb="textarea"],
 [data-testid="stNumberInput"] input, [data-testid="stTextInput"] input, [data-testid="stDateInput"] input {{
   border-radius: 10px !important; border-color: var(--line) !important;
-  background: rgba(255,255,255,0.7) !important; color: var(--text) !important; font-family: var(--mono);
+  background: rgba(255,255,255,0.055) !important; color: var(--text) !important; font-family: var(--mono);
 }}
 [data-baseweb="input"]:focus-within, [data-baseweb="select"] > div:focus-within {{
   border-color: var(--gold) !important;
@@ -1034,8 +1007,8 @@ pre, [data-testid="stCode"] {{
 [data-testid="stAlert"] [data-baseweb="notification"], [data-testid="stAlertContainer"],
 [data-testid="stNotificationContentInfo"], [data-testid="stNotificationContentWarning"],
 [data-testid="stNotificationContentError"], [data-testid="stNotificationContentSuccess"] {{
-  border-radius: 14px; background: var(--panel) !important;
-  -webkit-backdrop-filter: blur(24px) saturate(1.2); backdrop-filter: blur(24px) saturate(1.2);
+  border-radius: 14px;
+  background: linear-gradient(180deg, rgba(26,24,44,0.62), rgba(16,15,30,0.55)) !important;
 }}
 [data-testid="stAlert"] {{ border: 1px solid var(--line); border-inline-start: 3px solid var(--gold); }}
 [data-testid="stAlert"] [data-testid="stMarkdownContainer"] p, [data-testid="stAlertContainer"] p {{
@@ -1043,20 +1016,22 @@ pre, [data-testid="stCode"] {{
 }}
 [data-testid="stExpander"] {{
   border-radius: 16px; border: 1px solid var(--line); overflow: hidden;
-  background: var(--panel); -webkit-backdrop-filter: blur(28px) saturate(1.25); backdrop-filter: blur(28px) saturate(1.25);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.45), inset 0 0 30px -8px rgba(255,255,255,0.14), inset 0 -24px 44px -34px rgba(155,140,255,0.5), 0 24px 60px -22px rgba(0,0,0,0.55);
+  background: linear-gradient(180deg, rgba(24,22,42,0.58), rgba(15,14,28,0.5));
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.24), 0 18px 42px -22px rgba(0,0,0,0.6);
+  contain: layout style;
 }}
 [data-testid="stExpander"] summary:hover {{ background: var(--gold-wash); }}
 [data-testid="stForm"] {{
   border-radius: 18px; border: 1px solid var(--line);
-  background: var(--panel); -webkit-backdrop-filter: blur(32px) saturate(1.25); backdrop-filter: blur(32px) saturate(1.25);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.45), inset 0 0 30px -8px rgba(255,255,255,0.14), inset 0 -24px 44px -34px rgba(155,140,255,0.5), 0 24px 60px -22px rgba(0,0,0,0.55);
+  background: linear-gradient(180deg, rgba(24,22,42,0.58), rgba(15,14,28,0.5));
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.24), 0 18px 42px -22px rgba(0,0,0,0.6);
+  contain: layout style;
 }}
 /* bordered container -> a barely-there frame so the inner card carries the weight */
 div[data-testid="stVerticalBlockBorderWrapper"] {{
   border-radius: 20px;
-  background: rgba(255,255,255,0.16); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
-  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.4);
+  background: rgba(255,255,255,0.035);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.14);
 }}
 /* st.metric built-in sparkline: sit it on the card, not on a black rectangle */
 [data-testid="stMetricChart"], [data-testid="stMetricChart"] canvas,
@@ -1147,84 +1122,66 @@ body::after {{
 /* (the full plate transform lives on .stApp::before above; nothing to override) */
 
 @media (prefers-reduced-motion: no-preference) {{
+  /* reveal cascade -- compositor-only (opacity + translate); no filter/blur so
+     20 blocks animating at once on first paint stays smooth. */
   html.cx-js [data-testid="stMain"] .block-container [data-testid="stElementContainer"].cx-hide,
   html.cx-js [data-testid="stMain"] .block-container [data-testid="stHorizontalBlock"].cx-hide {{
-    opacity: 0; transform: translateY(34px) scale(.985); filter: blur(3px);
+    opacity: 0; transform: translateY(26px);
   }}
-  html.cx-js .cx-hero.cx-hide {{ opacity: 0; transform: translateY(40px); filter: blur(4px); }}
-  html.cx-js .cx-hero.cx-hide .cx-hero-title {{ letter-spacing: .03em; filter: blur(2px); }}
+  html.cx-js .cx-hero.cx-hide {{ opacity: 0; transform: translateY(32px); }}
+  html.cx-js .cx-hero.cx-hide .cx-hero-title {{ letter-spacing: .02em; }}
   html.cx-js .cx-hide {{
-    transition: opacity .7s cubic-bezier(.16,.72,.24,1),
-                transform .7s cubic-bezier(.16,.72,.24,1),
-                letter-spacing .7s ease, filter .7s ease;
+    transition: opacity .6s cubic-bezier(.16,.72,.24,1),
+                transform .6s cubic-bezier(.16,.72,.24,1),
+                letter-spacing .6s ease;
+    will-change: opacity, transform;
   }}
-  html.cx-js .cx-rev {{ filter: blur(0) !important; }}
-  html.cx-js .cx-hide .cx-hero-title {{
-    transition: letter-spacing .7s ease, filter .7s ease;
-  }}
-  html.cx-js .cx-rev {{ opacity: 1 !important; transform: none !important; }}
-  html.cx-js .cx-rev .cx-hero-title {{ letter-spacing: -0.01em; filter: none; }}
+  html.cx-js .cx-hide .cx-hero-title {{ transition: letter-spacing .6s ease; }}
+  html.cx-js .cx-rev {{ opacity: 1 !important; transform: none !important; will-change: auto; }}
+  html.cx-js .cx-rev .cx-hero-title {{ letter-spacing: -0.01em; }}
 }}
 
-/* ============================ Apple-style LIQUID GLASS ============================ *
- * a refracting glass sheet (::before, backdrop-blur + SVG displacement) + a
- * specular rim that catches light top-left (::after).  Added on top of the
- * existing panels -- nothing else about the design changes.                        */
-[data-testid="stMetric"],
-div[data-testid="stVerticalBlockBorderWrapper"],
-[data-testid="stForm"],
-[data-testid="stExpander"],
+/* ====================== glass finish (static -- zero scroll cost) ============ *
+ * The Apple-"liquid glass" refraction (SVG feDisplacementMap + per-card
+ * backdrop-filter) was removed: on a 30-metric screen it re-ran a turbulence
+ * filter per card per frame and wrecked scrolling.  Replaced with a purely
+ * static sheen (::before, one gradient) + specular rim (::after, gradient + mask,
+ * rasterised once).  No filters, no backdrop-filter -- nothing repaints on
+ * scroll.  Look is preserved: bright top-left rim, soft inner glow.            */
 .cx-orbit-item > button,
-.cx-orbit-name,
 .st-key-cx_refresh button {{
   position: relative; overflow: hidden; isolation: isolate;
 }}
 [data-testid="stMetric"]::before,
-div[data-testid="stVerticalBlockBorderWrapper"]::before,
 [data-testid="stForm"]::before,
 [data-testid="stExpander"]::before,
 .cx-orbit-item > button::before,
-.cx-orbit-name::before,
 .st-key-cx_refresh button::before {{
-  content: ""; position: absolute; inset: 0; z-index: -1; border-radius: inherit;
-  -webkit-backdrop-filter: blur(2px) saturate(1.6) brightness(1.06);
-          backdrop-filter: blur(2px) saturate(1.6) brightness(1.06);
-  filter: url(#cx-lg);
+  content: ""; position: absolute; inset: 0; z-index: 0; border-radius: inherit;
+  pointer-events: none;
+  background:
+    linear-gradient(135deg, rgba(255,255,255,0.07) 0%, rgba(255,255,255,0) 38%),
+    radial-gradient(120% 90% at 12% 0%, rgba(255,255,255,0.06), rgba(255,255,255,0) 60%);
 }}
 [data-testid="stMetric"]::after,
-div[data-testid="stVerticalBlockBorderWrapper"]::after,
 [data-testid="stForm"]::after,
 [data-testid="stExpander"]::after,
 .cx-orbit-item > button::after,
-.cx-orbit-name::after,
 .st-key-cx_refresh button::after {{
   content: ""; position: absolute; inset: 0; z-index: 1; border-radius: inherit;
-  padding: 1.2px; pointer-events: none; mix-blend-mode: screen;
+  padding: 1.1px; pointer-events: none; mix-blend-mode: screen;
   background: linear-gradient(135deg,
-    rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.25) 18%,
-    rgba(255,255,255,0) 42%, rgba(255,255,255,0) 60%,
-    rgba(200,220,255,0.30) 84%, rgba(255,255,255,0.55) 100%);
+    rgba(255,255,255,0.85) 0%, rgba(255,255,255,0.20) 18%,
+    rgba(255,255,255,0) 42%, rgba(255,255,255,0) 62%,
+    rgba(200,220,255,0.22) 86%, rgba(255,255,255,0.42) 100%);
   -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
           mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
   -webkit-mask-composite: xor;  mask-composite: exclude;
 }}
-/* a faint edge-lens brightening just inside the rim */
-[data-testid="stMetric"],
-div[data-testid="stVerticalBlockBorderWrapper"],
-[data-testid="stForm"],
-[data-testid="stExpander"] {{
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.45),
-    inset 0 0 22px -4px rgba(255,255,255,0.18),
-    inset 0 -30px 60px -46px rgba(155,140,255,0.6),
-    0 26px 64px -24px rgba(0,0,0,0.6);
+[data-testid="stMetric"], [data-testid="stForm"], [data-testid="stExpander"] {{
+  position: relative; isolation: isolate;
 }}
-.cx-orbit-name {{ overflow: visible; }}
-.cx-orbit-name::before {{ overflow: hidden; }}
-@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {{
-  [data-testid="stMetric"]::before, div[data-testid="stVerticalBlockBorderWrapper"]::before,
-  [data-testid="stForm"]::before, [data-testid="stExpander"]::before {{ background: rgba(20,18,42,0.7); }}
-}}
+[data-testid="stMetric"] > *, [data-testid="stForm"] > *, [data-testid="stExpander"] > * {{ position: relative; z-index: 1; }}
 
 /* ====================== per-section design languages ====================== */
 {_section_themes()}
@@ -1249,26 +1206,11 @@ _LTR_SHIM = (
 )
 
 
-_LG_SVG = (
-    '<svg aria-hidden="true" width="0" height="0" '
-    'style="position:absolute;pointer-events:none">'
-    '<defs><filter id="cx-lg" x="-25%" y="-25%" width="150%" height="150%" '
-    'color-interpolation-filters="sRGB">'
-    '<feTurbulence type="fractalNoise" baseFrequency="0.011 0.013" numOctaves="2" '
-    'seed="11" result="n"/>'
-    '<feGaussianBlur in="n" stdDeviation="1.3" result="nb"/>'
-    '<feDisplacementMap in="SourceGraphic" in2="nb" scale="26" '
-    'xChannelSelector="R" yChannelSelector="G"/>'
-    '</filter></defs></svg>'
-)
-
-
 def inject_theme() -> None:
     """Inject the global skin.  Call once, immediately after set_page_config.
     The scroll engine is installed separately by ``scroll_boot`` (index.html),
     because Streamlit's ``st.html`` strips a raw <script> even with the flag."""
     st.markdown(_css(), unsafe_allow_html=True)
-    st.markdown(_LG_SVG, unsafe_allow_html=True)
     try:
         st.html(_LTR_SHIM, unsafe_allow_javascript=True)
     except TypeError:

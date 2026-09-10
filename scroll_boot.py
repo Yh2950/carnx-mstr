@@ -52,41 +52,56 @@ _ENGINE = r"""
       for(var i=0;i<c.length;i++){ if(c[i].scrollHeight-c[i].clientHeight>40) return c[i]; }
       return d.scrollingElement||d.documentElement;
     }
-    function onScroll(){
-      var s=scroller();
-      var mx=Math.max(1, s.scrollHeight - s.clientHeight);
-      var p=Math.min(1, Math.max(0, (s.scrollTop||0)/mx));
+    // cache scroll geometry -- NEVER read layout inside the scroll handler
+    var _sc=null, _rng=1, _spending=false, _scrolling=0;
+    function measure(){
+      _sc=scroller();
+      _rng=Math.max(1, _sc.scrollHeight - _sc.clientHeight);
+    }
+    function paintScroll(){
+      _spending=false;
+      var top=_sc?(_sc.scrollTop||0):0;
+      var p=Math.min(1, Math.max(0, top/_rng));
       r.style.setProperty('--cx-progress', p.toFixed(4));
       r.style.setProperty('--cx-plate', (-42*p).toFixed(1)+'px');
+    }
+    function onScroll(){
+      _scrolling=Date.now();
+      if(_spending) return;
+      _spending=true; requestAnimationFrame(paintScroll);
     }
     var bound=null;
     function bindScroll(){
       var s=scroller();
       var t=(s===d.documentElement||s===d.scrollingElement)?window:s;
-      if(bound===t){ onScroll(); return; }
+      measure();
+      if(bound===t){ paintScroll(); return; }
       if(bound) bound.removeEventListener('scroll', onScroll);
       t.addEventListener('scroll', onScroll, {passive:true});
-      bound=t; onScroll();
+      bound=t; paintScroll();
     }
     bindScroll();
-    window.addEventListener('resize', bindScroll, {passive:true});
+    window.addEventListener('resize', function(){ measure(); paintScroll(); }, {passive:true});
 
     if(reduce) return;
 
-    // pointer parallax -- the plate leans away from the cursor (decorative only)
-    var px=0, py=0, tick=false;
-    window.addEventListener('pointermove', function(e){
-      var w=window.innerWidth||1, h=window.innerHeight||1;
-      px=((e.clientX/w)-0.5); py=((e.clientY/h)-0.5);
-      if(tick) return; tick=true;
-      requestAnimationFrame(function(){
-        tick=false;
-        r.style.setProperty('--cx-mx', (-px*28).toFixed(1)+'px');
-        r.style.setProperty('--cx-my', (-py*24).toFixed(1)+'px');
-        r.style.setProperty('--cx-amx', (px*48).toFixed(1)+'px');
-        r.style.setProperty('--cx-amy', (py*44).toFixed(1)+'px');
-      });
-    }, {passive:true});
+    // pointer parallax -- fine pointers only (pointless + costly on touch);
+    // suppressed while the page is scrolling so it can't add work to a scroll frame.
+    var fine=!window.matchMedia||window.matchMedia('(pointer: fine)').matches;
+    if(fine){
+      var px=0, py=0, tick=false;
+      window.addEventListener('pointermove', function(e){
+        if(Date.now()-_scrolling<220) return;
+        var w=window.innerWidth||1, h=window.innerHeight||1;
+        px=((e.clientX/w)-0.5); py=((e.clientY/h)-0.5);
+        if(tick) return; tick=true;
+        requestAnimationFrame(function(){
+          tick=false;
+          r.style.setProperty('--cx-mx', (-px*24).toFixed(1)+'px');
+          r.style.setProperty('--cx-my', (-py*20).toFixed(1)+'px');
+        });
+      }, {passive:true});
+    }
 
     var SEL='[data-testid=stMain] .block-container [data-testid=stElementContainer],'
           + '[data-testid=stMain] .block-container [data-testid=stHorizontalBlock],'
@@ -139,11 +154,9 @@ _ENGINE = r"""
       lastSec=i;
       r.style.setProperty('--cx-sec-i', i);
       r.dataset.cxSection=i;
-      // the sweep + the hue flash + a rack-focus kick on the plate
+      // the section-change sweep + hue flash (transform/opacity only)
       wipe.classList.remove('run'); void wipe.offsetWidth; wipe.classList.add('run');
       flash.classList.remove('run'); void flash.offsetWidth; flash.classList.add('run');
-      r.classList.remove('cx-kick'); void r.offsetWidth; r.classList.add('cx-kick');
-      setTimeout(function(){ r.classList.remove('cx-kick'); }, 700);
       if(navigator.vibrate) navigator.vibrate([4,18,8]);
       // re-arm the reveal cascade for the "new page"
       window.__cxReady=false; clearTimeout(rt);
@@ -310,14 +323,23 @@ _ENGINE = r"""
     pass(true); bumpReady(); syncSection();
     buildOrbit();
 
-    var mo=new MutationObserver(function(){
+    // Streamlit reruns fire a storm of mutations (every slider tick) -- coalesce
+    // to one rAF-gated pass so the observer can't compete with scroll/interaction.
+    var moPend=false;
+    function moFlush(){
+      moPend=false;
       syncSection();
       pass(!window.__cxReady);
       bumpReady();
       bindScroll();
+    }
+    var mo=new MutationObserver(function(){
+      if(moPend) return;
+      moPend=true;
+      (window.requestIdleCallback||window.requestAnimationFrame)(moFlush);
     });
     mo.observe(d.body, {childList:true, subtree:true});
-    setInterval(syncSection, 500);
+    setInterval(syncSection, 600);
    }catch(e){
     try{
       document.documentElement.classList.remove('cx-js');
