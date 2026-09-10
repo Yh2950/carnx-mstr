@@ -31,13 +31,13 @@ import streamlit as st
 # --------------------------------------------------------------------------- #
 # "light glass": a soft pale-grey ground under a faint pastel wash; frosted
 # WHITE panels; one indigo accent; the Bitcoin roundel at the nav hub.
-INK = "#EBECF2"          # the ground (pale grey)
-INK_EDGE = "#DDDEE8"     # deepest grey
-PANEL = "rgba(255,255,255,0.62)"   # frosted white glass
-PANEL_HI = "rgba(255,255,255,0.82)"
-SUNK = "rgba(255,255,255,0.45)"    # sunk well / code
-LINE = "rgba(20,22,45,0.10)"       # hairline
-LINE_SOFT = "rgba(20,22,45,0.055)"
+INK = "#E3E5EC"          # the ground (cool light grey)
+INK_EDGE = "#D4D7E1"     # deepest grey
+PANEL = "rgba(255,255,255,0.52)"   # clear glass pane
+PANEL_HI = "rgba(255,255,255,0.72)"
+SUNK = "rgba(255,255,255,0.28)"    # sunk well / code
+LINE = "rgba(255,255,255,0.55)"    # a lit glass edge
+LINE_SOFT = "rgba(30,35,60,0.06)"
 
 GOLD = "#5B54E8"         # the accent  (indigo)
 GOLD_BRIGHT = "#7C74FF"  # bright accent / glow
@@ -277,29 +277,29 @@ html, body {{ background: {INK}; }}
 body::before {{
   content: ""; position: fixed; inset: -14vmax; z-index: 0; pointer-events: none;
   background:
-    radial-gradient(50vmax 46vmax at calc(16% + var(--cx-amx,0px)) calc(12% + var(--cx-amy,0px)),
-      rgba(124,116,255,0.28) 0%, rgba(124,116,255,0) 60%),
-    radial-gradient(56vmax 52vmax at calc(88% - var(--cx-amx,0px)) 20%,
-      rgba(214,64,159,0.20) 0%, rgba(214,64,159,0) 58%),
-    radial-gradient(62vmax 56vmax at 44% calc(102% + var(--cx-amy,0px)),
-      rgba(11,165,196,0.22) 0%, rgba(11,165,196,0) 60%),
-    radial-gradient(44vmax 40vmax at calc(76% + var(--cx-amx,0px)) 0%,
-      rgba(247,147,26,0.14) 0%, rgba(247,147,26,0) 60%),
-    radial-gradient(48vmax 44vmax at 2% 84%,
-      rgba(99,102,241,0.18) 0%, rgba(99,102,241,0) 62%);
-  filter: hue-rotate(calc(var(--cx-hue,0deg) + var(--cx-aura-h,0deg))) saturate(1.1);
+    radial-gradient(60vmax 54vmax at calc(20% + var(--cx-amx,0px)) calc(6% + var(--cx-amy,0px)),
+      rgba(255,255,255,0.75) 0%, rgba(255,255,255,0) 58%),
+    radial-gradient(56vmax 52vmax at calc(88% - var(--cx-amx,0px)) 14%,
+      rgba(206,218,244,0.55) 0%, rgba(206,218,244,0) 56%),
+    radial-gradient(64vmax 58vmax at 46% calc(104% + var(--cx-amy,0px)),
+      rgba(199,208,232,0.50) 0%, rgba(199,208,232,0) 58%),
+    radial-gradient(40vmax 36vmax at calc(78% + var(--cx-amx,0px)) 4%,
+      rgba(150,146,236,0.14) 0%, rgba(150,146,236,0) 58%);
+  filter: saturate(1.02) brightness(1.02);
   transition: filter 1.1s ease;
-  animation: cx-aurora 34s ease-in-out infinite alternate, cx-aura-hue 52s linear infinite;
+  animation: cx-aurora 40s ease-in-out infinite alternate;
   will-change: transform, filter;
 }}
 .stApp::before {{
   content: ""; position: fixed; inset: -8vmax; z-index: 0; pointer-events: none;
   background:
-    radial-gradient(32vmax 30vmax at 60% 38%, rgba(124,116,255,0.14) 0%, rgba(124,116,255,0) 58%),
-    radial-gradient(28vmax 26vmax at 32% 72%, rgba(11,165,196,0.10) 0%, rgba(11,165,196,0) 60%);
-  transform: translate3d(var(--cx-mx,0px), calc(var(--cx-plate,0px) + var(--cx-my,0px)), 0)
-             rotate(var(--cx-rot,0deg)) scale(calc(1.04 * var(--cx-kick,1)));
-  filter: hue-rotate(calc(var(--cx-hue,0deg) * .7)) blur(8px);
+    linear-gradient(122deg,
+      rgba(255,255,255,0) 30%, rgba(255,255,255,0.35) 47%,
+      rgba(255,255,255,0.10) 52%, rgba(255,255,255,0) 66%),
+    radial-gradient(34vmax 30vmax at 62% 34%, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0) 56%);
+  transform: translate3d(calc(var(--cx-mx,0px) * 1.6), calc(var(--cx-plate,0px) + var(--cx-my,0px) * 1.6), 0)
+             rotate(var(--cx-rot,0deg)) scale(calc(1.05 * var(--cx-kick,1)));
+  filter: blur(2px);
   transition: transform .18s cubic-bezier(.2,.8,.2,1), filter .7s ease;
   will-change: transform, filter;
 }}
@@ -307,7 +307,7 @@ html.cx-js.cx-kick .stApp::before {{ animation: cx-plate-kick .62s cubic-bezier(
 .stApp::after {{
   content: ""; position: fixed; inset: 0; z-index: 0; pointer-events: none;
   background:
-    radial-gradient(150% 120% at 50% 0%, rgba(235,236,242,0) 60%, rgba(215,216,228,0.55) 100%);
+    radial-gradient(150% 130% at 50% -10%, rgba(227,229,236,0) 58%, rgba(198,202,216,0.6) 100%);
 }}
 
 /* section-change sweep -- an electric prism edge */
@@ -377,7 +377,7 @@ body::before {{
 
 /* ---------- masthead ---------- */
 .cx-mast {{
-  display: flex; align-items: baseline; gap: .8rem;
+  display: flex; align-items: center; gap: .7rem;
   padding: .1rem 0 .5rem; flex-wrap: wrap;
 }}
 .cx-mast svg {{ height: 44px; width: auto; display: block; }}
@@ -446,9 +446,9 @@ body::before {{
   white-space: nowrap; cursor: pointer; line-height: 1;
   font-family: var(--display); font-weight: 600; font-size: .74rem; letter-spacing: .005em;
   color: var(--text-dim);
-  background: var(--panel); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
-  border: 1px solid var(--line); border-radius: 999px; padding: .32rem .66rem;
-  box-shadow: 0 5px 16px -8px rgba(20,22,45,.35), inset 0 1px 0 rgba(255,255,255,.65);
+  background: rgba(255,255,255,0.34); -webkit-backdrop-filter: blur(18px) saturate(1.2); backdrop-filter: blur(18px) saturate(1.2);
+  border: 1px solid rgba(255,255,255,0.6); border-radius: 999px; padding: .32rem .66rem;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.95), 0 10px 26px -12px rgba(30,35,60,.32);
   transition: color .15s, background .15s, box-shadow .15s, border-color .15s;
 }}
 .cx-orbit.spinning .cx-orbit-item > button {{ transition: none; }}
@@ -466,14 +466,14 @@ body::before {{
   transform: translate(-50%,-50%); border-radius: 50%; overflow: visible; cursor: grab; z-index: 5;
 }}
 .cx-orbit-hub:active {{ cursor: grabbing; }}
-.cx-orbit-hub svg {{
+.cx-orbit-hub svg, .cx-orbit-hub img {{
   width: 100%; height: 100%; display: block; border-radius: 50%; position: relative; z-index: 2;
-  box-shadow: 0 12px 32px -6px rgba(247,147,26,.5), 0 2px 10px rgba(0,0,0,.18),
-              inset 0 0 0 3px rgba(255,255,255,.9);
+  box-shadow: 0 16px 40px -8px rgba(91,84,232,.5), 0 3px 12px rgba(30,35,60,.22),
+              inset 0 0 0 2px rgba(255,255,255,.7);
 }}
 .cx-orbit-hub::after {{
   content: ""; position: absolute; inset: -10px; border-radius: 50%; z-index: 1;
-  background: conic-gradient(from 0deg, rgba(247,147,26,0), rgba(247,147,26,.6), rgba(247,147,26,0) 55%);
+  background: conic-gradient(from 0deg, rgba(124,116,255,0), rgba(124,116,255,.7), rgba(56,224,240,.3), rgba(124,116,255,0) 60%);
   opacity: 0; transition: opacity .3s;
 }}
 .cx-orbit.spinning {{ animation: cx-spin-var 24s linear infinite; }}
@@ -483,7 +483,7 @@ body::before {{
   position: absolute; left: 50%; bottom: -14px; transform: translateX(-50%);
   font-family: var(--display); font-weight: 700; font-size: .98rem; color: var(--text);
   white-space: nowrap; letter-spacing: -.012em;
-  background: var(--panel-hi); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
+  background: rgba(255,255,255,0.42); -webkit-backdrop-filter: blur(20px) saturate(1.2); backdrop-filter: blur(20px) saturate(1.2);
   border: 1px solid var(--line); border-radius: 999px; padding: .28rem .95rem; z-index: 6;
   box-shadow: 0 8px 24px -10px rgba(20,22,45,.4);
 }}
@@ -552,15 +552,15 @@ pre, [data-testid="stCode"] {{
 
 /* ---------- metric  (an engraved plaque, no boxy border) ---------- */
 [data-testid="stMetric"] {{
-  background: var(--panel); -webkit-backdrop-filter: blur(16px) saturate(1.4);
-  backdrop-filter: blur(16px) saturate(1.4);
-  border: 1px solid var(--line); border-radius: 16px; padding: 1rem 1.15rem;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.85), 0 12px 34px -16px rgba(20,22,45,0.28);
+  background: var(--panel); -webkit-backdrop-filter: blur(30px) saturate(1.28);
+  backdrop-filter: blur(30px) saturate(1.28);
+  border: 1px solid var(--line); border-radius: 18px; padding: 1rem 1.15rem;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.92), inset 0 0 0 1px rgba(30,35,60,0.04), 0 14px 46px -18px rgba(30,35,60,0.22);
   transition: border-color .18s ease, box-shadow .18s ease, transform .18s ease;
 }}
 [data-testid="stMetric"]:hover {{
-  border-color: var(--gold-line);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.95), 0 0 26px -6px rgba(91,84,232,0.32), 0 16px 44px -18px rgba(20,22,45,0.34);
+  background: rgba(255,255,255,0.50);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,1), inset 0 0 0 1px rgba(91,84,232,0.16), 0 0 24px -8px rgba(91,84,232,0.26), 0 18px 48px -18px rgba(30,35,60,0.26);
   transform: translateY(-2px);
 }}
 [data-testid="stMetricLabel"], [data-testid="stMetricLabel"] p {{
@@ -678,7 +678,7 @@ pre, [data-testid="stCode"] {{
 [data-testid="stNotificationContentInfo"], [data-testid="stNotificationContentWarning"],
 [data-testid="stNotificationContentError"], [data-testid="stNotificationContentSuccess"] {{
   border-radius: 14px; background: var(--panel) !important;
-  -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(24px) saturate(1.2); backdrop-filter: blur(24px) saturate(1.2);
 }}
 [data-testid="stAlert"] {{ border: 1px solid var(--line); border-inline-start: 3px solid var(--gold); }}
 [data-testid="stAlert"] [data-testid="stMarkdownContainer"] p, [data-testid="stAlertContainer"] p {{
@@ -686,20 +686,20 @@ pre, [data-testid="stCode"] {{
 }}
 [data-testid="stExpander"] {{
   border-radius: 16px; border: 1px solid var(--line); overflow: hidden;
-  background: var(--panel); -webkit-backdrop-filter: blur(16px) saturate(1.3); backdrop-filter: blur(16px) saturate(1.3);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.8);
+  background: var(--panel); -webkit-backdrop-filter: blur(28px) saturate(1.25); backdrop-filter: blur(28px) saturate(1.25);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.92), inset 0 0 0 1px rgba(30,35,60,0.04), 0 14px 46px -18px rgba(30,35,60,0.22);
 }}
 [data-testid="stExpander"] summary:hover {{ background: var(--gold-wash); }}
 [data-testid="stForm"] {{
   border-radius: 18px; border: 1px solid var(--line);
-  background: var(--panel); -webkit-backdrop-filter: blur(18px) saturate(1.3); backdrop-filter: blur(18px) saturate(1.3);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.85), 0 18px 50px -22px rgba(20,22,45,0.32);
+  background: var(--panel); -webkit-backdrop-filter: blur(32px) saturate(1.25); backdrop-filter: blur(32px) saturate(1.25);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.92), inset 0 0 0 1px rgba(30,35,60,0.04), 0 14px 46px -18px rgba(30,35,60,0.22);
 }}
-/* bordered container -> a frosted card floating over the mesh */
+/* bordered container -> a barely-there frame so the inner card carries the weight */
 div[data-testid="stVerticalBlockBorderWrapper"] {{
-  border-radius: 18px;
-  background: var(--panel); -webkit-backdrop-filter: blur(18px) saturate(1.35); backdrop-filter: blur(18px) saturate(1.35);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.9), 0 18px 50px -22px rgba(20,22,45,0.34);
+  border-radius: 20px;
+  background: rgba(255,255,255,0.16); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.4);
 }}
 /* st.metric built-in sparkline: sit it on the card, not on a black rectangle */
 [data-testid="stMetricChart"], [data-testid="stMetricChart"] canvas,
@@ -839,15 +839,13 @@ def inject_theme() -> None:
 
 
 def _wordmark_svg() -> str:
-    try:
-        from assets.brandmark import svg_wordmark
-
-        return svg_wordmark(430, 96)
-    except Exception:  # pragma: no cover
-        return (
-            f'<span style="font-family:{_DISPLAY};font-weight:600;font-size:1.3rem;'
-            f'color:{GOLD_BRIGHT};letter-spacing:.02em">CARN-X</span>'
-        )
+    return (
+        '<img src="./carnx/mark.png" alt="" '
+        'style="height:42px;width:42px;border-radius:11px;display:block;'
+        'box-shadow:0 6px 18px -6px rgba(30,35,60,.4), inset 0 0 0 1px rgba(255,255,255,.5)">'
+        f'<span style="font-family:{_DISPLAY};font-weight:700;font-size:1.24rem;'
+        f'color:{TEXT};letter-spacing:-.01em">CARN-X</span>'
+    )
 
 
 def refresh_button() -> None:

@@ -34,7 +34,7 @@ TEXT = "#191B29"
 CATEGORICAL = [AMBER, CYAN, GREEN, MAGENTA, VIOLET, "#B9924A", "#6E7DA8", RED]
 
 # gold-anchored gradients for continuous encodings (replace Vega neon schemes)
-SEQ = ["#F4F5FA", "#D3D5E4", "#4038C4", "#7A6A46", AMBER, "#8B84F5"]
+SEQ = ["#EEF0F6", "#D3D5E4", "#4038C4", "#7A6A46", AMBER, "#8B84F5"]
 DIV = [RED, "#C9C6F0", AMBER]
 
 _UP = GREEN

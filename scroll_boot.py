@@ -158,14 +158,8 @@ _ENGINE = r"""
 
 
     /* ---- orbital navigation: page buttons on a ring around the Bitcoin hub ---- */
-    var BTC='<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">'
-      +'<circle cx="32" cy="32" r="31" fill="#F7931A"/>'
-      +'<text x="32" y="47" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" '
-      +'font-weight="700" font-size="40" fill="#fff" transform="rotate(-13 32 32)">B</text>'
-      +'<rect x="27" y="10" width="3.6" height="9" fill="#fff" transform="rotate(-13 32 32)"/>'
-      +'<rect x="27" y="45" width="3.6" height="9" fill="#fff" transform="rotate(-13 32 32)"/>'
-      +'<rect x="35" y="10" width="3.6" height="9" fill="#fff" transform="rotate(-13 32 32)"/>'
-      +'<rect x="35" y="45" width="3.6" height="9" fill="#fff" transform="rotate(-13 32 32)"/></svg>';
+    var BTC='<img src="./carnx/hub.png" alt="" '
+      +'style="width:100%;height:100%;display:block;border-radius:50%;object-fit:cover">';
 
     function navLabels(){ return d.querySelectorAll('.st-key-cx_nav [role=radiogroup] label'); }
     function navNames(){

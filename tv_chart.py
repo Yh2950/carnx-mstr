@@ -30,12 +30,12 @@ _LWC_CDN = "https://cdn.jsdelivr.net/npm/lightweight-charts@4.1.3/dist/lightweig
 
 # deep-navy plate, antique-gold accent -- matches theme.py
 _DARK = dict(
-    bg="#F4F5FA",
+    bg="#EEF0F6",
     grid="rgba(30,30,60,0.05)",
     border="#D8DAE6",
     text="#575B75",
     strong="#191B29",
-    panel="#FFFFFF",
+    panel="#F7F8FC",
     up="#0E9F6E",
     down="#E5484D",
     accent="#5B54E8",
@@ -47,12 +47,12 @@ _DARK = dict(
 # the instrument commits to one look; kept identical so an unexpected
 # "light" theme signal can never flash a white chart
 _LIGHT = dict(
-    bg="#F4F5FA",
+    bg="#EEF0F6",
     grid="rgba(30,30,60,0.05)",
     border="#D8DAE6",
     text="#575B75",
     strong="#191B29",
-    panel="#FFFFFF",
+    panel="#F7F8FC",
     up="#0E9F6E",
     down="#E5484D",
     accent="#5B54E8",

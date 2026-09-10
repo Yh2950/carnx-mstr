@@ -34,6 +34,8 @@ _ICONS = {
     "icon_192.png": "icon-192.png",
     "icon_512.png": "icon-512.png",
     "icon_maskable_512.png": "icon-maskable-512.png",
+    "hub.png": "hub.png",
+    "mark.png": "mark.png",
 }
 
 _MANIFEST = f"""{{
