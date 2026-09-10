@@ -33,8 +33,8 @@ import streamlit as st
 # WHITE panels; one indigo accent; the Bitcoin roundel at the nav hub.
 # "liquid glass" -- deep electric ground, near-clear glass that refracts it,
 # bright specular rims.  (var names still INK*/GOLD* -- values only.)
-INK = "#0B0A1E"          # deep indigo-black ground
-INK_EDGE = "#060512"     # deepest
+INK = "#08070F"          # deep near-black ground (dimmed -- easy on the eye)
+INK_EDGE = "#040308"     # deepest
 PANEL = "rgba(255,255,255,0.085)"  # a thin sheet of glass
 PANEL_HI = "rgba(255,255,255,0.14)"
 SUNK = "rgba(8,6,22,0.42)"         # sunk well / code
@@ -74,6 +74,9 @@ _FONTS = (
     "&family=Inter:wght@400;500;600;700;800"
     "&family=Assistant:wght@400;500;600;700"
     "&family=IBM+Plex+Mono:wght@400;500;600"
+    "&family=Space+Grotesk:wght@400;500;600;700"
+    "&family=Archivo+Black"
+    "&family=Orbitron:wght@500;700;900"
     "&display=swap"
 )
 
@@ -249,6 +252,261 @@ def _engraving_uri() -> str:
     return f"data:image/svg+xml;base64,{b64}"
 
 
+# --------------------------------------------------------------------------- #
+# per-section design languages
+# --------------------------------------------------------------------------- #
+# Each nav section speaks a different visual dialect.  scroll_boot writes
+# data-cx-section="0..10" on <html> from the active menu item; every rule below
+# is scoped to that + [data-testid=stMain], so the masthead, the orbital nav and
+# the scroll chrome stay constant while the content area transforms.  If the JS
+# never runs, no attribute is set and the base "glass" look shows -- nothing here
+# is load-bearing.
+#
+#   0 סקירה .............. Minimalism      6 מבנים מתמטיים ...... Neo-Brutalism
+#   1 טרמינל מסחר ........ Cyberpunk       7 מחזור ביטקוין ...... Maximalism
+#   2 מחשבון הסתברויות ... Neumorphism     8 ראיות Walk-Forward . Material
+#   3 אבחון סטטיסטי ...... Editorial       9 סיכון ומינוף ....... Claymorphism
+#   4 תחזית הסתברותית .... Glassmorphism  10 הגדרות ............. Skeuomorphism
+#   5 Monte Carlo ........ Y2K
+_C = (
+    '[data-testid="stMain"] :is([data-testid="stMetric"],'
+    'div[data-testid="stVerticalBlockBorderWrapper"],[data-testid="stForm"],'
+    '[data-testid="stExpander"],[data-testid="stAlert"])'
+)
+_H = '[data-testid="stMain"] :is(h1,h2,h3,.cx-hero-title)'
+_MV = '[data-testid="stMain"] [data-testid="stMetricValue"]'
+_ML = '[data-testid="stMain"] [data-testid="stMetricLabel"] p'
+
+_SECTION_THEMES_RAW = r"""
+/* 0 · סקירה — MINIMALISM : near-monochrome, air, one hairline, no gloss ---- */
+html[data-cx-section="0"]{
+  --gold:#E9E9F1;--gold-bright:#fff;--gold-deep:#B4B4CA;--gold-text:#ECECF3;
+  --gold-wash:rgba(255,255,255,.04);--gold-line:rgba(255,255,255,.12);
+  --glow:0 0 0 1px rgba(255,255,255,.14);
+}
+html[data-cx-section="0"] body::before{filter:saturate(.5) brightness(.52) contrast(1);}
+html[data-cx-section="0"] .stApp::after{opacity:.2;}
+html[data-cx-section="0"] §CARDS§{
+  background:rgba(255,255,255,.025)!important;border:1px solid rgba(255,255,255,.10)!important;
+  border-radius:8px!important;backdrop-filter:blur(5px)!important;-webkit-backdrop-filter:blur(5px)!important;
+  box-shadow:none!important;
+}
+html[data-cx-section="0"] §CARDS§::before,html[data-cx-section="0"] §CARDS§::after{display:none!important;}
+html[data-cx-section="0"] §HEADS§{font-family:'Space Grotesk',var(--sans)!important;font-weight:500!important;letter-spacing:0!important;}
+html[data-cx-section="0"] .cx-hero-title{font-weight:600!important;text-shadow:none!important;letter-spacing:-.02em!important;}
+html[data-cx-section="0"] .cx-hero-ghost{opacity:.3;}
+html[data-cx-section="0"] §MV§{font-family:'Space Grotesk',var(--sans)!important;font-weight:600!important;}
+
+/* 1 · טרמינל מסחר — CYBERPUNK : neon cyan/magenta, scanlines, hard glow ----- */
+html[data-cx-section="1"]{
+  --gold:#00F0FF;--gold-bright:#8BFEFF;--gold-deep:#00AEBB;--gold-text:#9DFBFF;
+  --gold-wash:rgba(0,240,255,.08);--gold-line:rgba(0,240,255,.34);
+  --glow:0 0 0 1px rgba(0,240,255,.4),0 0 26px -2px rgba(0,240,255,.5);
+}
+html[data-cx-section="1"] body::before{filter:saturate(1.25) brightness(.58) hue-rotate(-14deg);}
+html[data-cx-section="1"] §CARDS§{
+  background:linear-gradient(180deg,rgba(4,10,20,.62),rgba(6,14,26,.5))!important;
+  border:1px solid rgba(0,240,255,.32)!important;border-radius:3px!important;
+  box-shadow:0 0 0 1px rgba(0,240,255,.12),0 0 34px -10px rgba(0,240,255,.45),inset 0 0 24px -14px rgba(255,0,200,.55)!important;
+}
+html[data-cx-section="1"] §CARDS§::before{display:none!important;}
+html[data-cx-section="1"] §CARDS§::after{
+  display:block!important;content:""!important;padding:0!important;
+  background:repeating-linear-gradient(0deg,rgba(0,240,255,.055) 0 1px,transparent 1px 3px)!important;
+  -webkit-mask:none!important;mask:none!important;mix-blend-mode:screen!important;opacity:.7;
+}
+html[data-cx-section="1"] §HEADS§{font-family:'Orbitron',var(--sans)!important;text-transform:uppercase!important;letter-spacing:.04em!important;font-weight:700!important;}
+html[data-cx-section="1"] .cx-hero-title{color:#CFFEFF!important;-webkit-text-fill-color:#CFFEFF!important;text-shadow:0 0 22px rgba(0,240,255,.6),2px 0 3px rgba(255,0,200,.5)!important;}
+html[data-cx-section="1"] §MV§{font-family:var(--mono)!important;color:#8BFEFF!important;-webkit-text-fill-color:#8BFEFF!important;text-shadow:0 0 14px rgba(0,240,255,.55)!important;}
+html[data-cx-section="1"] §ML§{color:#5FD8E4!important;}
+
+/* 2 · מחשבון הסתברויות — NEUMORPHISM : soft extruded, dual shadow, no border  */
+html[data-cx-section="2"]{
+  --gold:#9AA7D4;--gold-bright:#C2CBEC;--gold-deep:#6D7AA6;--gold-text:#C8CFEC;
+  --gold-wash:rgba(154,167,212,.10);--gold-line:rgba(154,167,212,.24);
+  --glow:0 0 0 1px rgba(154,167,212,.24);
+}
+html[data-cx-section="2"] body::before{filter:saturate(.6) brightness(.48);}
+html[data-cx-section="2"] .stApp::after{opacity:.28;}
+html[data-cx-section="2"] §CARDS§{
+  background:#191A2E!important;border:1px solid rgba(255,255,255,.03)!important;border-radius:22px!important;
+  backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
+  box-shadow:-8px -8px 20px rgba(255,255,255,.035),10px 10px 26px rgba(0,0,0,.55)!important;
+}
+html[data-cx-section="2"] §CARDS§::before,html[data-cx-section="2"] §CARDS§::after{display:none!important;}
+html[data-cx-section="2"] §CARDS§:hover{box-shadow:-4px -4px 12px rgba(255,255,255,.03),5px 5px 14px rgba(0,0,0,.5)!important;transform:none!important;}
+html[data-cx-section="2"] §HEADS§{font-family:var(--sans)!important;font-weight:600!important;color:#D6DAF0!important;}
+html[data-cx-section="2"] .cx-hero-title{color:#D9DDF2!important;-webkit-text-fill-color:#D9DDF2!important;text-shadow:-3px -3px 8px rgba(255,255,255,.04),4px 4px 12px rgba(0,0,0,.5)!important;}
+html[data-cx-section="2"] §MV§{color:#D6DAF0!important;-webkit-text-fill-color:#D6DAF0!important;}
+html[data-cx-section="2"] [data-baseweb="slider"] [role="slider"]{box-shadow:-3px -3px 8px rgba(255,255,255,.04),4px 4px 10px rgba(0,0,0,.5)!important;}
+
+/* 3 · אבחון סטטיסטי — EDITORIAL : serif, rules not boxes, long measure ------ */
+html[data-cx-section="3"]{
+  --gold:#D8C6A0;--gold-bright:#F1E6CB;--gold-deep:#A88E5E;--gold-text:#E7DAC0;
+  --gold-wash:rgba(216,198,160,.08);--gold-line:rgba(216,198,160,.28);
+  --glow:0 0 0 1px rgba(216,198,160,.28);
+}
+html[data-cx-section="3"] body::before{filter:saturate(.7) brightness(.52) sepia(.14);}
+html[data-cx-section="3"] §CARDS§{
+  background:rgba(255,255,255,.016)!important;border:0!important;
+  border-top:1px solid rgba(216,198,160,.32)!important;border-bottom:1px solid rgba(216,198,160,.14)!important;
+  border-radius:0!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;box-shadow:none!important;
+}
+html[data-cx-section="3"] §CARDS§::before,html[data-cx-section="3"] §CARDS§::after{display:none!important;}
+html[data-cx-section="3"] §HEADS§{font-family:'Playfair Display',var(--display)!important;font-weight:800!important;letter-spacing:-.015em!important;}
+html[data-cx-section="3"] [data-testid="stMain"] h2{border-bottom:1px solid rgba(216,198,160,.24);padding-bottom:.3rem;}
+html[data-cx-section="3"] .cx-hero-title{font-style:italic!important;font-weight:700!important;color:#F4ECDA!important;-webkit-text-fill-color:#F4ECDA!important;text-shadow:none!important;}
+html[data-cx-section="3"] [data-testid="stMain"] [data-testid="stMarkdownContainer"] p{font-family:'Frank Ruhl Libre','Playfair Display',Georgia,serif!important;font-size:1.02rem!important;line-height:1.75!important;color:#D6D2C4!important;}
+html[data-cx-section="3"] §MV§{font-family:'Playfair Display',var(--display)!important;font-weight:700!important;}
+
+/* 5 · Monte Carlo — Y2K : chrome, iridescent conic rim, holo gradient text -- */
+html[data-cx-section="5"]{
+  --gold:#C6B4FF;--gold-bright:#E9DEFF;--gold-deep:#8E79DE;--gold-text:#E4DAFF;
+  --gold-wash:rgba(198,180,255,.12);--gold-line:rgba(198,180,255,.34);
+  --glow:0 0 0 1px rgba(255,255,255,.18),0 0 24px -4px rgba(150,120,255,.5);
+}
+html[data-cx-section="5"] body::before{filter:saturate(1.15) brightness(.6) hue-rotate(8deg);}
+html[data-cx-section="5"] §CARDS§{
+  background:linear-gradient(160deg,rgba(255,255,255,.16),rgba(200,190,255,.06) 45%,rgba(120,200,255,.1))!important;
+  border:1px solid transparent!important;border-radius:22px!important;
+  box-shadow:0 0 0 1.5px rgba(255,255,255,.18),0 20px 50px -18px rgba(150,120,255,.5),inset 0 2px 8px rgba(255,255,255,.4)!important;
+}
+html[data-cx-section="5"] §CARDS§::before{display:none!important;}
+html[data-cx-section="5"] §CARDS§::after{
+  display:block!important;content:""!important;padding:1.6px!important;mix-blend-mode:normal!important;opacity:.9;
+  background:conic-gradient(from 0deg,#88CCFF,#C9B4FF,#FFB3E6,#9BE8FF,#88CCFF)!important;
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0)!important;
+  mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0)!important;
+  -webkit-mask-composite:xor!important;mask-composite:exclude!important;
+}
+html[data-cx-section="5"] §HEADS§{font-family:'Orbitron',var(--sans)!important;font-weight:700!important;letter-spacing:.01em!important;}
+html[data-cx-section="5"] .cx-hero-title::before,html[data-cx-section="5"] .cx-hero-title::after{display:none!important;}
+html[data-cx-section="5"] .cx-hero-title{
+  background:linear-gradient(180deg,#fff,#C9B4FF 58%,#8AD4FF)!important;-webkit-background-clip:text!important;
+  background-clip:text!important;-webkit-text-fill-color:transparent!important;color:transparent!important;
+  text-shadow:0 6px 30px rgba(150,120,255,.5)!important;
+}
+html[data-cx-section="5"] §MV§{
+  background:linear-gradient(180deg,#fff,#C9B4FF)!important;-webkit-background-clip:text!important;
+  background-clip:text!important;-webkit-text-fill-color:transparent!important;
+}
+
+/* 6 · מבנים מתמטיים — NEO-BRUTALISM : raw, 2px borders, hard offset shadow -- */
+html[data-cx-section="6"]{
+  --gold:#C9FF3D;--gold-bright:#E3FF8A;--gold-deep:#9BD400;--gold-text:#DBFF7A;
+  --gold-wash:rgba(201,255,61,.12);--gold-line:rgba(201,255,61,.5);
+  --glow:0 0 0 2px #C9FF3D;
+}
+html[data-cx-section="6"] body::before{filter:saturate(.95) brightness(.46) contrast(1.12);}
+html[data-cx-section="6"] .stApp::after{opacity:.42;}
+html[data-cx-section="6"] §CARDS§{
+  background:#0C0C12!important;border:2px solid #F4F4F8!important;border-radius:0!important;
+  backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
+  box-shadow:6px 6px 0 0 #C9FF3D,11px 11px 0 0 rgba(0,0,0,.6)!important;
+}
+html[data-cx-section="6"] §CARDS§::before,html[data-cx-section="6"] §CARDS§::after{display:none!important;}
+html[data-cx-section="6"] §CARDS§:hover{transform:translate(-2px,-2px)!important;box-shadow:8px 8px 0 0 #C9FF3D,14px 14px 0 0 rgba(0,0,0,.6)!important;}
+html[data-cx-section="6"] §HEADS§{font-family:'Archivo Black',var(--sans)!important;text-transform:uppercase!important;letter-spacing:-.01em!important;font-weight:400!important;color:#F4F4F8!important;}
+html[data-cx-section="6"] .cx-hero-title{color:#F4F4F8!important;-webkit-text-fill-color:#F4F4F8!important;text-shadow:4px 4px 0 #C9FF3D!important;}
+html[data-cx-section="6"] .cx-hero-ghost{-webkit-text-stroke:2px rgba(201,255,61,.28)!important;opacity:1;}
+html[data-cx-section="6"] §MV§{font-family:'Archivo Black',var(--mono)!important;color:#F4F4F8!important;-webkit-text-fill-color:#F4F4F8!important;}
+html[data-cx-section="6"] §ML§{color:#C9FF3D!important;text-transform:uppercase!important;}
+
+/* 7 · מחזור ביטקוין → MSTR — MAXIMALISM : layered orange/magenta, saturated - */
+html[data-cx-section="7"]{
+  --gold:#F7931A;--gold-bright:#FFC061;--gold-deep:#C46F00;--gold-text:#FFB454;
+  --gold-wash:rgba(247,147,26,.14);--gold-line:rgba(247,147,26,.4);
+  --glow:0 0 0 1px rgba(255,180,84,.35),0 0 30px -4px rgba(247,147,26,.5);
+}
+html[data-cx-section="7"] body::before{filter:saturate(1.35) brightness(.62) contrast(1.05) hue-rotate(-8deg);}
+html[data-cx-section="7"] .stApp::after{opacity:.6;}
+html[data-cx-section="7"] §CARDS§{
+  background:
+    radial-gradient(120% 140% at 0% 0%,rgba(247,147,26,.22),transparent 55%),
+    radial-gradient(120% 140% at 100% 100%,rgba(255,61,166,.18),transparent 55%),
+    linear-gradient(180deg,rgba(30,16,4,.6),rgba(20,10,26,.55))!important;
+  border:1px solid rgba(247,147,26,.42)!important;border-radius:16px!important;
+  box-shadow:0 0 0 1px rgba(255,180,84,.2),0 0 40px -8px rgba(247,147,26,.5),0 26px 60px -20px rgba(0,0,0,.7),inset 0 1px 0 rgba(255,220,180,.35)!important;
+}
+html[data-cx-section="7"] §CARDS§::before{display:none!important;}
+html[data-cx-section="7"] §HEADS§{font-family:'Playfair Display',var(--display)!important;font-weight:900!important;letter-spacing:-.02em!important;}
+html[data-cx-section="7"] .cx-hero-title::before,html[data-cx-section="7"] .cx-hero-title::after{display:none!important;}
+html[data-cx-section="7"] .cx-hero-title{
+  background:linear-gradient(92deg,#FFD9A8,#F7931A 45%,#FF3DA6)!important;-webkit-background-clip:text!important;
+  background-clip:text!important;-webkit-text-fill-color:transparent!important;color:transparent!important;
+  text-shadow:0 8px 40px rgba(247,147,26,.55)!important;
+}
+html[data-cx-section="7"] §MV§{color:#FFC061!important;-webkit-text-fill-color:#FFC061!important;text-shadow:0 0 20px rgba(247,147,26,.4)!important;}
+html[data-cx-section="7"] §ML§{color:#FFB454!important;}
+
+/* 8 · ראיות Walk-Forward — MATERIAL : tonal surface, crisp elevation, calm -- */
+html[data-cx-section="8"]{
+  --gold:#7C9EFF;--gold-bright:#A9C1FF;--gold-deep:#4E6FD8;--gold-text:#AFC4FF;
+  --gold-wash:rgba(124,158,255,.10);--gold-line:rgba(124,158,255,.3);
+  --glow:0 0 0 1px rgba(124,158,255,.3);
+}
+html[data-cx-section="8"] body::before{filter:saturate(.85) brightness(.5);}
+html[data-cx-section="8"] .stApp::after{opacity:.28;}
+html[data-cx-section="8"] §CARDS§{
+  background:#1B1E30!important;border:1px solid rgba(255,255,255,.05)!important;border-radius:12px!important;
+  backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
+  box-shadow:0 1px 2px rgba(0,0,0,.5),0 8px 18px -6px rgba(0,0,0,.5)!important;
+}
+html[data-cx-section="8"] §CARDS§::before,html[data-cx-section="8"] §CARDS§::after{display:none!important;}
+html[data-cx-section="8"] §CARDS§:hover{box-shadow:0 2px 4px rgba(0,0,0,.5),0 14px 30px -8px rgba(0,0,0,.6)!important;transform:translateY(-1px)!important;}
+html[data-cx-section="8"] §HEADS§{font-family:var(--sans)!important;font-weight:600!important;letter-spacing:0!important;}
+html[data-cx-section="8"] .cx-hero-title{font-weight:700!important;color:#EEF1FF!important;-webkit-text-fill-color:#EEF1FF!important;text-shadow:none!important;}
+html[data-cx-section="8"] §MV§{font-family:var(--sans)!important;font-weight:600!important;}
+
+/* 9 · סיכון ומינוף — CLAYMORPHISM : puffy tactile clay, deep soft shadow ---- */
+html[data-cx-section="9"]{
+  --gold:#FF8FA3;--gold-bright:#FFB3C1;--gold-deep:#D65E76;--gold-text:#FFB0BE;
+  --gold-wash:rgba(255,143,163,.12);--gold-line:rgba(255,143,163,.34);
+  --glow:0 0 0 1px rgba(255,143,163,.34);
+}
+html[data-cx-section="9"] body::before{filter:saturate(1.1) brightness(.56) hue-rotate(-6deg);}
+html[data-cx-section="9"] §CARDS§{
+  background:#26202E!important;border:0!important;border-radius:26px!important;
+  backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
+  box-shadow:0 18px 40px -12px rgba(0,0,0,.6),inset 6px 6px 14px rgba(255,255,255,.06),inset -8px -10px 20px rgba(0,0,0,.5)!important;
+}
+html[data-cx-section="9"] §CARDS§::before,html[data-cx-section="9"] §CARDS§::after{display:none!important;}
+html[data-cx-section="9"] §HEADS§{font-family:'Space Grotesk',var(--sans)!important;font-weight:700!important;color:#FDE9EC!important;}
+html[data-cx-section="9"] .cx-hero-title{color:#FFE7EC!important;-webkit-text-fill-color:#FFE7EC!important;text-shadow:0 6px 16px rgba(0,0,0,.4)!important;}
+html[data-cx-section="9"] §MV§{color:#FFB3C1!important;-webkit-text-fill-color:#FFB3C1!important;}
+html[data-cx-section="9"] [data-testid="stMain"] .stButton>button{border-radius:16px!important;box-shadow:0 8px 18px -6px rgba(0,0,0,.5),inset 3px 3px 8px rgba(255,255,255,.08),inset -4px -5px 10px rgba(0,0,0,.4)!important;}
+
+/* 10 · הגדרות — SKEUOMORPHISM : brushed metal, bevel, physical depth -------- */
+html[data-cx-section="10"]{
+  --gold:#BFC5D0;--gold-bright:#E0E4EC;--gold-deep:#8C92A0;--gold-text:#D8DCE6;
+  --gold-wash:rgba(191,197,208,.10);--gold-line:rgba(191,197,208,.3);
+  --glow:0 0 0 1px rgba(191,197,208,.3);
+}
+html[data-cx-section="10"] body::before{filter:saturate(.5) brightness(.46);}
+html[data-cx-section="10"] §CARDS§{
+  background:linear-gradient(180deg,#2B2E3A 0%,#1E212B 48%,#191C25 52%,#20232E 100%)!important;
+  border:1px solid #3A3E4C!important;border-top-color:#4C5160!important;border-radius:10px!important;
+  backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.12),inset 0 -1px 0 rgba(0,0,0,.5),0 2px 3px rgba(0,0,0,.4),0 14px 30px -14px rgba(0,0,0,.6)!important;
+}
+html[data-cx-section="10"] §CARDS§::before,html[data-cx-section="10"] §CARDS§::after{display:none!important;}
+html[data-cx-section="10"] §HEADS§{font-family:var(--sans)!important;font-weight:700!important;color:#E7EAF2!important;text-shadow:0 1px 0 rgba(0,0,0,.5)!important;}
+html[data-cx-section="10"] .cx-hero-title{color:#EDEFF5!important;-webkit-text-fill-color:#EDEFF5!important;text-shadow:0 1px 0 rgba(0,0,0,.6),0 2px 6px rgba(0,0,0,.4)!important;}
+html[data-cx-section="10"] §MV§{color:#E0E4EC!important;-webkit-text-fill-color:#E0E4EC!important;text-shadow:0 1px 0 rgba(0,0,0,.5)!important;}
+html[data-cx-section="10"] [data-baseweb="slider"] [data-testid="stSliderTrack"]{box-shadow:inset 0 1px 3px rgba(0,0,0,.6)!important;}
+"""
+
+
+def _section_themes() -> str:
+    return (
+        _SECTION_THEMES_RAW
+        .replace("§CARDS§", _C)
+        .replace("§HEADS§", _H)
+        .replace("§MV§", _MV)
+        .replace("§ML§", _ML)
+    )
+
+
 def _css() -> str:
     return f"""
 <style>
@@ -284,18 +542,18 @@ body::before {{
   content: ""; position: fixed; inset: -16vmax; z-index: 0; pointer-events: none;
   background:
     radial-gradient(52vmax 48vmax at calc(16% + var(--cx-amx,0px)) calc(10% + var(--cx-amy,0px)),
-      rgba(59,107,255,0.55) 0%, rgba(59,107,255,0) 56%),
+      rgba(59,107,255,0.13) 0%, rgba(59,107,255,0) 56%),
     radial-gradient(58vmax 54vmax at calc(88% - var(--cx-amx,0px)) 16%,
-      rgba(155,77,255,0.55) 0%, rgba(155,77,255,0) 54%),
+      rgba(140,77,255,0.13) 0%, rgba(140,77,255,0) 54%),
     radial-gradient(64vmax 58vmax at 44% calc(104% + var(--cx-amy,0px)),
-      rgba(45,224,240,0.40) 0%, rgba(45,224,240,0) 56%),
+      rgba(45,224,240,0.09) 0%, rgba(45,224,240,0) 56%),
     radial-gradient(46vmax 42vmax at calc(78% + var(--cx-amx,0px)) 92%,
-      rgba(255,61,166,0.42) 0%, rgba(255,61,166,0) 56%),
+      rgba(255,61,166,0.09) 0%, rgba(255,61,166,0) 56%),
     radial-gradient(40vmax 36vmax at 4% 62%,
-      rgba(108,140,255,0.34) 0%, rgba(108,140,255,0) 58%),
-    radial-gradient(120vmax 110vmax at 50% 46%,
-      rgba(11,10,30,0) 34%, rgba(6,5,18,0.72) 100%);
-  filter: saturate(1.35) brightness(1.05) contrast(1.04);
+      rgba(108,140,255,0.08) 0%, rgba(108,140,255,0) 58%),
+    radial-gradient(120vmax 120vmax at 50% 42%,
+      rgba(8,7,15,0) 16%, rgba(4,3,9,0.94) 100%);
+  filter: saturate(1.0) brightness(0.6) contrast(1.01);
   transition: filter 1.1s ease;
   animation: cx-aurora 32s ease-in-out infinite alternate, cx-aura-hue 44s linear infinite;
   will-change: transform, filter;
@@ -304,10 +562,10 @@ body::before {{
   content: ""; position: fixed; inset: -10vmax; z-index: 0; pointer-events: none;
   background:
     linear-gradient(118deg,
-      rgba(200,220,255,0) 34%, rgba(200,220,255,0.16) 46%,
-      rgba(255,255,255,0.32) 50%, rgba(200,220,255,0.10) 55%, rgba(200,220,255,0) 64%),
-    radial-gradient(30vmax 26vmax at 66% 30%, rgba(120,180,255,0.28) 0%, rgba(120,180,255,0) 56%),
-    radial-gradient(24vmax 22vmax at 26% 74%, rgba(255,110,199,0.20) 0%, rgba(255,110,199,0) 60%);
+      rgba(200,220,255,0) 38%, rgba(200,220,255,0.045) 47%,
+      rgba(255,255,255,0.08) 50%, rgba(200,220,255,0.035) 54%, rgba(200,220,255,0) 62%),
+    radial-gradient(30vmax 26vmax at 66% 30%, rgba(120,180,255,0.09) 0%, rgba(120,180,255,0) 56%),
+    radial-gradient(24vmax 22vmax at 26% 74%, rgba(255,110,199,0.06) 0%, rgba(255,110,199,0) 60%);
   transform: translate3d(calc(var(--cx-mx,0px) * 1.7), calc(var(--cx-plate,0px) + var(--cx-my,0px) * 1.7), 0)
              rotate(var(--cx-rot,0deg)) scale(calc(1.06 * var(--cx-kick,1)));
   filter: blur(3px);
@@ -322,7 +580,7 @@ html.cx-js.cx-kick .stApp::before {{ animation: cx-plate-kick .62s cubic-bezier(
     radial-gradient(150% 130% at 50% 0%, rgba(6,5,18,0) 46%, rgba(4,3,14,0.7) 100%);
   background-size: 150px 150px, cover;
 }}
-.stApp::after {{ opacity: .5; }}
+.stApp::after {{ opacity: .38; }}
 
 
 /* section-change sweep -- an electric prism edge */
@@ -967,6 +1225,9 @@ div[data-testid="stVerticalBlockBorderWrapper"],
   [data-testid="stMetric"]::before, div[data-testid="stVerticalBlockBorderWrapper"]::before,
   [data-testid="stForm"]::before, [data-testid="stExpander"]::before {{ background: rgba(20,18,42,0.7); }}
 }}
+
+/* ====================== per-section design languages ====================== */
+{_section_themes()}
 </style>
 """
 

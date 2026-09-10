@@ -5,8 +5,8 @@
 [theme]
 base = "dark"
 primaryColor = "#9B8CFF"
-backgroundColor = "#0B0A1E"
-secondaryBackgroundColor = "#14122B"
+backgroundColor = "#08070F"
+secondaryBackgroundColor = "#0E0D1C"
 textColor = "#F2F1FA"
 linkColor = "#C9BEFF"
 borderColor = "#2C2A44"
