@@ -5,11 +5,11 @@
 [theme]
 base = "dark"
 primaryColor = "#9B8CFF"
-backgroundColor = "#08070F"
-secondaryBackgroundColor = "#0E0D1C"
+backgroundColor = "#0A0A0B"
+secondaryBackgroundColor = "#141416"
 textColor = "#F2F1FA"
 linkColor = "#C9BEFF"
-borderColor = "#2C2A44"
+borderColor = "#2A2A2E"
 showWidgetBorder = true
 baseRadius = "0.9rem"
 baseFontSize = 15
@@ -24,6 +24,6 @@ chartCategoricalColors = [
 ]
 
 [theme.sidebar]
-backgroundColor = "#0A0818"
-secondaryBackgroundColor = "#14122B"
-borderColor = "#242238"
+backgroundColor = "#0B0B0C"
+secondaryBackgroundColor = "#161617"
+borderColor = "#242426"

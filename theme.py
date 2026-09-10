@@ -33,11 +33,11 @@ import streamlit as st
 # WHITE panels; one indigo accent; the Bitcoin roundel at the nav hub.
 # "liquid glass" -- deep electric ground, near-clear glass that refracts it,
 # bright specular rims.  (var names still INK*/GOLD* -- values only.)
-INK = "#08070F"          # deep near-black ground (dimmed -- easy on the eye)
-INK_EDGE = "#040308"     # deepest
+INK = "#0A0A0B"          # neutral near-black ground (no colour)
+INK_EDGE = "#050505"     # deepest
 PANEL = "rgba(255,255,255,0.085)"  # a thin sheet of glass
 PANEL_HI = "rgba(255,255,255,0.14)"
-SUNK = "rgba(8,6,22,0.42)"         # sunk well / code
+SUNK = "rgba(6,6,8,0.42)"         # sunk well / code
 LINE = "rgba(255,255,255,0.16)"    # the lit glass rim
 LINE_SOFT = "rgba(255,255,255,0.08)"
 
@@ -284,7 +284,6 @@ html[data-cx-section="0"]{
   --gold-wash:rgba(255,255,255,.04);--gold-line:rgba(255,255,255,.12);
   --glow:0 0 0 1px rgba(255,255,255,.14);
 }
-html[data-cx-section="0"] body::before{filter:saturate(.5) brightness(.52) contrast(1);}
 html[data-cx-section="0"] .stApp::after{opacity:.2;}
 html[data-cx-section="0"] §CARDS§{
   background:rgba(255,255,255,.025)!important;border:1px solid rgba(255,255,255,.10)!important;
@@ -303,7 +302,6 @@ html[data-cx-section="1"]{
   --gold-wash:rgba(0,240,255,.08);--gold-line:rgba(0,240,255,.34);
   --glow:0 0 0 1px rgba(0,240,255,.4),0 0 26px -2px rgba(0,240,255,.5);
 }
-html[data-cx-section="1"] body::before{filter:saturate(1.25) brightness(.58) hue-rotate(-14deg);}
 html[data-cx-section="1"] §CARDS§{
   background:linear-gradient(180deg,rgba(4,10,20,.62),rgba(6,14,26,.5))!important;
   border:1px solid rgba(0,240,255,.32)!important;border-radius:3px!important;
@@ -326,10 +324,9 @@ html[data-cx-section="2"]{
   --gold-wash:rgba(154,167,212,.10);--gold-line:rgba(154,167,212,.24);
   --glow:0 0 0 1px rgba(154,167,212,.24);
 }
-html[data-cx-section="2"] body::before{filter:saturate(.6) brightness(.48);}
 html[data-cx-section="2"] .stApp::after{opacity:.28;}
 html[data-cx-section="2"] §CARDS§{
-  background:#191A2E!important;border:1px solid rgba(255,255,255,.03)!important;border-radius:22px!important;
+  background:#1B1B1D!important;border:1px solid rgba(255,255,255,.03)!important;border-radius:22px!important;
   backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
   box-shadow:-8px -8px 20px rgba(255,255,255,.035),10px 10px 26px rgba(0,0,0,.55)!important;
 }
@@ -346,7 +343,6 @@ html[data-cx-section="3"]{
   --gold-wash:rgba(216,198,160,.08);--gold-line:rgba(216,198,160,.28);
   --glow:0 0 0 1px rgba(216,198,160,.28);
 }
-html[data-cx-section="3"] body::before{filter:saturate(.7) brightness(.52) sepia(.14);}
 html[data-cx-section="3"] §CARDS§{
   background:rgba(255,255,255,.016)!important;border:0!important;
   border-top:1px solid rgba(216,198,160,.32)!important;border-bottom:1px solid rgba(216,198,160,.14)!important;
@@ -365,7 +361,6 @@ html[data-cx-section="5"]{
   --gold-wash:rgba(198,180,255,.12);--gold-line:rgba(198,180,255,.34);
   --glow:0 0 0 1px rgba(255,255,255,.18),0 0 24px -4px rgba(150,120,255,.5);
 }
-html[data-cx-section="5"] body::before{filter:saturate(1.15) brightness(.6) hue-rotate(8deg);}
 html[data-cx-section="5"] §CARDS§{
   background:linear-gradient(160deg,rgba(255,255,255,.16),rgba(200,190,255,.06) 45%,rgba(120,200,255,.1))!important;
   border:1px solid transparent!important;border-radius:22px!important;
@@ -397,7 +392,6 @@ html[data-cx-section="6"]{
   --gold-wash:rgba(201,255,61,.12);--gold-line:rgba(201,255,61,.5);
   --glow:0 0 0 2px #C9FF3D;
 }
-html[data-cx-section="6"] body::before{filter:saturate(.95) brightness(.46) contrast(1.12);}
 html[data-cx-section="6"] .stApp::after{opacity:.42;}
 html[data-cx-section="6"] §CARDS§{
   background:#0C0C12!important;border:2px solid #F4F4F8!important;border-radius:0!important;
@@ -418,7 +412,6 @@ html[data-cx-section="7"]{
   --gold-wash:rgba(247,147,26,.14);--gold-line:rgba(247,147,26,.4);
   --glow:0 0 0 1px rgba(255,180,84,.35),0 0 30px -4px rgba(247,147,26,.5);
 }
-html[data-cx-section="7"] body::before{filter:saturate(1.35) brightness(.62) contrast(1.05) hue-rotate(-8deg);}
 html[data-cx-section="7"] .stApp::after{opacity:.6;}
 html[data-cx-section="7"] §CARDS§{
   background:
@@ -445,10 +438,9 @@ html[data-cx-section="8"]{
   --gold-wash:rgba(124,158,255,.10);--gold-line:rgba(124,158,255,.3);
   --glow:0 0 0 1px rgba(124,158,255,.3);
 }
-html[data-cx-section="8"] body::before{filter:saturate(.85) brightness(.5);}
 html[data-cx-section="8"] .stApp::after{opacity:.28;}
 html[data-cx-section="8"] §CARDS§{
-  background:#1B1E30!important;border:1px solid rgba(255,255,255,.05)!important;border-radius:12px!important;
+  background:#1C1C1F!important;border:1px solid rgba(255,255,255,.05)!important;border-radius:12px!important;
   backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
   box-shadow:0 1px 2px rgba(0,0,0,.5),0 8px 18px -6px rgba(0,0,0,.5)!important;
 }
@@ -464,7 +456,6 @@ html[data-cx-section="9"]{
   --gold-wash:rgba(255,143,163,.12);--gold-line:rgba(255,143,163,.34);
   --glow:0 0 0 1px rgba(255,143,163,.34);
 }
-html[data-cx-section="9"] body::before{filter:saturate(1.1) brightness(.56) hue-rotate(-6deg);}
 html[data-cx-section="9"] §CARDS§{
   background:#26202E!important;border:0!important;border-radius:26px!important;
   backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
@@ -482,10 +473,9 @@ html[data-cx-section="10"]{
   --gold-wash:rgba(191,197,208,.10);--gold-line:rgba(191,197,208,.3);
   --glow:0 0 0 1px rgba(191,197,208,.3);
 }
-html[data-cx-section="10"] body::before{filter:saturate(.5) brightness(.46);}
 html[data-cx-section="10"] §CARDS§{
-  background:linear-gradient(180deg,#2B2E3A 0%,#1E212B 48%,#191C25 52%,#20232E 100%)!important;
-  border:1px solid #3A3E4C!important;border-top-color:#4C5160!important;border-radius:10px!important;
+  background:linear-gradient(180deg,#2C2C2F 0%,#202023 48%,#1A1A1C 52%,#212124 100%)!important;
+  border:1px solid #3C3C40!important;border-top-color:#4E4E54!important;border-radius:10px!important;
   backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
   box-shadow:inset 0 1px 0 rgba(255,255,255,.12),inset 0 -1px 0 rgba(0,0,0,.5),0 2px 3px rgba(0,0,0,.4),0 14px 30px -14px rgba(0,0,0,.6)!important;
 }
@@ -536,40 +526,29 @@ html, body, [class*="stApp"] {{ font-family: var(--sans); }}
 html, body {{ background: {INK}; }}
 .stApp {{ background: transparent; color: var(--text); }}
 
-/* One promoted, static gradient layer that drifts forever on the compositor
-   (transform-only animation -- never repaints).  No pointer-driven repaint. */
+/* Neutral near-black ground -- NO colour.  Just a soft depth vignette. */
 body::before {{
   content: ""; position: fixed; inset: -16vmax; z-index: 0; pointer-events: none;
   background:
-    radial-gradient(52vmax 48vmax at 16% 10%,  rgba(59,107,255,0.13) 0%, rgba(59,107,255,0) 56%),
-    radial-gradient(58vmax 54vmax at 88% 16%,  rgba(140,77,255,0.13) 0%, rgba(140,77,255,0) 54%),
-    radial-gradient(64vmax 58vmax at 44% 104%, rgba(45,224,240,0.09) 0%, rgba(45,224,240,0) 56%),
-    radial-gradient(46vmax 42vmax at 78% 92%,  rgba(255,61,166,0.09) 0%, rgba(255,61,166,0) 56%),
-    radial-gradient(40vmax 36vmax at 4% 62%,   rgba(108,140,255,0.08) 0%, rgba(108,140,255,0) 58%),
-    radial-gradient(120vmax 120vmax at 50% 42%, rgba(8,7,15,0) 16%, rgba(4,3,9,0.94) 100%);
-  filter: saturate(1.0) brightness(0.6) contrast(1.01);
-  transition: filter .6s ease;
-  animation: cx-aurora 40s ease-in-out infinite alternate;
-  transform: translateZ(0); will-change: transform; backface-visibility: hidden;
+    radial-gradient(130vmax 120vmax at 50% 38%, rgba(0,0,0,0) 26%, rgba(0,0,0,0.55) 100%);
+  transform: translateZ(0); backface-visibility: hidden;
 }}
-/* the pointer/scroll parallax veil -- transform-only, own layer, no blur/filter */
+/* the pointer/scroll parallax veil -- a whisper of neutral light, transform-only */
 .stApp::before {{
   content: ""; position: fixed; inset: -10vmax; z-index: 0; pointer-events: none;
   background:
     linear-gradient(118deg,
-      rgba(200,220,255,0) 38%, rgba(200,220,255,0.04) 47%,
-      rgba(255,255,255,0.07) 50%, rgba(200,220,255,0.03) 54%, rgba(200,220,255,0) 62%),
-    radial-gradient(30vmax 26vmax at 66% 30%, rgba(120,180,255,0.08) 0%, rgba(120,180,255,0) 56%),
-    radial-gradient(24vmax 22vmax at 26% 74%, rgba(255,110,199,0.05) 0%, rgba(255,110,199,0) 60%);
+      rgba(255,255,255,0) 40%, rgba(255,255,255,0.025) 49%,
+      rgba(255,255,255,0.045) 50%, rgba(255,255,255,0.02) 51%, rgba(255,255,255,0) 60%);
   transform: translate3d(calc(var(--cx-mx,0px) * 1.4), calc(var(--cx-plate,0px) + var(--cx-my,0px) * 1.4), 0) scale(1.06);
   transition: transform .2s cubic-bezier(.2,.8,.2,1);
   will-change: transform; backface-visibility: hidden;
 }}
 .stApp::after {{
-  content: ""; position: fixed; inset: 0; z-index: 0; pointer-events: none; opacity: .34;
+  content: ""; position: fixed; inset: 0; z-index: 0; pointer-events: none; opacity: .3;
   background:
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E"),
-    radial-gradient(150% 130% at 50% 0%, rgba(6,5,18,0) 46%, rgba(4,3,14,0.7) 100%);
+    radial-gradient(150% 130% at 50% 0%, rgba(0,0,0,0) 46%, rgba(0,0,0,0.65) 100%);
   background-size: 150px 150px, cover;
   transform: translateZ(0); backface-visibility: hidden;
 }}
@@ -580,26 +559,19 @@ body::before {{
   position: fixed; inset: 0 -46vw; z-index: 6; pointer-events: none;
   opacity: 0; transform: translateX(-125%) skewX(-15deg);
   background: linear-gradient(90deg,
-    rgba(155,140,255,0) 0%, rgba(77,227,240,0.22) 30%,
-    rgba(255,255,255,0.7) 46%, rgba(255,255,255,0.95) 50%,
-    rgba(255,255,255,0.7) 54%, rgba(255,110,199,0.22) 70%, rgba(155,140,255,0) 100%);
-  box-shadow: 0 0 100px 16px rgba(155,140,255,0.35);
+    rgba(255,255,255,0) 0%, rgba(255,255,255,0.28) 34%,
+    rgba(255,255,255,0.72) 46%, rgba(255,255,255,0.96) 50%,
+    rgba(255,255,255,0.72) 54%, rgba(255,255,255,0.28) 66%, rgba(255,255,255,0) 100%);
+  box-shadow: 0 0 100px 16px rgba(255,255,255,0.18);
 }}
 .cx-wipe.run {{ animation: cx-wipe .8s cubic-bezier(.62,0,.28,1); }}
 .cx-flash {{
   position: fixed; inset: 0; z-index: 5; pointer-events: none; opacity: 0;
   background: radial-gradient(120% 120% at 50% 30%,
-    hsla(calc(244deg + var(--cx-hue,0deg)), 75%, 66%, 0.12) 0%,
-    hsla(calc(244deg + var(--cx-hue,0deg)), 75%, 60%, 0) 62%);
+    rgba(255,255,255,0.07) 0%, rgba(255,255,255,0) 62%);
 }}
 .cx-flash.run {{ animation: cx-flash .7s ease-out; }}
 
-@keyframes cx-aurora {{
-  0%   {{ transform: translate3d(0,0,0) scale(1) rotate(0deg); }}
-  33%  {{ transform: translate3d(5vmax,-4vmax,0) scale(1.1) rotate(3deg); }}
-  66%  {{ transform: translate3d(-3vmax,4vmax,0) scale(1.16) rotate(-2.6deg); }}
-  100% {{ transform: translate3d(-5vmax,-2vmax,0) scale(1.08) rotate(1.8deg); }}
-}}
 @keyframes cx-wipe {{
   0%   {{ opacity: 0; transform: translateX(-125%) skewX(-15deg); }}
   18%  {{ opacity: 1; }}
@@ -618,7 +590,7 @@ body::before {{
 [data-testid="stAppDeployButton"], [data-testid="stDeployButton"] {{ display: none !important; }}
 [data-testid="stMain"] .block-container {{ padding-top: 1.1rem; max-width: 1180px; }}
 [data-testid="stSidebarCollapsedControl"] {{ opacity: .5; }}
-[data-testid="stSidebar"] {{ background: rgba(8,8,18,0.92); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); border-right: 1px solid var(--line-soft); }}
+[data-testid="stSidebar"] {{ background: rgba(10,10,11,0.92); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); border-right: 1px solid var(--line-soft); }}
 
 /* ---------- masthead ---------- */
 .cx-mast {{
@@ -674,8 +646,8 @@ body::before {{
 /* the glass ring band */
 .cx-orbit::before {{
   content: ""; position: absolute; inset: 34px; border-radius: 50%;
-  background: rgba(18,16,34,0.34);
-  -webkit-backdrop-filter: blur(5px) saturate(1.4); backdrop-filter: blur(5px) saturate(1.4);
+  background: rgba(16,16,18,0.34);
+  -webkit-backdrop-filter: blur(5px) saturate(1.3); backdrop-filter: blur(5px) saturate(1.3);
   border: 1px solid rgba(255,255,255,0.14);
   box-shadow: inset 0 1px 0 rgba(255,255,255,0.35), inset 0 0 60px -20px rgba(155,140,255,0.5),
               0 30px 80px -30px rgba(0,0,0,0.6);
@@ -711,8 +683,8 @@ body::before {{
   white-space: nowrap; cursor: pointer; line-height: 1;
   font-family: var(--display); font-weight: 600; font-size: .76rem; letter-spacing: .005em;
   color: var(--text-dim);
-  background: rgba(28,26,48,0.62);
-  -webkit-backdrop-filter: blur(6px) saturate(1.5); backdrop-filter: blur(6px) saturate(1.5);
+  background: rgba(26,26,28,0.62);
+  -webkit-backdrop-filter: blur(6px) saturate(1.4); backdrop-filter: blur(6px) saturate(1.4);
   border: 1px solid rgba(255,255,255,0.16); border-radius: 999px; padding: .4rem .78rem;
   box-shadow: inset 0 1px 0 rgba(255,255,255,0.45), inset 0 0 16px -6px rgba(255,255,255,0.2),
               0 12px 30px -14px rgba(0,0,0,0.5);
@@ -812,7 +784,7 @@ code, pre, kbd, [data-testid="stMetricValue"], [data-testid="stMetricDelta"],
   border: 1px solid var(--gold-line); border-radius: 6px; padding: .05em .38em; font-size: .84em;
 }}
 pre, [data-testid="stCode"] {{
-  background: rgba(8,7,16,0.6) !important;
+  background: rgba(8,8,9,0.62) !important;
   border: 1px solid var(--line); border-radius: 12px;
 }}
 .katex {{ color: var(--text); }}
@@ -882,14 +854,14 @@ pre, [data-testid="stCode"] {{
 /* ---------- metric  (translucent plaque -- NO backdrop-filter: there can be
    30+ of these on one screen; a real blur per card destroys scroll) ---------- */
 [data-testid="stMetric"] {{
-  background: linear-gradient(180deg, rgba(28,26,46,0.60), rgba(16,15,30,0.52));
+  background: linear-gradient(180deg, rgba(26,26,28,0.62), rgba(15,15,16,0.54));
   border: 1px solid var(--line); border-radius: 18px; padding: 1rem 1.15rem;
   box-shadow: inset 0 1px 0 rgba(255,255,255,0.28), 0 18px 42px -22px rgba(0,0,0,0.6);
   contain: layout style;
   transition: border-color .16s ease, box-shadow .16s ease, transform .16s ease;
 }}
 [data-testid="stMetric"]:hover {{
-  background: linear-gradient(180deg, rgba(38,35,60,0.68), rgba(22,20,40,0.58));
+  background: linear-gradient(180deg, rgba(36,36,39,0.7), rgba(20,20,22,0.6));
   border-color: rgba(155,140,255,0.35);
   box-shadow: inset 0 1px 0 rgba(255,255,255,0.4), 0 0 22px -8px rgba(91,84,232,0.3), 0 20px 48px -20px rgba(0,0,0,0.5);
   transform: translateY(-2px);
@@ -1008,7 +980,7 @@ pre, [data-testid="stCode"] {{
 [data-testid="stNotificationContentInfo"], [data-testid="stNotificationContentWarning"],
 [data-testid="stNotificationContentError"], [data-testid="stNotificationContentSuccess"] {{
   border-radius: 14px;
-  background: linear-gradient(180deg, rgba(26,24,44,0.62), rgba(16,15,30,0.55)) !important;
+  background: linear-gradient(180deg, rgba(24,24,26,0.64), rgba(15,15,16,0.56)) !important;
 }}
 [data-testid="stAlert"] {{ border: 1px solid var(--line); border-inline-start: 3px solid var(--gold); }}
 [data-testid="stAlert"] [data-testid="stMarkdownContainer"] p, [data-testid="stAlertContainer"] p {{
@@ -1016,7 +988,7 @@ pre, [data-testid="stCode"] {{
 }}
 [data-testid="stExpander"] {{
   border-radius: 16px; border: 1px solid var(--line); overflow: hidden;
-  background: linear-gradient(180deg, rgba(24,22,42,0.58), rgba(15,14,28,0.5));
+  background: linear-gradient(180deg, rgba(23,23,25,0.6), rgba(14,14,15,0.52));
   box-shadow: inset 0 1px 0 rgba(255,255,255,0.24), 0 18px 42px -22px rgba(0,0,0,0.6);
   contain: layout style;
 }}
