@@ -249,6 +249,7 @@ def _css() -> str:
 @import url('{_FONTS}');
 
 @property --cx-sec-i {{ syntax: "<number>"; inherits: true; initial-value: 0; }}
+@property --spin {{ syntax: "<angle>"; inherits: true; initial-value: 0deg; }}
 @property --cx-aura-h {{ syntax: "<angle>"; inherits: true; initial-value: 0deg; }}
 
 :root {{
@@ -419,7 +420,7 @@ body::before {{
 }}
 
 .cx-orbit {{
-  --r: 138px; --size: 320px; --orbit-rot: 0deg;
+  --r: 138px; --size: 320px; --orbit-rot: 0deg; --spin: 0deg;
   position: relative; width: var(--size); height: var(--size);
   margin: 0 auto 2.6rem; z-index: 20;
   touch-action: none; -webkit-user-select: none; user-select: none;
@@ -430,13 +431,10 @@ body::before {{
 }}
 .cx-orbit-ring {{
   position: absolute; inset: 0; border-radius: 50%;
-  transform: rotate(var(--orbit-rot));
+  transform: rotate(calc(var(--orbit-rot) + var(--spin)));
   transition: transform .6s cubic-bezier(.2,.85,.25,1);
 }}
-.cx-orbit.dragging .cx-orbit-ring {{ transition: none; }}
-.cx-orbit.spinning .cx-orbit-ring {{
-  animation: cx-orbit-spin 24s linear infinite; transition: none;
-}}
+.cx-orbit.dragging .cx-orbit-ring, .cx-orbit.spinning .cx-orbit-ring {{ transition: none; }}
 
 .cx-orbit-item {{
   position: absolute; left: 50%; top: 50%; width: 0; height: 0;
@@ -444,7 +442,7 @@ body::before {{
 }}
 .cx-orbit-item > button {{
   position: absolute; left: 50%; top: 50%;
-  transform: translate(-50%,-50%) rotate(calc(-1 * var(--a) - var(--orbit-rot)));
+  transform: translate(-50%,-50%) rotate(calc(-1 * var(--a) - var(--orbit-rot) - var(--spin)));
   white-space: nowrap; cursor: pointer; line-height: 1;
   font-family: var(--display); font-weight: 600; font-size: .74rem; letter-spacing: .005em;
   color: var(--text-dim);
@@ -453,9 +451,7 @@ body::before {{
   box-shadow: 0 5px 16px -8px rgba(20,22,45,.35), inset 0 1px 0 rgba(255,255,255,.65);
   transition: color .15s, background .15s, box-shadow .15s, border-color .15s;
 }}
-.cx-orbit.spinning .cx-orbit-item > button {{
-  animation: cx-btn-counter 24s linear infinite;
-}}
+.cx-orbit.spinning .cx-orbit-item > button {{ transition: none; }}
 .cx-orbit-item > button:hover {{ color: var(--text); border-color: var(--gold-line); }}
 .cx-orbit-item.on > button {{
   color: #fff; -webkit-text-fill-color: #fff;
@@ -480,6 +476,7 @@ body::before {{
   background: conic-gradient(from 0deg, rgba(247,147,26,0), rgba(247,147,26,.6), rgba(247,147,26,0) 55%);
   opacity: 0; transition: opacity .3s;
 }}
+.cx-orbit.spinning {{ animation: cx-spin-var 24s linear infinite; }}
 .cx-orbit.spinning .cx-orbit-hub::after {{ opacity: 1; animation: cx-orbit-spin 3s linear infinite; }}
 
 .cx-orbit-name {{
@@ -498,10 +495,7 @@ body::before {{
 .cx-orbit.touched .cx-orbit-hint {{ opacity: 0; }}
 
 @keyframes cx-orbit-spin {{ to {{ transform: rotate(360deg); }} }}
-@keyframes cx-btn-counter {{
-  from {{ transform: translate(-50%,-50%) rotate(calc(-1 * var(--a))); }}
-  to   {{ transform: translate(-50%,-50%) rotate(calc(-1 * var(--a) - 360deg)); }}
-}}
+@keyframes cx-spin-var {{ from {{ --spin: 0deg; }} to {{ --spin: 360deg; }} }}
 
 /* ---------- typography ---------- */
 h1, h2, h3, h4, h5 {{
@@ -757,9 +751,7 @@ img, iframe, canvas, svg {{ max-width: 100%; }}
   .cx-orbit-hub {{ width: 62px; height: 62px; }}
 }}
 @media (prefers-reduced-motion: reduce) {{
-  .cx-orbit.spinning .cx-orbit-ring,
-  .cx-orbit.spinning .cx-orbit-item > button,
-  .cx-orbit.spinning .cx-orbit-hub::after {{ animation: none !important; }}
+  .cx-orbit.spinning, .cx-orbit.spinning .cx-orbit-hub::after {{ animation: none !important; }}
 }}
 
 @media (max-width: 560px) {{
