@@ -31,32 +31,34 @@ import streamlit as st
 # --------------------------------------------------------------------------- #
 # "light glass": a soft pale-grey ground under a faint pastel wash; frosted
 # WHITE panels; one indigo accent; the Bitcoin roundel at the nav hub.
-INK = "#E3E5EC"          # the ground (cool light grey)
-INK_EDGE = "#D4D7E1"     # deepest grey
-PANEL = "rgba(255,255,255,0.52)"   # clear glass pane
-PANEL_HI = "rgba(255,255,255,0.72)"
-SUNK = "rgba(255,255,255,0.28)"    # sunk well / code
-LINE = "rgba(255,255,255,0.55)"    # a lit glass edge
-LINE_SOFT = "rgba(30,35,60,0.06)"
+# "liquid glass" -- deep electric ground, near-clear glass that refracts it,
+# bright specular rims.  (var names still INK*/GOLD* -- values only.)
+INK = "#0B0A1E"          # deep indigo-black ground
+INK_EDGE = "#060512"     # deepest
+PANEL = "rgba(255,255,255,0.085)"  # a thin sheet of glass
+PANEL_HI = "rgba(255,255,255,0.14)"
+SUNK = "rgba(8,6,22,0.42)"         # sunk well / code
+LINE = "rgba(255,255,255,0.16)"    # the lit glass rim
+LINE_SOFT = "rgba(255,255,255,0.08)"
 
-GOLD = "#5B54E8"         # the accent  (indigo)
-GOLD_BRIGHT = "#7C74FF"  # bright accent / glow
-GOLD_DEEP = "#4038C4"    # deep accent
-GOLD_TEXT = "#4A43C8"    # accent as text on light
+GOLD = "#9B8CFF"         # the accent  (electric violet)
+GOLD_BRIGHT = "#C9BEFF"  # bright accent / specular
+GOLD_DEEP = "#6A54E0"    # deep accent
+GOLD_TEXT = "#D6CCFF"    # accent as text on dark
 
-TEXT = "#191B29"
-TEXT_DIM = "#575B75"
-TEXT_FAINT = "#8B8FA8"
+TEXT = "#F2F1FA"
+TEXT_DIM = "#A9ACCB"
+TEXT_FAINT = "#6C6F92"
 
-UP = "#0E9F6E"
-DOWN = "#E5484D"
+UP = "#3DDC97"
+DOWN = "#FF6B7A"
 
-CYAN = "#0BA5C4"
-VIOLET = "#7C6BF0"
-MAGENTA = "#D6409F"
-LIME = "#5FA82B"
-AMBER = "#F7931A"        # Bitcoin orange -- used only for the hub logo
-CATEGORICAL = [GOLD, CYAN, UP, MAGENTA, VIOLET, "#6366F1", "#0891B2", DOWN]
+CYAN = "#4DE3F0"
+VIOLET = "#B08CFF"
+MAGENTA = "#FF6EC7"
+LIME = "#9BE86B"
+AMBER = "#F7931A"        # Bitcoin orange -- the hub logo only
+CATEGORICAL = [GOLD, CYAN, UP, MAGENTA, VIOLET, "#6C8CFF", "#37D6E8", DOWN]
 
 _DISPLAY = "'Space Grotesk', 'Rubik', system-ui, -apple-system, 'Segoe UI', sans-serif"
 _SANS = "'Inter', 'Rubik', system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif"
@@ -275,31 +277,36 @@ html, body {{ background: {INK}; }}
 .stApp {{ background: transparent; color: var(--text); }}
 
 body::before {{
-  content: ""; position: fixed; inset: -14vmax; z-index: 0; pointer-events: none;
+  content: ""; position: fixed; inset: -16vmax; z-index: 0; pointer-events: none;
   background:
-    radial-gradient(60vmax 54vmax at calc(20% + var(--cx-amx,0px)) calc(6% + var(--cx-amy,0px)),
-      rgba(255,255,255,0.75) 0%, rgba(255,255,255,0) 58%),
-    radial-gradient(56vmax 52vmax at calc(88% - var(--cx-amx,0px)) 14%,
-      rgba(206,218,244,0.55) 0%, rgba(206,218,244,0) 56%),
-    radial-gradient(64vmax 58vmax at 46% calc(104% + var(--cx-amy,0px)),
-      rgba(199,208,232,0.50) 0%, rgba(199,208,232,0) 58%),
-    radial-gradient(40vmax 36vmax at calc(78% + var(--cx-amx,0px)) 4%,
-      rgba(150,146,236,0.14) 0%, rgba(150,146,236,0) 58%);
-  filter: saturate(1.02) brightness(1.02);
+    radial-gradient(52vmax 48vmax at calc(16% + var(--cx-amx,0px)) calc(10% + var(--cx-amy,0px)),
+      rgba(59,107,255,0.55) 0%, rgba(59,107,255,0) 56%),
+    radial-gradient(58vmax 54vmax at calc(88% - var(--cx-amx,0px)) 16%,
+      rgba(155,77,255,0.55) 0%, rgba(155,77,255,0) 54%),
+    radial-gradient(64vmax 58vmax at 44% calc(104% + var(--cx-amy,0px)),
+      rgba(45,224,240,0.40) 0%, rgba(45,224,240,0) 56%),
+    radial-gradient(46vmax 42vmax at calc(78% + var(--cx-amx,0px)) 92%,
+      rgba(255,61,166,0.42) 0%, rgba(255,61,166,0) 56%),
+    radial-gradient(40vmax 36vmax at 4% 62%,
+      rgba(108,140,255,0.34) 0%, rgba(108,140,255,0) 58%),
+    radial-gradient(120vmax 110vmax at 50% 46%,
+      rgba(11,10,30,0) 34%, rgba(6,5,18,0.72) 100%);
+  filter: saturate(1.35) brightness(1.05) contrast(1.04);
   transition: filter 1.1s ease;
-  animation: cx-aurora 40s ease-in-out infinite alternate;
+  animation: cx-aurora 32s ease-in-out infinite alternate, cx-aura-hue 44s linear infinite;
   will-change: transform, filter;
 }}
 .stApp::before {{
-  content: ""; position: fixed; inset: -8vmax; z-index: 0; pointer-events: none;
+  content: ""; position: fixed; inset: -10vmax; z-index: 0; pointer-events: none;
   background:
-    linear-gradient(122deg,
-      rgba(255,255,255,0) 30%, rgba(255,255,255,0.35) 47%,
-      rgba(255,255,255,0.10) 52%, rgba(255,255,255,0) 66%),
-    radial-gradient(34vmax 30vmax at 62% 34%, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0) 56%);
-  transform: translate3d(calc(var(--cx-mx,0px) * 1.6), calc(var(--cx-plate,0px) + var(--cx-my,0px) * 1.6), 0)
-             rotate(var(--cx-rot,0deg)) scale(calc(1.05 * var(--cx-kick,1)));
-  filter: blur(2px);
+    linear-gradient(118deg,
+      rgba(200,220,255,0) 34%, rgba(200,220,255,0.16) 46%,
+      rgba(255,255,255,0.32) 50%, rgba(200,220,255,0.10) 55%, rgba(200,220,255,0) 64%),
+    radial-gradient(30vmax 26vmax at 66% 30%, rgba(120,180,255,0.28) 0%, rgba(120,180,255,0) 56%),
+    radial-gradient(24vmax 22vmax at 26% 74%, rgba(255,110,199,0.20) 0%, rgba(255,110,199,0) 60%);
+  transform: translate3d(calc(var(--cx-mx,0px) * 1.7), calc(var(--cx-plate,0px) + var(--cx-my,0px) * 1.7), 0)
+             rotate(var(--cx-rot,0deg)) scale(calc(1.06 * var(--cx-kick,1)));
+  filter: blur(3px);
   transition: transform .18s cubic-bezier(.2,.8,.2,1), filter .7s ease;
   will-change: transform, filter;
 }}
@@ -307,7 +314,7 @@ html.cx-js.cx-kick .stApp::before {{ animation: cx-plate-kick .62s cubic-bezier(
 .stApp::after {{
   content: ""; position: fixed; inset: 0; z-index: 0; pointer-events: none;
   background:
-    radial-gradient(150% 130% at 50% -10%, rgba(227,229,236,0) 58%, rgba(198,202,216,0.6) 100%);
+    radial-gradient(150% 130% at 50% 0%, rgba(6,5,18,0) 46%, rgba(4,3,14,0.66) 100%);
 }}
 
 /* section-change sweep -- an electric prism edge */
@@ -315,10 +322,10 @@ html.cx-js.cx-kick .stApp::before {{ animation: cx-plate-kick .62s cubic-bezier(
   position: fixed; inset: 0 -46vw; z-index: 6; pointer-events: none;
   opacity: 0; transform: translateX(-125%) skewX(-15deg);
   background: linear-gradient(90deg,
-    rgba(91,84,232,0) 0%, rgba(91,84,232,0.08) 28%,
-    rgba(255,255,255,0.55) 44%, rgba(255,255,255,0.85) 50%,
-    rgba(255,255,255,0.55) 56%, rgba(91,84,232,0.08) 72%, rgba(91,84,232,0) 100%);
-  box-shadow: 0 0 80px 12px rgba(255,255,255,0.5);
+    rgba(155,140,255,0) 0%, rgba(77,227,240,0.22) 30%,
+    rgba(255,255,255,0.7) 46%, rgba(255,255,255,0.95) 50%,
+    rgba(255,255,255,0.7) 54%, rgba(255,110,199,0.22) 70%, rgba(155,140,255,0) 100%);
+  box-shadow: 0 0 100px 16px rgba(155,140,255,0.35);
 }}
 .cx-wipe.run {{ animation: cx-wipe .8s cubic-bezier(.62,0,.28,1); }}
 .cx-flash {{
@@ -391,14 +398,15 @@ body::before {{
   letter-spacing: .01em !important; text-transform: none !important;
   padding: .38rem .95rem !important; border-radius: 10px !important;
   color: #fff !important; -webkit-text-fill-color: #fff !important;
-  background: linear-gradient(180deg,#2ea043,#218139) !important;
-  border: 1px solid rgba(52,211,153,0.30) !important;
-  box-shadow: 0 4px 18px -4px rgba(46,160,67,0.55), inset 0 1px 0 rgba(255,255,255,0.14) !important;
+  background: linear-gradient(180deg, rgba(61,220,151,0.9), rgba(38,180,120,0.85)) !important;
+  -webkit-backdrop-filter: blur(14px) saturate(1.6); backdrop-filter: blur(14px) saturate(1.6);
+  border: 1px solid rgba(180,255,220,0.4) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.5), 0 10px 30px -6px rgba(61,220,151,0.5) !important;
   transition: background .12s ease, transform .06s ease !important;
 }}
 .st-key-cx_refresh button:hover, .cx-reload button:hover {{
-  background: linear-gradient(180deg,#3fb958,#268f43) !important; border-color: rgba(52,211,153,0.45) !important;
-  box-shadow: 0 6px 24px -4px rgba(46,160,67,0.7), inset 0 1px 0 rgba(255,255,255,0.18) !important;
+  background: linear-gradient(180deg, rgba(77,235,166,0.95), rgba(46,195,132,0.9)) !important; border-color: rgba(180,255,220,0.55) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.6), 0 0 36px -6px rgba(61,220,151,0.7) !important;
   color: #fff !important; -webkit-text-fill-color: #fff !important;
 }}
 .st-key-cx_refresh button:active, .cx-reload button:active {{
@@ -420,14 +428,33 @@ body::before {{
 }}
 
 .cx-orbit {{
-  --r: 138px; --size: 320px; --orbit-rot: 0deg; --spin: 0deg;
+  --r: 202px; --size: 466px; --orbit-rot: 0deg; --spin: 0deg;
   position: relative; width: var(--size); height: var(--size);
-  margin: 0 auto 2.6rem; z-index: 20;
+  margin: .4rem auto 3.6rem; z-index: 20;
   touch-action: none; -webkit-user-select: none; user-select: none;
 }}
+/* the glass ring band */
 .cx-orbit::before {{
-  content: ""; position: absolute; inset: 8px; border-radius: 50%;
-  border: 1px dashed var(--line);
+  content: ""; position: absolute; inset: 34px; border-radius: 50%;
+  background: rgba(255,255,255,0.05);
+  -webkit-backdrop-filter: blur(14px) saturate(1.5); backdrop-filter: blur(14px) saturate(1.5);
+  border: 1px solid rgba(255,255,255,0.14);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.35), inset 0 0 60px -20px rgba(155,140,255,0.5),
+              0 30px 80px -30px rgba(0,0,0,0.6);
+  -webkit-mask: radial-gradient(circle, transparent calc(50% - 34px), #000 calc(50% - 33px));
+          mask: radial-gradient(circle, transparent calc(50% - 34px), #000 calc(50% - 33px));
+}}
+/* a rotating specular sweep + graduation ticks on the band */
+.cx-orbit::after {{
+  content: ""; position: absolute; inset: 30px; border-radius: 50%; pointer-events: none;
+  background:
+    conic-gradient(from calc(var(--orbit-rot) + var(--spin)),
+      rgba(255,255,255,0) 0deg, rgba(255,255,255,0.28) 24deg, rgba(255,255,255,0) 70deg,
+      rgba(255,255,255,0) 190deg, rgba(200,220,255,0.16) 210deg, rgba(255,255,255,0) 250deg),
+    repeating-conic-gradient(from 0deg,
+      rgba(255,255,255,0.34) 0deg 0.5deg, rgba(255,255,255,0) 0.5deg 6deg);
+  -webkit-mask: radial-gradient(circle, transparent calc(50% - 38px), #000 calc(50% - 36px), #000 calc(50% - 4px), transparent calc(50% - 2px));
+          mask: radial-gradient(circle, transparent calc(50% - 38px), #000 calc(50% - 36px), #000 calc(50% - 4px), transparent calc(50% - 2px));
 }}
 .cx-orbit-ring {{
   position: absolute; inset: 0; border-radius: 50%;
@@ -444,56 +471,75 @@ body::before {{
   position: absolute; left: 50%; top: 50%;
   transform: translate(-50%,-50%) rotate(calc(-1 * var(--a) - var(--orbit-rot) - var(--spin)));
   white-space: nowrap; cursor: pointer; line-height: 1;
-  font-family: var(--display); font-weight: 600; font-size: .74rem; letter-spacing: .005em;
+  font-family: var(--display); font-weight: 600; font-size: .76rem; letter-spacing: .005em;
   color: var(--text-dim);
-  background: rgba(255,255,255,0.34); -webkit-backdrop-filter: blur(18px) saturate(1.2); backdrop-filter: blur(18px) saturate(1.2);
-  border: 1px solid rgba(255,255,255,0.6); border-radius: 999px; padding: .32rem .66rem;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.95), 0 10px 26px -12px rgba(30,35,60,.32);
-  transition: color .15s, background .15s, box-shadow .15s, border-color .15s;
+  background: rgba(255,255,255,0.08);
+  -webkit-backdrop-filter: blur(20px) saturate(1.7); backdrop-filter: blur(20px) saturate(1.7);
+  border: 1px solid rgba(255,255,255,0.16); border-radius: 999px; padding: .4rem .78rem;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.45), inset 0 0 16px -6px rgba(255,255,255,0.2),
+              0 12px 30px -14px rgba(0,0,0,0.5);
+  transition: color .18s, background .18s, box-shadow .18s, border-color .18s, transform .3s cubic-bezier(.2,.85,.25,1);
 }}
-.cx-orbit.spinning .cx-orbit-item > button {{ transition: none; }}
-.cx-orbit-item > button:hover {{ color: var(--text); border-color: var(--gold-line); }}
+.cx-orbit.spinning .cx-orbit-item > button {{ transition: color .18s, background .18s, box-shadow .18s, border-color .18s; }}
+.cx-orbit-item > button:hover {{
+  color: var(--text); border-color: rgba(201,190,255,0.5); background: rgba(255,255,255,0.14);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.6), 0 0 26px -6px rgba(155,140,255,0.6), 0 14px 32px -14px rgba(0,0,0,0.5);
+}}
 .cx-orbit-item.on > button {{
-  color: #fff; -webkit-text-fill-color: #fff;
-  background: linear-gradient(135deg, var(--gold-bright), var(--gold));
-  border-color: var(--gold-deep);
-  box-shadow: 0 8px 26px -4px rgba(91,84,232,.6), inset 0 1px 0 rgba(255,255,255,.4);
-  z-index: 4; font-weight: 700;
+  color: #fff; -webkit-text-fill-color: #fff; font-weight: 700;
+  background: linear-gradient(135deg, rgba(201,190,255,0.5), rgba(155,140,255,0.35));
+  border-color: rgba(201,190,255,0.7);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.7), inset 0 0 20px -4px rgba(255,255,255,0.4),
+              0 0 40px -4px rgba(155,140,255,0.8), 0 16px 40px -12px rgba(0,0,0,0.55);
+  transform: translate(-50%,-50%) rotate(calc(-1 * var(--a) - var(--orbit-rot) - var(--spin))) scale(1.16);
+  z-index: 4;
 }}
 
 .cx-orbit-hub {{
-  position: absolute; left: 50%; top: 50%; width: 96px; height: 96px;
+  position: absolute; left: 50%; top: 50%; width: 128px; height: 128px;
   transform: translate(-50%,-50%); border-radius: 50%; overflow: visible; cursor: grab; z-index: 5;
 }}
 .cx-orbit-hub:active {{ cursor: grabbing; }}
 .cx-orbit-hub svg, .cx-orbit-hub img {{
   width: 100%; height: 100%; display: block; border-radius: 50%; position: relative; z-index: 2;
-  box-shadow: 0 16px 40px -8px rgba(91,84,232,.5), 0 3px 12px rgba(30,35,60,.22),
-              inset 0 0 0 2px rgba(255,255,255,.7);
+  box-shadow: 0 24px 60px -12px rgba(155,140,255,.6), 0 4px 16px rgba(0,0,0,.35),
+              inset 0 0 0 2px rgba(255,255,255,.35), inset 0 3px 10px rgba(255,255,255,.25);
 }}
-.cx-orbit-hub::after {{
-  content: ""; position: absolute; inset: -10px; border-radius: 50%; z-index: 1;
-  background: conic-gradient(from 0deg, rgba(124,116,255,0), rgba(124,116,255,.7), rgba(56,224,240,.3), rgba(124,116,255,0) 60%);
-  opacity: 0; transition: opacity .3s;
+.cx-orbit-hub::before {{  /* soft always-on aura */
+  content: ""; position: absolute; inset: -18px; border-radius: 50%; z-index: 0;
+  background: radial-gradient(circle, rgba(155,140,255,.5) 0%, rgba(77,227,240,.2) 45%, rgba(155,140,255,0) 72%);
+  filter: blur(6px); animation: cx-hub-pulse 4.5s ease-in-out infinite;
 }}
-.cx-orbit.spinning {{ animation: cx-spin-var 24s linear infinite; }}
-.cx-orbit.spinning .cx-orbit-hub::after {{ opacity: 1; animation: cx-orbit-spin 3s linear infinite; }}
+.cx-orbit-hub::after {{  /* rotating conic ring */
+  content: ""; position: absolute; inset: -12px; border-radius: 50%; z-index: 1;
+  background: conic-gradient(from 0deg, rgba(155,140,255,0), rgba(200,220,255,.85), rgba(77,227,240,.4), rgba(255,110,199,.3), rgba(155,140,255,0) 70%);
+  opacity: .5; transition: opacity .3s; animation: cx-orbit-spin 8s linear infinite;
+  -webkit-mask: radial-gradient(circle, transparent calc(50% - 5px), #000 calc(50% - 3px));
+          mask: radial-gradient(circle, transparent calc(50% - 5px), #000 calc(50% - 3px));
+}}
+.cx-orbit.spinning {{ animation: cx-spin-var 22s linear infinite; }}
+.cx-orbit.spinning .cx-orbit-hub::after {{ opacity: 1; animation: cx-orbit-spin 2.4s linear infinite; }}
 
 .cx-orbit-name {{
-  position: absolute; left: 50%; bottom: -14px; transform: translateX(-50%);
-  font-family: var(--display); font-weight: 700; font-size: .98rem; color: var(--text);
-  white-space: nowrap; letter-spacing: -.012em;
-  background: rgba(255,255,255,0.42); -webkit-backdrop-filter: blur(20px) saturate(1.2); backdrop-filter: blur(20px) saturate(1.2);
-  border: 1px solid var(--line); border-radius: 999px; padding: .28rem .95rem; z-index: 6;
-  box-shadow: 0 8px 24px -10px rgba(20,22,45,.4);
+  position: absolute; left: 50%; bottom: -20px; transform: translateX(-50%);
+  font-family: var(--display); font-weight: 700; font-size: 1.05rem; color: #fff;
+  white-space: nowrap; letter-spacing: -.014em;
+  background: rgba(255,255,255,0.10);
+  -webkit-backdrop-filter: blur(22px) saturate(1.7); backdrop-filter: blur(22px) saturate(1.7);
+  border: 1px solid rgba(255,255,255,0.2); border-radius: 999px; padding: .34rem 1.15rem; z-index: 6;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.5), 0 0 34px -6px rgba(155,140,255,0.5), 0 14px 40px -14px rgba(0,0,0,0.55);
 }}
 .cx-orbit-hint {{
-  position: absolute; left: 50%; top: 100%; transform: translateX(-50%); margin-top: 1.9rem;
-  font-family: var(--mono); font-size: .56rem; letter-spacing: .18em; text-transform: uppercase;
+  position: absolute; left: 50%; top: 100%; transform: translateX(-50%); margin-top: 2.3rem;
+  font-family: var(--mono); font-size: .56rem; letter-spacing: .2em; text-transform: uppercase;
   color: var(--text-faint); white-space: nowrap; transition: opacity .4s;
 }}
 .cx-orbit.touched .cx-orbit-hint {{ opacity: 0; }}
 
+@keyframes cx-hub-pulse {{
+  0%,100% {{ transform: scale(1); opacity: .8; }}
+  50% {{ transform: scale(1.12); opacity: 1; }}
+}}
 @keyframes cx-orbit-spin {{ to {{ transform: rotate(360deg); }} }}
 @keyframes cx-spin-var {{ from {{ --spin: 0deg; }} to {{ --spin: 360deg; }} }}
 
@@ -507,7 +553,7 @@ h1 {{ font-size: 1.95rem; }}  h2 {{ font-size: 1.5rem; }}
 h3 {{ font-size: 1.18rem; }}  h4 {{ font-size: 1.02rem; }}
 [data-testid="stMain"] [data-testid="stMarkdownContainer"] p,
 [data-testid="stMain"] [data-testid="stMarkdownContainer"] li {{
-  color: #2A2D3E; line-height: 1.62; text-wrap: pretty;
+  color: #CFD1E6; line-height: 1.62; text-wrap: pretty;
 }}
 [data-testid="stMain"] [data-testid="stMarkdownContainer"] strong {{
   color: var(--gold-text); font-weight: 600;
@@ -555,12 +601,12 @@ pre, [data-testid="stCode"] {{
   background: var(--panel); -webkit-backdrop-filter: blur(30px) saturate(1.28);
   backdrop-filter: blur(30px) saturate(1.28);
   border: 1px solid var(--line); border-radius: 18px; padding: 1rem 1.15rem;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.92), inset 0 0 0 1px rgba(30,35,60,0.04), 0 14px 46px -18px rgba(30,35,60,0.22);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.45), inset 0 0 30px -8px rgba(255,255,255,0.14), inset 0 -24px 44px -34px rgba(155,140,255,0.5), 0 24px 60px -22px rgba(0,0,0,0.55);
   transition: border-color .18s ease, box-shadow .18s ease, transform .18s ease;
 }}
 [data-testid="stMetric"]:hover {{
   background: rgba(255,255,255,0.50);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,1), inset 0 0 0 1px rgba(91,84,232,0.16), 0 0 24px -8px rgba(91,84,232,0.26), 0 18px 48px -18px rgba(30,35,60,0.26);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,1), inset 0 0 0 1px rgba(91,84,232,0.16), 0 0 24px -8px rgba(91,84,232,0.26), 0 18px 48px -18px rgba(0,0,0,0.26);
   transform: translateY(-2px);
 }}
 [data-testid="stMetricLabel"], [data-testid="stMetricLabel"] p {{
@@ -647,7 +693,7 @@ pre, [data-testid="stCode"] {{
 }}
 
 /* ---------- inputs ---------- */
-[data-testid="stWidgetLabel"] p, label p {{ color: var(--gold-text) !important; font-weight: 500; }}
+[data-testid="stWidgetLabel"] p, label p {{ color: var(--text-dim) !important; font-weight: 600; }}
 [data-baseweb="input"], [data-baseweb="select"] > div, [data-baseweb="textarea"],
 [data-testid="stNumberInput"] input, [data-testid="stTextInput"] input, [data-testid="stDateInput"] input {{
   border-radius: 10px !important; border-color: var(--line) !important;
@@ -687,13 +733,13 @@ pre, [data-testid="stCode"] {{
 [data-testid="stExpander"] {{
   border-radius: 16px; border: 1px solid var(--line); overflow: hidden;
   background: var(--panel); -webkit-backdrop-filter: blur(28px) saturate(1.25); backdrop-filter: blur(28px) saturate(1.25);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.92), inset 0 0 0 1px rgba(30,35,60,0.04), 0 14px 46px -18px rgba(30,35,60,0.22);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.45), inset 0 0 30px -8px rgba(255,255,255,0.14), inset 0 -24px 44px -34px rgba(155,140,255,0.5), 0 24px 60px -22px rgba(0,0,0,0.55);
 }}
 [data-testid="stExpander"] summary:hover {{ background: var(--gold-wash); }}
 [data-testid="stForm"] {{
   border-radius: 18px; border: 1px solid var(--line);
   background: var(--panel); -webkit-backdrop-filter: blur(32px) saturate(1.25); backdrop-filter: blur(32px) saturate(1.25);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.92), inset 0 0 0 1px rgba(30,35,60,0.04), 0 14px 46px -18px rgba(30,35,60,0.22);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.45), inset 0 0 30px -8px rgba(255,255,255,0.14), inset 0 -24px 44px -34px rgba(155,140,255,0.5), 0 24px 60px -22px rgba(0,0,0,0.55);
 }}
 /* bordered container -> a barely-there frame so the inner card carries the weight */
 div[data-testid="stVerticalBlockBorderWrapper"] {{
@@ -740,15 +786,15 @@ img, iframe, canvas, svg {{ max-width: 100%; }}
 }}
 /* ---------- orbital nav: responsive ---------- */
 @media (max-width: 900px) {{
-  .cx-orbit {{ --r: 118px; --size: 280px; margin: .3rem auto 3rem; }}
-  .cx-orbit-item > button {{ font-size: .62rem; padding: .24rem .5rem; }}
-  .cx-orbit-hub {{ width: 74px; height: 74px; }}
-  .cx-orbit-name {{ font-size: .84rem; }}
+  .cx-orbit {{ --r: 150px; --size: 340px; margin: .2rem auto 3rem; }}
+  .cx-orbit-item > button {{ font-size: .64rem; padding: .3rem .58rem; }}
+  .cx-orbit-hub {{ width: 92px; height: 92px; }}
+  .cx-orbit-name {{ font-size: .9rem; }}
 }}
 @media (max-width: 560px) {{
-  .cx-orbit {{ --r: 104px; --size: 244px; }}
-  .cx-orbit-item > button {{ font-size: .56rem; padding: .2rem .42rem; }}
-  .cx-orbit-hub {{ width: 62px; height: 62px; }}
+  .cx-orbit {{ --r: 124px; --size: 286px; }}
+  .cx-orbit-item > button {{ font-size: .58rem; padding: .24rem .48rem; }}
+  .cx-orbit-hub {{ width: 78px; height: 78px; }}
 }}
 @media (prefers-reduced-motion: reduce) {{
   .cx-orbit.spinning, .cx-orbit.spinning .cx-orbit-hub::after {{ animation: none !important; }}
@@ -842,7 +888,7 @@ def _wordmark_svg() -> str:
     return (
         '<img src="./carnx/mark.png" alt="" '
         'style="height:42px;width:42px;border-radius:11px;display:block;'
-        'box-shadow:0 6px 18px -6px rgba(30,35,60,.4), inset 0 0 0 1px rgba(255,255,255,.5)">'
+        'box-shadow:0 8px 22px -6px rgba(155,140,255,.5), inset 0 0 0 1px rgba(255,255,255,.35)">'
         f'<span style="font-family:{_DISPLAY};font-weight:700;font-size:1.24rem;'
         f'color:{TEXT};letter-spacing:-.01em">CARN-X</span>'
     )
