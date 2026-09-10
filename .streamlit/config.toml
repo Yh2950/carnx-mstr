@@ -15,7 +15,7 @@ baseRadius = "0.9rem"
 baseFontSize = 15
 
 font = "'Inter':https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
-headingFont = "'Space Grotesk':https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap"
+headingFont = "'Playfair Display':https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,800;0,900;1,600&display=swap"
 codeFont = "'IBM Plex Mono':https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap"
 
 chartCategoricalColors = [

@@ -60,15 +60,19 @@ LIME = "#9BE86B"
 AMBER = "#F7931A"        # Bitcoin orange -- the hub logo only
 CATEGORICAL = [GOLD, CYAN, UP, MAGENTA, VIOLET, "#6C8CFF", "#37D6E8", DOWN]
 
-_DISPLAY = "'Space Grotesk', 'Rubik', system-ui, -apple-system, 'Segoe UI', sans-serif"
-_SANS = "'Inter', 'Rubik', system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif"
+# editorial: a dramatic high-contrast serif for the cinematic display type,
+# a clean grotesque for working UI, a mono for figures.
+_DISPLAY = "'Playfair Display', 'Frank Ruhl Libre', 'Fraunces', Georgia, 'Times New Roman', serif"
+_HEBREW_DISPLAY = "'Frank Ruhl Libre', 'Playfair Display', Georgia, serif"
+_SANS = "'Inter', 'Assistant', system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif"
 _MONO = "'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace"
 
 _FONTS = (
     "https://fonts.googleapis.com/css2?"
-    "family=Space+Grotesk:wght@400;500;600;700"
+    "family=Playfair+Display:ital,wght@0,500;0,600;0,700;0,800;0,900;1,600"
+    "&family=Frank+Ruhl+Libre:wght@500;700;900"
     "&family=Inter:wght@400;500;600;700;800"
-    "&family=Rubik:wght@400;500;600;700"
+    "&family=Assistant:wght@400;500;600;700"
     "&family=IBM+Plex+Mono:wght@400;500;600"
     "&display=swap"
 )
@@ -314,8 +318,12 @@ html.cx-js.cx-kick .stApp::before {{ animation: cx-plate-kick .62s cubic-bezier(
 .stApp::after {{
   content: ""; position: fixed; inset: 0; z-index: 0; pointer-events: none;
   background:
-    radial-gradient(150% 130% at 50% 0%, rgba(6,5,18,0) 46%, rgba(4,3,14,0.66) 100%);
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E"),
+    radial-gradient(150% 130% at 50% 0%, rgba(6,5,18,0) 46%, rgba(4,3,14,0.7) 100%);
+  background-size: 150px 150px, cover;
 }}
+.stApp::after {{ opacity: .5; }}
+
 
 /* section-change sweep -- an electric prism edge */
 .cx-wipe {{
@@ -543,17 +551,22 @@ body::before {{
 @keyframes cx-orbit-spin {{ to {{ transform: rotate(360deg); }} }}
 @keyframes cx-spin-var {{ from {{ --spin: 0deg; }} to {{ --spin: 360deg; }} }}
 
-/* ---------- typography ---------- */
+/* ---------- typography (cinematic editorial) ---------- */
+h1, h2 {{ font-family: 'Playfair Display', 'Frank Ruhl Libre', 'Fraunces', Georgia, serif !important; }}
+:lang(he), [dir="rtl"] {{ }}
+.cx-hero-title:dir(rtl), h1:dir(rtl), h2:dir(rtl), h3:dir(rtl) {{
+  font-family: 'Frank Ruhl Libre', 'Playfair Display', Georgia, serif !important; }}
 h1, h2, h3, h4, h5 {{
-  font-family: var(--display); letter-spacing: -0.02em; text-wrap: balance; font-weight: 600;
+  font-family: var(--display); letter-spacing: -0.01em; text-wrap: balance; font-weight: 700;
 }}
-h1, h2 {{ color: var(--text); font-weight: 700; }}
-h3, h4, h5 {{ color: var(--text); font-weight: 600; }}
-h1 {{ font-size: 1.95rem; }}  h2 {{ font-size: 1.5rem; }}
-h3 {{ font-size: 1.18rem; }}  h4 {{ font-size: 1.02rem; }}
+h1, h2 {{ color: var(--text); font-weight: 800; }}
+h3, h4, h5 {{ color: var(--text); font-weight: 700; letter-spacing: -0.005em; }}
+h1 {{ font-size: clamp(2.1rem, 3vw, 3rem); line-height: 1.02; }}
+h2 {{ font-size: clamp(1.7rem, 2.8vw, 2.6rem); line-height: 1.06; }}
+h3 {{ font-size: 1.28rem; }}  h4 {{ font-size: 1.06rem; font-family: var(--sans); font-weight: 700; }}
 [data-testid="stMain"] [data-testid="stMarkdownContainer"] p,
 [data-testid="stMain"] [data-testid="stMarkdownContainer"] li {{
-  color: #CFD1E6; line-height: 1.62; text-wrap: pretty;
+  color: #C7C9E0; line-height: 1.66; text-wrap: pretty; font-family: var(--sans);
 }}
 [data-testid="stMain"] [data-testid="stMarkdownContainer"] strong {{
   color: var(--gold-text); font-weight: 600;
@@ -574,26 +587,66 @@ pre, [data-testid="stCode"] {{
 }}
 .katex {{ color: var(--text); }}
 
-/* ---------- chapter opening ---------- */
-.cx-hero {{ position: relative; margin: .2rem 0 1.6rem; padding: 0 0 .9rem; }}
-.cx-hero::after {{
-  content: ""; position: absolute; inset-inline: 0; bottom: 0; height: 2px; border-radius: 2px;
-  background: linear-gradient(90deg, var(--gold) 0%, var(--cyan, #38E0F0) 30%, transparent 72%);
-  opacity: .8;
+/* ---------- the chapter opening -- a title card from a launch film ---------- */
+.cx-hero {{
+  position: relative; margin: 1.4rem 0 2.4rem; padding: 2.6rem 0 1.2rem;
+  overflow: visible; isolation: isolate;
+}}
+.cx-hero-ghost {{
+  position: absolute; left: -0.06em; top: -0.06em; z-index: 0; pointer-events: none;
+  font-family: var(--display); font-weight: 900; text-transform: uppercase;
+  font-size: clamp(4.5rem, 13vw, 10rem); line-height: .8; letter-spacing: -0.04em;
+  white-space: nowrap; color: transparent;
+  -webkit-text-stroke: 1px rgba(255,255,255,0.05);
+  background: linear-gradient(180deg, rgba(155,140,255,0.10), rgba(255,255,255,0.0) 70%);
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-mask: linear-gradient(90deg, #000 0 62%, transparent 92%);
+          mask: linear-gradient(90deg, #000 0 62%, transparent 92%);
 }}
 .cx-hero-eyebrow {{
-  display: inline-block; margin: 0 0 .55rem; font-family: var(--mono);
-  font-size: .66rem; letter-spacing: .16em; text-transform: uppercase; color: var(--gold-text);
-  background: var(--gold-wash); border: 1px solid var(--gold-line);
-  padding: .2rem .55rem; border-radius: 999px;
+  position: relative; z-index: 2;
+  display: inline-flex; align-items: center; gap: .4rem; margin: 0 0 .7rem;
+  font-family: var(--mono); font-size: .62rem; letter-spacing: .28em;
+  text-transform: uppercase; color: var(--gold-text);
+}}
+.cx-hero-eyebrow::before {{
+  content: ""; width: 22px; height: 1px; background: var(--gold);
+  box-shadow: 0 0 8px var(--gold);
 }}
 .cx-hero-title {{
-  font-family: var(--display); font-weight: 700; color: var(--text);
-  font-size: clamp(1.7rem, 2.7vw, 2.5rem); line-height: 1.1; letter-spacing: -0.03em;
+  position: relative; z-index: 2; display: block;
+  font-family: var(--display) !important; font-weight: 700; color: #FBFBFF;
+  font-size: clamp(2.6rem, 5.2vw, 4.8rem) !important; line-height: 1.0 !important; letter-spacing: -0.028em;
+  text-shadow: 0 2px 50px rgba(155,140,255,0.4);
 }}
+.cx-hero-title::before, .cx-hero-title::after {{
+  content: attr(data-text); position: absolute; inset: 0; z-index: -1;
+  pointer-events: none; opacity: .32; mix-blend-mode: screen;
+}}
+.cx-hero-title::before {{ color: #37D6E8; transform: translate3d(-2px,0,0); }}
+.cx-hero-title::after  {{ color: #FF4FB0; transform: translate3d(2px,1px,0); }}
+.cx-hero-title.cx-glitch::before {{ animation: cx-rgb-l 5.5s steps(1) infinite; }}
+.cx-hero-title.cx-glitch::after  {{ animation: cx-rgb-r 5.5s steps(1) infinite; }}
+.cx-hero-title.cx-glitch {{ animation: cx-glitch-slice 5.5s steps(1) infinite; }}
 .cx-hero-sub {{
-  margin-top: .45rem; color: var(--text-dim); font-size: .92rem; max-width: 74ch;
-  text-wrap: pretty;
+  position: relative; z-index: 2; margin-top: 1rem; color: var(--text-dim);
+  font-size: .96rem; max-width: 64ch; text-wrap: pretty; font-family: var(--sans);
+  padding-left: 26px; border-left: 1px solid rgba(255,255,255,0.14);
+}}
+@keyframes cx-rgb-l {{
+  0%,88%,100% {{ transform: translate3d(-2px,0,0); }}
+  90% {{ transform: translate3d(-7px,-2px,0); }}  93% {{ transform: translate3d(3px,1px,0); }}
+  96% {{ transform: translate3d(-4px,2px,0); }}
+}}
+@keyframes cx-rgb-r {{
+  0%,88%,100% {{ transform: translate3d(2px,1px,0); }}
+  90% {{ transform: translate3d(7px,2px,0); }}   93% {{ transform: translate3d(-3px,-1px,0); }}
+  96% {{ transform: translate3d(5px,-2px,0); }}
+}}
+@keyframes cx-glitch-slice {{
+  0%,89%,100% {{ clip-path: none; }}
+  90% {{ clip-path: inset(18% 0 62% 0); }}  92% {{ clip-path: inset(72% 0 8% 0); }}
+  94% {{ clip-path: inset(42% 0 38% 0); }}  96% {{ clip-path: none; }}
 }}
 
 /* ---------- metric  (an engraved plaque, no boxy border) ---------- */
@@ -803,8 +856,10 @@ img, iframe, canvas, svg {{ max-width: 100%; }}
 @media (max-width: 560px) {{
   [data-testid="stMainBlockContainer"], .block-container {{ padding: .7rem .6rem 3rem !important; }}
   [data-testid="stColumn"] {{ flex: 1 1 100% !important; min-width: 100% !important; width: 100% !important; }}
-  .cx-hero-title {{ font-size: 1.35rem !important; line-height: 1.2; }}
-  h1 {{ font-size: 1.4rem !important; }}  h2 {{ font-size: 1.22rem !important; }}  h3 {{ font-size: 1.05rem !important; }}
+  .cx-hero {{ padding: 1.8rem 0 .9rem; margin: .8rem 0 1.6rem; }}
+  .cx-hero-title {{ font-size: 2rem !important; line-height: 1.04; }}
+  .cx-hero-ghost {{ font-size: 4.4rem !important; }}
+  h1 {{ font-size: 1.7rem !important; }}  h2 {{ font-size: 1.4rem !important; }}  h3 {{ font-size: 1.14rem !important; }}
   [data-testid="stMetric"] {{ padding: .65rem .75rem; }}
   [data-testid="stMetricValue"] {{ font-size: 1.32rem !important; }}
   [data-testid="stMetricLabel"] p {{ white-space: normal; }}
@@ -813,6 +868,7 @@ img, iframe, canvas, svg {{ max-width: 100%; }}
 }}
 @media (prefers-reduced-motion: reduce) {{
   *, *::before, *::after {{ animation-duration: .001ms !important; transition-duration: .001ms !important; }}
+  .cx-hero-title::before, .cx-hero-title::after {{ display: none !important; }}
 }}
 
 /* ======================================================================= *
@@ -935,13 +991,20 @@ def header_nav(sections: list[str] | None = None, default: str = "סקירה") -
 
 
 def hero(title: str, subtitle: str = "", eyebrow: str = "CARN-X") -> None:
-    """Drop-in for ``st.header``: a ruled chapter opening in gilt cut-serif."""
-    parts = ['<div class="cx-hero">']
+    """A title card from a launch film: a huge ghost word, a chromatic-glitch
+    serif headline, one hairline sub-line.  Cosmetic only."""
+    import html as _h
+    ghost = _h.escape((eyebrow or "CARN-X").split()[0])
+    t = _h.escape(title)
+    parts = [
+        '<div class="cx-hero">',
+        f'<span class="cx-hero-ghost" aria-hidden="true">{ghost}</span>',
+    ]
     if eyebrow:
-        parts.append(f'<span class="cx-hero-eyebrow">{eyebrow}</span>')
-    parts.append(f'<div class="cx-hero-title">{title}</div>')
+        parts.append(f'<span class="cx-hero-eyebrow">{_h.escape(eyebrow)}</span>')
+    parts.append(f'<h2 class="cx-hero-title cx-glitch" data-text="{t}">{t}</h2>')
     if subtitle:
-        parts.append(f'<div class="cx-hero-sub">{subtitle}</div>')
+        parts.append(f'<div class="cx-hero-sub">{_h.escape(subtitle)}</div>')
     parts.append("</div>")
     st.markdown("".join(parts), unsafe_allow_html=True)
 
