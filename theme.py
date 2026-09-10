@@ -1261,90 +1261,121 @@ body::after {{
 /* ====================== per-section design languages ====================== */
 {_section_themes()}
 
-/* ================= CARN agent -- carved mahogany ================= *
- * The one warm surface in the app: deep figured mahogany with gold inlay,
- * a carved bevel, sharp bright specular.  Lives only in the sidebar.        */
+/* ============== CARN agent -- black-mahogany & gold ============== *
+ * Deep near-black figured hardwood, glowing gold inlay, an electric-cyan pulse
+ * from the bolt mark, a hard carved bevel and sharp specular.  Sidebar only.  */
 [data-testid="stSidebar"] {{
   background:
-    linear-gradient(115deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0) 22%),
-    repeating-linear-gradient(94deg, rgba(0,0,0,0.05) 0 2px, rgba(255,255,255,0.018) 2px 5px),
-    linear-gradient(160deg, #6E3320 0%, #521F12 40%, #3A1109 74%, #2A0B05 100%) !important;
-  border-right: 1px solid rgba(247,227,166,0.35) !important;
-  box-shadow: inset 0 0 0 1px rgba(247,227,166,0.10),
-              inset 0 40px 90px -60px rgba(255,220,180,0.5),
-              12px 0 48px -12px rgba(0,0,0,0.6) !important;
+    radial-gradient(120% 40% at 20% 0%, rgba(255,214,150,0.10), rgba(255,214,150,0) 60%),
+    repeating-linear-gradient(93deg, rgba(0,0,0,0.34) 0 1px, rgba(120,60,30,0.05) 1px 3px, rgba(0,0,0,0) 3px 7px),
+    linear-gradient(168deg, #3A1B10 0%, #24100A 34%, #160A06 68%, #0B0402 100%) !important;
+  border-right: 1px solid rgba(243,217,140,0.45) !important;
+  box-shadow: inset 0 1px 0 rgba(255,225,180,0.16),
+              inset -1px 0 0 rgba(243,217,140,0.22),
+              inset 0 60px 120px -80px rgba(255,210,150,0.35),
+              18px 0 60px -16px rgba(0,0,0,0.75) !important;
   -webkit-backdrop-filter: none !important; backdrop-filter: none !important;
 }}
-[data-testid="stSidebar"] * {{ --gold: #F1D89A; --gold-text: #F6E7C3; }}
+[data-testid="stSidebar"] * {{ --gold: #F3D98C; --gold-text: #F7E9C6; }}
 [data-testid="stSidebar"] [data-testid="stMarkdownContainer"] p,
-[data-testid="stSidebar"] label p, [data-testid="stSidebar"] .stMarkdown {{
-  color: #EAD9C2 !important;
-}}
+[data-testid="stSidebar"] label p, [data-testid="stSidebar"] .stMarkdown {{ color: #E7D6BE !important; }}
+
 .cx-agent-head {{
-  display: flex; align-items: center; gap: .6rem; padding: .2rem 0 .7rem;
-  border-bottom: 1px solid rgba(247,227,166,0.22); margin-bottom: .6rem;
+  display: flex; align-items: center; gap: .7rem; padding: .3rem 0 .8rem;
+  margin-bottom: .7rem; position: relative;
+}}
+.cx-agent-head::after {{
+  content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(243,217,140,0.6) 20%, rgba(127,233,255,0.4) 50%, rgba(243,217,140,0.6) 80%, transparent);
+  box-shadow: 0 0 10px rgba(243,217,140,0.35);
 }}
 .cx-agent-head svg {{
-  filter: drop-shadow(0 3px 8px rgba(0,0,0,0.5)) drop-shadow(0 0 10px rgba(127,233,255,0.25));
   flex: 0 0 auto;
+  filter: drop-shadow(0 4px 10px rgba(0,0,0,0.6)) drop-shadow(0 0 14px rgba(127,233,255,0.35));
 }}
-.cx-agent-id {{ display: flex; flex-direction: column; line-height: 1.15; }}
+.cx-agent-id {{ display: flex; flex-direction: column; line-height: 1.2; }}
 .cx-agent-id b {{
-  font-family: var(--display); font-size: 1.12rem; letter-spacing: .02em;
-  color: #FBEFD6; text-shadow: 0 1px 0 rgba(0,0,0,0.5), 0 0 14px rgba(247,227,166,0.3);
+  font-family: var(--display); font-size: 1.28rem; font-weight: 800; letter-spacing: .04em;
+  background: linear-gradient(180deg, #FDF3DA, #E8C079 55%, #B98A3C);
+  -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 1px 0 rgba(0,0,0,0.5)) drop-shadow(0 0 16px rgba(243,217,140,0.4));
 }}
 .cx-agent-id span {{
-  font-family: var(--mono); font-size: .58rem; letter-spacing: .12em;
-  text-transform: uppercase; color: #C9A86E;
+  font-family: var(--mono); font-size: .56rem; letter-spacing: .18em;
+  text-transform: uppercase; color: #B98A50;
 }}
+
+/* transcript well -- st.container(height) */
 [data-testid="stSidebar"] [data-testid="stVerticalBlockBorderWrapper"] {{
-  background: rgba(20,7,3,0.5) !important;
-  border: 1px solid rgba(247,227,166,0.16) !important; border-radius: 12px !important;
-  box-shadow: inset 0 2px 10px rgba(0,0,0,0.55), inset 0 0 0 1px rgba(255,220,180,0.05) !important;
-  padding: .5rem !important;
+  background: linear-gradient(180deg, rgba(6,3,2,0.66), rgba(14,7,4,0.55)) !important;
+  border: 1px solid rgba(243,217,140,0.2) !important; border-radius: 14px !important;
+  box-shadow: inset 0 3px 16px rgba(0,0,0,0.7), inset 0 0 0 1px rgba(255,220,180,0.05),
+              inset 0 -20px 40px -30px rgba(127,233,255,0.14) !important;
+  padding: .55rem .5rem !important;
 }}
+[data-testid="stSidebar"] [data-testid="stVerticalBlockBorderWrapper"]::-webkit-scrollbar-thumb,
+[data-testid="stSidebar"] ::-webkit-scrollbar-thumb {{ background: rgba(243,217,140,0.3) !important; }}
+
 .cx-a-msg {{
-  font-size: .82rem; line-height: 1.6; border-radius: 12px;
-  padding: .55rem .7rem; margin: .38rem 0; max-width: 92%;
-  border: 1px solid rgba(247,227,166,0.18);
-  box-shadow: 0 6px 16px -8px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,235,200,0.14);
+  font-size: .82rem; line-height: 1.62; border-radius: 13px;
+  padding: .58rem .74rem; margin: .4rem 0; max-width: 93%; width: fit-content;
+  border: 1px solid rgba(243,217,140,0.22);
+  box-shadow: 0 8px 20px -10px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,236,205,0.16);
+  position: relative;
 }}
-.cx-a-msg b {{ color: #FBEAC6; }}
-.cx-a-msg i {{ color: #C7AE8A; font-style: italic; }}
+.cx-a-msg b {{ color: #FBE7BE; font-weight: 700; }}
+.cx-a-msg i {{ color: #C2A67E; font-style: italic; }}
 .cx-a-bot {{
-  background: linear-gradient(165deg, #5A281A, #3D160C);
-  color: #EEDCC4; margin-inline-end: auto; border-bottom-left-radius: 4px;
+  background: linear-gradient(160deg, #2A140C 0%, #170A05 100%);
+  color: #EBDAC1; margin-inline-end: auto; border-bottom-left-radius: 4px;
+  box-shadow: 0 8px 20px -10px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,236,205,0.14),
+              inset 0 0 22px -14px rgba(127,233,255,0.5);
 }}
 .cx-a-me {{
-  background: linear-gradient(165deg, #8A5A2C, #6B3F1C);
-  color: #FBF0DC; margin-inline-start: auto;
-  border-bottom-right-radius: 4px; border-color: rgba(247,227,166,0.32);
+  background: linear-gradient(160deg, #5E3A1C 0%, #3E2510 100%);
+  color: #FCF1DC; margin-inline-start: auto;
+  border-bottom-right-radius: 4px; border-color: rgba(243,217,140,0.4);
 }}
-[data-testid="stSidebar"] [data-testid="stChatInput"],
+
+/* the input bar */
+[data-testid="stSidebar"] [data-testid="stChatInput"] {{ margin-top: .5rem; }}
 [data-testid="stSidebar"] [data-testid="stChatInput"] > div,
-[data-testid="stSidebar"] [data-testid="stTextArea"] textarea {{
-  background: linear-gradient(180deg, #3A1509, #2A0D05) !important;
-  border: 1px solid rgba(247,227,166,0.34) !important; border-radius: 12px !important;
-  color: #F6E7C3 !important;
-  box-shadow: inset 0 2px 8px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,220,180,0.06) !important;
+[data-testid="stSidebar"] [data-baseweb="textarea"],
+[data-testid="stSidebar"] [data-testid="stChatInput"] textarea,
+[data-testid="stSidebar"] [data-testid="stTextInput"] input {{
+  background: linear-gradient(180deg, #2C1207, #160A05) !important;
+  border: 1px solid rgba(243,217,140,0.42) !important; border-radius: 13px !important;
+  color: #F7E9C6 !important; -webkit-text-fill-color: #F7E9C6 !important;
+  box-shadow: inset 0 3px 10px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,220,180,0.06),
+              0 0 22px -10px rgba(127,233,255,0.35) !important;
 }}
-[data-testid="stSidebar"] [data-testid="stChatInput"] textarea::placeholder {{ color: rgba(180,144,96,0.6) !important; }}
-[data-testid="stSidebar"] [data-testid="stChatInputSubmitButton"] {{ color: #F1D89A !important; }}
+[data-testid="stSidebar"] [data-testid="stChatInput"] textarea::placeholder,
+[data-testid="stSidebar"] [data-testid="stTextInput"] input::placeholder {{ color: rgba(180,138,80,0.7) !important; }}
+[data-testid="stSidebar"] [data-testid="stChatInputSubmitButton"] {{
+  color: #0E0503 !important;
+  background: linear-gradient(180deg, #F3D98C, #C9973F) !important; border-radius: 10px !important;
+}}
 [data-testid="stSidebar"] .stFormSubmitButton button {{
-  background: linear-gradient(180deg, #C9973F, #9A6B23) !important;
-  color: #2A0D05 !important; -webkit-text-fill-color: #2A0D05 !important;
-  border: 1px solid rgba(247,227,166,0.5) !important; font-weight: 700 !important;
+  background: linear-gradient(180deg, #F3D98C, #B98A3C) !important;
+  color: #0E0503 !important; -webkit-text-fill-color: #0E0503 !important;
+  border: 1px solid rgba(255,240,200,0.6) !important; font-weight: 800 !important;
+  box-shadow: 0 6px 18px -6px rgba(243,217,140,0.5), inset 0 1px 0 rgba(255,255,255,0.4) !important;
 }}
+
 .cx-agent-rule {{
-  height: 2px; margin: .5rem 0 .2rem;
-  background: linear-gradient(90deg, transparent, rgba(247,227,166,0.5), transparent);
+  height: 2px; margin: .7rem 0 .3rem;
+  background: linear-gradient(90deg, transparent, rgba(243,217,140,0.55), rgba(127,233,255,0.35), rgba(243,217,140,0.55), transparent);
+  box-shadow: 0 0 12px rgba(243,217,140,0.3);
 }}
-[data-testid="stSidebar"] [data-testid="stMetricValue"] {{ color: #FBEFD6 !important; -webkit-text-fill-color: #FBEFD6 !important; }}
-[data-testid="stSidebar"] [data-testid="stMetricLabel"] p {{ color: #C9A86E !important; }}
-[data-testid="stSidebar"] hr {{ border-color: rgba(247,227,166,0.2) !important; }}
+
+/* status widgets below, on the wood */
+[data-testid="stSidebar"] [data-testid="stMetricValue"] {{ color: #FBEFD6 !important; -webkit-text-fill-color: #FBEFD6 !important; font-family: var(--mono) !important; }}
+[data-testid="stSidebar"] [data-testid="stMetricLabel"] p {{ color: #B98A50 !important; }}
+[data-testid="stSidebar"] hr {{ border-color: rgba(243,217,140,0.25) !important; }}
 [data-testid="stSidebar"] [data-testid="stAlert"] {{
-  background: rgba(20,7,3,0.5) !important; border: 1px solid rgba(247,227,166,0.2) !important;
+  background: rgba(10,4,2,0.55) !important; border: 1px solid rgba(243,217,140,0.24) !important;
 }}
+[data-testid="stSidebar"] [data-baseweb="toggle"][aria-checked="true"] > div {{ background: #C9973F !important; }}
 </style>
 """
 

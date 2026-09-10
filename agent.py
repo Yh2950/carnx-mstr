@@ -525,86 +525,101 @@ def _logo_svg(size: int = 46) -> str:
     return f"""
 <svg width="{size}" height="{size}" viewBox="0 0 96 96" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
   <defs>
-    <radialGradient id="cxa-wood" cx="34%" cy="28%" r="80%">
-      <stop offset="0%" stop-color="#7A3B22"/><stop offset="46%" stop-color="#5A2617"/>
-      <stop offset="100%" stop-color="#331107"/>
+    <radialGradient id="cxa-wood" cx="32%" cy="24%" r="88%">
+      <stop offset="0%" stop-color="#4A2314"/><stop offset="42%" stop-color="#2A130B"/>
+      <stop offset="100%" stop-color="#0A0402"/>
     </radialGradient>
     <linearGradient id="cxa-bolt" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#EAF9FF"/><stop offset="55%" stop-color="#7FE9FF"/>
-      <stop offset="100%" stop-color="#37C4E6"/>
+      <stop offset="0%" stop-color="#F4FDFF"/><stop offset="50%" stop-color="#7FE9FF"/>
+      <stop offset="100%" stop-color="#2FB6DC"/>
     </linearGradient>
     <linearGradient id="cxa-gold" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#F7E3A6"/><stop offset="100%" stop-color="#C9973F"/>
+      <stop offset="0%" stop-color="#FDF3D6"/><stop offset="45%" stop-color="#E8C079"/>
+      <stop offset="100%" stop-color="#9A6B23"/>
     </linearGradient>
-    <filter id="cxa-glow" x="-40%" y="-40%" width="180%" height="180%">
-      <feGaussianBlur stdDeviation="2.1"/>
+    <filter id="cxa-glow" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="2.6"/>
     </filter>
   </defs>
-  <circle cx="48" cy="48" r="45" fill="url(#cxa-wood)" stroke="url(#cxa-gold)" stroke-width="2.4"/>
-  <circle cx="48" cy="48" r="37" fill="none" stroke="#2C0F05" stroke-width="1.4" opacity="0.7"/>
-  <circle cx="48" cy="48" r="37" fill="none" stroke="url(#cxa-gold)" stroke-width="1" opacity="0.55"/>
-  <g opacity="0.9">
-    <path d="M40 20c-12 3-20 13-20 27 0 9 4 16 11 21" stroke="url(#cxa-gold)" stroke-width="2" fill="none" stroke-linecap="round" opacity="0.5"/>
-    <path d="M56 76c12-3 20-13 20-27 0-9-4-16-11-21" stroke="url(#cxa-gold)" stroke-width="2" fill="none" stroke-linecap="round" opacity="0.5"/>
+  <circle cx="48" cy="48" r="45.5" fill="url(#cxa-wood)"/>
+  <circle cx="48" cy="48" r="45.5" fill="none" stroke="url(#cxa-gold)" stroke-width="2.6"/>
+  <circle cx="48" cy="48" r="38" fill="none" stroke="#000000" stroke-width="1.6" opacity="0.55"/>
+  <circle cx="48" cy="48" r="37" fill="none" stroke="url(#cxa-gold)" stroke-width="1.1" opacity="0.7"/>
+  <g opacity="0.5">
+    <path d="M39 19c-13 3-21 14-21 29 0 10 5 18 12 23" stroke="url(#cxa-gold)" stroke-width="1.7" fill="none" stroke-linecap="round"/>
+    <path d="M57 77c13-3 21-14 21-29 0-10-5-18-12-23" stroke="url(#cxa-gold)" stroke-width="1.7" fill="none" stroke-linecap="round"/>
   </g>
-  <path d="M54 18 L34 50 L47 50 L40 78 L64 42 L50 42 Z"
-        fill="url(#cxa-bolt)" stroke="#EAF9FF" stroke-width="1.2" stroke-linejoin="round"
-        filter="url(#cxa-glow)"/>
-  <path d="M54 18 L34 50 L47 50 L40 78 L64 42 L50 42 Z"
-        fill="url(#cxa-bolt)" stroke="#FFFFFF" stroke-width="1" stroke-linejoin="round"/>
-  <g stroke="#7FE9FF" stroke-width="1.5" opacity="0.85">
-    <circle cx="30" cy="34" r="2.2" fill="#DFF7FF"/><circle cx="66" cy="60" r="2.2" fill="#DFF7FF"/>
-    <circle cx="64" cy="30" r="1.8" fill="#DFF7FF"/><circle cx="32" cy="62" r="1.8" fill="#DFF7FF"/>
-    <path d="M30 34 L44 44 M66 60 L52 50 M64 30 L52 40 M32 62 L44 52" opacity="0.5"/>
+  <path d="M55 16 L33 51 L47 51 L39 80 L65 41 L50 41 Z"
+        fill="url(#cxa-bolt)" filter="url(#cxa-glow)" opacity="0.9"/>
+  <path d="M55 16 L33 51 L47 51 L39 80 L65 41 L50 41 Z"
+        fill="url(#cxa-bolt)" stroke="#FFFFFF" stroke-width="1.1" stroke-linejoin="round"/>
+  <g stroke="#7FE9FF" stroke-width="1.4" opacity="0.9">
+    <circle cx="29" cy="33" r="2.4" fill="#EAFBFF"/><circle cx="67" cy="61" r="2.4" fill="#EAFBFF"/>
+    <circle cx="64" cy="29" r="1.9" fill="#EAFBFF"/><circle cx="31" cy="63" r="1.9" fill="#EAFBFF"/>
+    <path d="M29 33 L44 44 M67 61 L52 50 M64 29 L52 40 M31 63 L44 52" opacity="0.45"/>
   </g>
 </svg>"""
 
 
-def _brain_json_for_history() -> str | None:
-    return None
-
-
 def render_sidebar(*, data, get_model, last_price: float,
                    live_price: float | None = None) -> None:
-    """Draw the CARN agent panel at the top of the sidebar."""
+    """Draw the CARN agent panel at the top of the sidebar.  The chat itself is
+    an st.fragment -- sending a message reruns ONLY the panel, not the whole app
+    (which would reload data + model + the current screen every time)."""
     ss = st.session_state
     ss.setdefault("cx_agent_chat", [{"role": "assistant", "content": _GREET}])
 
     with st.sidebar:
         st.markdown(
-            f'<div class="cx-agent-head">{_logo_svg(44)}'
+            f'<div class="cx-agent-head">{_logo_svg(46)}'
             f'<div class="cx-agent-id"><b>CARN</b>'
-            f'<span>יועץ · {brain_label()}</span></div></div>',
+            f'<span>{brain_label()}</span></div></div>',
             unsafe_allow_html=True,
         )
-        box = st.container(height=430)
-        with box:
-            for m in ss["cx_agent_chat"]:
-                who = "cx-a-me" if m["role"] == "user" else "cx-a-bot"
-                st.markdown(
-                    f'<div class="cx-a-msg {who}">{_md(m["content"])}</div>',
-                    unsafe_allow_html=True,
-                )
+        _agent_chat_fragment(data, get_model, last_price, live_price)
+        st.markdown('<div class="cx-agent-rule"></div>', unsafe_allow_html=True)
 
-        prompt = None
-        try:
-            prompt = st.chat_input("דבר עם CARN…", key="cx_agent_input")
-        except Exception:  # noqa: BLE001  -- older Streamlit / nesting
-            with st.form("cx_agent_form", clear_on_submit=True):
-                txt = st.text_area("הודעה", key="cx_agent_ta",
-                                   label_visibility="collapsed", height=70)
-                if st.form_submit_button("שלח") and txt.strip():
-                    prompt = txt
 
-        if prompt:
-            ss["cx_agent_chat"].append({"role": "user", "content": prompt})
-            with st.spinner("CARN מנתח…"):
-                ans = reply(prompt, data=data, get_model=get_model,
+@st.fragment
+def _agent_chat_fragment(data, get_model, last_price, live_price) -> None:
+    ss = st.session_state
+    log = ss["cx_agent_chat"]
+
+    # reserve the transcript slot, THEN read the input, THEN fill the slot -- so a
+    # new message shows at once and only the fragment reruns.
+    slot = st.container(height=440)
+    prompt = None
+    try:
+        prompt = st.chat_input("דבר עם CARN — כמה שמת, באיזה שער…", key="cx_agent_input")
+    except Exception:  # noqa: BLE001
+        with st.form("cx_agent_form", clear_on_submit=True):
+            txt = st.text_input("הודעה", key="cx_agent_ta", label_visibility="collapsed",
+                                placeholder="דבר עם CARN…")
+            if st.form_submit_button("שלח ➤") and (txt or "").strip():
+                prompt = txt
+
+    if prompt and prompt.strip():
+        log.append({"role": "user", "content": prompt.strip()})
+        with slot:
+            _bubbles(log)
+        with st.spinner("CARN מריץ את המודל…"):
+            try:
+                ans = reply(prompt.strip(), data=data, get_model=get_model,
                             last_price=last_price, live_price=live_price)
-            ss["cx_agent_chat"].append({"role": "assistant", "content": ans})
-            st.rerun()
+            except Exception as e:  # noqa: BLE001
+                ans = f"נתקלתי בתקלה בניתוח ({type(e).__name__}). נסה שוב."
+        log.append({"role": "assistant", "content": ans})
+        st.rerun(scope="fragment")
 
-    st.sidebar.markdown('<div class="cx-agent-rule"></div>', unsafe_allow_html=True)
+    with slot:
+        _bubbles(log)
+
+
+def _bubbles(log: list[dict]) -> None:
+    for m in log:
+        who = "cx-a-me" if m["role"] == "user" else "cx-a-bot"
+        st.markdown(f'<div class="cx-a-msg {who}">{_md(m["content"])}</div>',
+                    unsafe_allow_html=True)
 
 
 def _md(text: str) -> str:
