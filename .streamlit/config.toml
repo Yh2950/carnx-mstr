@@ -3,13 +3,13 @@
 # glass recipe and the orbital nav live in theme.py.
 
 [theme]
-base = "light"
-primaryColor = "#0E8FA8"
-backgroundColor = "#CFF3F7"
-secondaryBackgroundColor = "#E4FAFC"
-textColor = "#0D1E25"
-linkColor = "#0A6C80"
-borderColor = "#B7DDE2"
+base = "dark"
+primaryColor = "#4DA6FF"
+backgroundColor = "#08070F"
+secondaryBackgroundColor = "#12101F"
+textColor = "#F2F1FA"
+linkColor = "#8FD3FF"
+borderColor = "#282740"
 showWidgetBorder = true
 baseRadius = "0.9rem"
 baseFontSize = 15
@@ -19,13 +19,11 @@ headingFont = "'Playfair Display':https://fonts.googleapis.com/css2?family=Playf
 codeFont = "'IBM Plex Mono':https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap"
 
 chartCategoricalColors = [
-  "#0E8FA8", "#1AA6C4", "#0F9B6B", "#E0485A",
-  "#3E8FA0", "#127C7C", "#33C6E2", "#C98A2E",
+  "#4DA6FF", "#8FD3FF", "#B36BFF", "#FF4FB0",
+  "#5AC8FF", "#8A4DFF", "#37D6E8", "#FF6EC7",
 ]
 
 [theme.sidebar]
-backgroundColor = "#1A0C06"
-secondaryBackgroundColor = "#241009"
-textColor = "#F0DFC6"
-linkColor = "#F1D89A"
-borderColor = "#3A1B10"
+backgroundColor = "#0B0B0C"
+secondaryBackgroundColor = "#161617"
+borderColor = "#242426"

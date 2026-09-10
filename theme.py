@@ -33,25 +33,25 @@ import streamlit as st
 # WHITE panels; one indigo accent; the Bitcoin roundel at the nav hub.
 # "liquid glass" -- deep electric ground, near-clear glass that refracts it,
 # bright specular rims.  (var names still INK*/GOLD* -- values only.)
-INK = "#0B2A33"          # deep teal (rarely seen -- water covers it)
-INK_EDGE = "#072028"     # deepest
-PANEL = "rgba(255,255,255,0.66)"  # frosted white glass over water
-PANEL_HI = "rgba(255,255,255,0.84)"
-SUNK = "rgba(255,255,255,0.5)"     # sunk well / code
-LINE = "rgba(9,42,52,0.16)"        # hairline on glass
-LINE_SOFT = "rgba(9,42,52,0.08)"
+INK = "#0A0A0B"          # neutral near-black ground (no colour)
+INK_EDGE = "#050505"     # deepest
+PANEL = "rgba(255,255,255,0.085)"  # a thin sheet of glass
+PANEL_HI = "rgba(255,255,255,0.14)"
+SUNK = "rgba(6,6,8,0.42)"         # sunk well / code
+LINE = "rgba(150,190,255,0.17)"    # the lit glass rim
+LINE_SOFT = "rgba(150,190,255,0.09)"
 
-GOLD = "#0E8FA8"         # the accent (deep lagoon teal)
-GOLD_BRIGHT = "#15B7D3"  # bright accent
-GOLD_DEEP = "#0A6C80"    # deep accent
-GOLD_TEXT = "#0A6C80"    # accent as text on light
+GOLD = "#4DA6FF"         # the accent (electric blue)
+GOLD_BRIGHT = "#8FD3FF"  # bright accent / specular
+GOLD_DEEP = "#2E6FE0"    # deep accent
+GOLD_TEXT = "#C3E0FF"    # accent as text on dark
 
-TEXT = "#0D1E25"
-TEXT_DIM = "#3B565F"
-TEXT_FAINT = "#6C888F"
+TEXT = "#F2F1FA"
+TEXT_DIM = "#A9ACCB"
+TEXT_FAINT = "#6C6F92"
 
-UP = "#0F9B6B"
-DOWN = "#E0485A"
+UP = "#3DDC97"
+DOWN = "#FF6B7A"
 
 CYAN = "#4DE3F0"
 VIOLET = "#B08CFF"
@@ -63,10 +63,10 @@ CATEGORICAL = [GOLD, CYAN, UP, MAGENTA, VIOLET, "#6C8CFF", "#37D6E8", DOWN]
 # "electric ocean" backdrop -- a bright tropical-lagoon aqua the whole page
 # floats on, with lightning.  Content rides a dark translucent slab so text and
 # the section cards keep their contrast.
-OCEAN_TOP = "#B4F4FB"
-OCEAN_MID = "#62DFE9"
-OCEAN_DEEP = "#34C6D9"
-SLAB = "rgba(255,255,255,0.56)"   # frosted glass -- the water shows through
+OCEAN_TOP = "#0C0A1A"
+OCEAN_MID = "#0A0814"
+OCEAN_DEEP = "#07060E"
+SLAB = "rgba(12,10,22,0.55)"      # dark glass over the plasma
 
 _BOLT_A = (
     "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 160 620'%3E"
@@ -305,21 +305,212 @@ _MV = '[data-testid="stMain"] [data-testid="stMetricValue"]'
 _ML = '[data-testid="stMain"] [data-testid="stMetricLabel"] p'
 
 _SECTION_THEMES_RAW = r"""
-/* Per-section identity on the light-water theme = an ACCENT-HUE shift only.
-   No dark panels, no light-on-dark text -- those fought the bright ground.
-   scroll_boot writes data-cx-section="0..10" on <html>; if the JS never runs
-   nothing here applies and the base lagoon-teal accent shows. */
-html[data-cx-section="0"]{ --gold:#3B7C8C;--gold-bright:#4E97A8;--gold-deep:#2C6270;--gold-text:#2C6270;--gold-wash:rgba(59,124,140,.10);--gold-line:rgba(59,124,140,.30); }
-html[data-cx-section="1"]{ --gold:#0E9FB8;--gold-bright:#1EC1DA;--gold-deep:#0A7688;--gold-text:#0A7688;--gold-wash:rgba(14,159,184,.12);--gold-line:rgba(14,159,184,.34); }
-html[data-cx-section="2"]{ --gold:#3E8FA0;--gold-bright:#54AEC0;--gold-deep:#2F6E7C;--gold-text:#2F6E7C;--gold-wash:rgba(62,143,160,.10);--gold-line:rgba(62,143,160,.30); }
-html[data-cx-section="3"]{ --gold:#0F7E93;--gold-bright:#159AB2;--gold-deep:#0A5E6E;--gold-text:#0A5E6E;--gold-wash:rgba(15,126,147,.10);--gold-line:rgba(15,126,147,.30); }
-html[data-cx-section="4"]{ --gold:#0E8FA8;--gold-bright:#15B7D3;--gold-deep:#0A6C80;--gold-text:#0A6C80;--gold-wash:rgba(14,143,168,.10);--gold-line:rgba(14,143,168,.30); }
-html[data-cx-section="5"]{ --gold:#1AA6C4;--gold-bright:#33C6E2;--gold-deep:#127E96;--gold-text:#127E96;--gold-wash:rgba(26,166,196,.12);--gold-line:rgba(26,166,196,.34); }
-html[data-cx-section="6"]{ --gold:#127C7C;--gold-bright:#199C9C;--gold-deep:#0D5E5E;--gold-text:#0D5E5E;--gold-wash:rgba(18,124,124,.10);--gold-line:rgba(18,124,124,.32); }
-html[data-cx-section="7"]{ --gold:#0C93A6;--gold-bright:#14B4CA;--gold-deep:#0A6E7C;--gold-text:#0A6E7C;--gold-wash:rgba(12,147,166,.12);--gold-line:rgba(12,147,166,.32); }
-html[data-cx-section="8"]{ --gold:#2E7E93;--gold-bright:#3E9CB4;--gold-deep:#235E6E;--gold-text:#235E6E;--gold-wash:rgba(46,126,147,.10);--gold-line:rgba(46,126,147,.30); }
-html[data-cx-section="9"]{ --gold:#0F8FA0;--gold-bright:#16B0C4;--gold-deep:#0A6C7A;--gold-text:#0A6C7A;--gold-wash:rgba(15,143,160,.11);--gold-line:rgba(15,143,160,.32); }
-html[data-cx-section="10"]{ --gold:#3C7F8A;--gold-bright:#4F9CA8;--gold-deep:#2D6068;--gold-text:#2D6068;--gold-wash:rgba(60,127,138,.10);--gold-line:rgba(60,127,138,.30); }
+/* 0 · סקירה — MINIMALISM : near-monochrome, air, one hairline, no gloss ---- */
+html[data-cx-section="0"]{
+  --gold:#E9E9F1;--gold-bright:#fff;--gold-deep:#B4B4CA;--gold-text:#ECECF3;
+  --gold-wash:rgba(255,255,255,.04);--gold-line:rgba(255,255,255,.12);
+  --glow:0 0 0 1px rgba(255,255,255,.14);
+}
+html[data-cx-section="0"] .stApp::after{opacity:.2;}
+html[data-cx-section="0"] §CARDS§{
+  background:rgba(255,255,255,.025)!important;border:1px solid rgba(255,255,255,.10)!important;
+  border-radius:8px!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
+  box-shadow:none!important;
+}
+html[data-cx-section="0"] §CARDS§::before,html[data-cx-section="0"] §CARDS§::after{display:none!important;}
+html[data-cx-section="0"] §HEADS§{font-family:'Space Grotesk',var(--sans)!important;font-weight:500!important;letter-spacing:0!important;}
+html[data-cx-section="0"] .cx-hero-title{font-weight:600!important;text-shadow:none!important;letter-spacing:-.02em!important;}
+html[data-cx-section="0"] .cx-hero-ghost{opacity:.3;}
+html[data-cx-section="0"] §MV§{font-family:'Space Grotesk',var(--sans)!important;font-weight:600!important;}
+
+/* 1 · טרמינל מסחר — CYBERPUNK : neon cyan/magenta, scanlines, hard glow ----- */
+html[data-cx-section="1"]{
+  --gold:#00F0FF;--gold-bright:#8BFEFF;--gold-deep:#00AEBB;--gold-text:#9DFBFF;
+  --gold-wash:rgba(0,240,255,.08);--gold-line:rgba(0,240,255,.34);
+  --glow:0 0 0 1px rgba(0,240,255,.4),0 0 26px -2px rgba(0,240,255,.5);
+}
+html[data-cx-section="1"] §CARDS§{
+  background:linear-gradient(180deg,rgba(4,10,20,.62),rgba(6,14,26,.5))!important;
+  border:1px solid rgba(0,240,255,.32)!important;border-radius:3px!important;
+  box-shadow:0 0 0 1px rgba(0,240,255,.12),0 0 34px -10px rgba(0,240,255,.45),inset 0 0 24px -14px rgba(255,0,200,.55)!important;
+}
+html[data-cx-section="1"] §CARDS§::before{display:none!important;}
+html[data-cx-section="1"] §CARDS§::after{
+  display:block!important;content:""!important;padding:0!important;
+  background:repeating-linear-gradient(0deg,rgba(0,240,255,.055) 0 1px,transparent 1px 3px)!important;
+  -webkit-mask:none!important;mask:none!important;mix-blend-mode:screen!important;opacity:.7;
+}
+html[data-cx-section="1"] §HEADS§{font-family:'Orbitron',var(--sans)!important;text-transform:uppercase!important;letter-spacing:.04em!important;font-weight:700!important;}
+html[data-cx-section="1"] .cx-hero-title{color:#CFFEFF!important;-webkit-text-fill-color:#CFFEFF!important;text-shadow:0 0 22px rgba(0,240,255,.6),2px 0 3px rgba(255,0,200,.5)!important;}
+html[data-cx-section="1"] §MV§{font-family:var(--mono)!important;color:#8BFEFF!important;-webkit-text-fill-color:#8BFEFF!important;text-shadow:0 0 14px rgba(0,240,255,.55)!important;}
+html[data-cx-section="1"] §ML§{color:#5FD8E4!important;}
+
+/* 2 · מחשבון הסתברויות — NEUMORPHISM : soft extruded, dual shadow, no border  */
+html[data-cx-section="2"]{
+  --gold:#9AA7D4;--gold-bright:#C2CBEC;--gold-deep:#6D7AA6;--gold-text:#C8CFEC;
+  --gold-wash:rgba(154,167,212,.10);--gold-line:rgba(154,167,212,.24);
+  --glow:0 0 0 1px rgba(154,167,212,.24);
+}
+html[data-cx-section="2"] .stApp::after{opacity:.28;}
+html[data-cx-section="2"] §CARDS§{
+  background:#1B1B1D!important;border:1px solid rgba(255,255,255,.03)!important;border-radius:22px!important;
+  backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
+  box-shadow:-8px -8px 20px rgba(255,255,255,.035),10px 10px 26px rgba(0,0,0,.55)!important;
+}
+html[data-cx-section="2"] §CARDS§::before,html[data-cx-section="2"] §CARDS§::after{display:none!important;}
+html[data-cx-section="2"] §CARDS§:hover{box-shadow:-4px -4px 12px rgba(255,255,255,.03),5px 5px 14px rgba(0,0,0,.5)!important;transform:none!important;}
+html[data-cx-section="2"] §HEADS§{font-family:var(--sans)!important;font-weight:600!important;color:#D6DAF0!important;}
+html[data-cx-section="2"] .cx-hero-title{color:#D9DDF2!important;-webkit-text-fill-color:#D9DDF2!important;text-shadow:-3px -3px 8px rgba(255,255,255,.04),4px 4px 12px rgba(0,0,0,.5)!important;}
+html[data-cx-section="2"] §MV§{color:#D6DAF0!important;-webkit-text-fill-color:#D6DAF0!important;}
+html[data-cx-section="2"] [data-baseweb="slider"] [role="slider"]{box-shadow:-3px -3px 8px rgba(255,255,255,.04),4px 4px 10px rgba(0,0,0,.5)!important;}
+
+/* 3 · אבחון סטטיסטי — EDITORIAL : serif, rules not boxes, long measure ------ */
+html[data-cx-section="3"]{
+  --gold:#D8C6A0;--gold-bright:#F1E6CB;--gold-deep:#A88E5E;--gold-text:#E7DAC0;
+  --gold-wash:rgba(216,198,160,.08);--gold-line:rgba(216,198,160,.28);
+  --glow:0 0 0 1px rgba(216,198,160,.28);
+}
+html[data-cx-section="3"] §CARDS§{
+  background:rgba(255,255,255,.016)!important;border:0!important;
+  border-top:1px solid rgba(216,198,160,.32)!important;border-bottom:1px solid rgba(216,198,160,.14)!important;
+  border-radius:0!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;box-shadow:none!important;
+}
+html[data-cx-section="3"] §CARDS§::before,html[data-cx-section="3"] §CARDS§::after{display:none!important;}
+html[data-cx-section="3"] §HEADS§{font-family:'Playfair Display',var(--display)!important;font-weight:800!important;letter-spacing:-.015em!important;}
+html[data-cx-section="3"] [data-testid="stMain"] h2{border-bottom:1px solid rgba(216,198,160,.24);padding-bottom:.3rem;}
+html[data-cx-section="3"] .cx-hero-title{font-style:italic!important;font-weight:700!important;color:#F4ECDA!important;-webkit-text-fill-color:#F4ECDA!important;text-shadow:none!important;}
+html[data-cx-section="3"] [data-testid="stMain"] [data-testid="stMarkdownContainer"] p{font-family:'Frank Ruhl Libre','Playfair Display',Georgia,serif!important;font-size:1.02rem!important;line-height:1.75!important;color:#D6D2C4!important;}
+html[data-cx-section="3"] §MV§{font-family:'Playfair Display',var(--display)!important;font-weight:700!important;}
+
+/* 5 · Monte Carlo — Y2K : chrome, iridescent conic rim, holo gradient text -- */
+html[data-cx-section="5"]{
+  --gold:#C6B4FF;--gold-bright:#E9DEFF;--gold-deep:#8E79DE;--gold-text:#E4DAFF;
+  --gold-wash:rgba(198,180,255,.12);--gold-line:rgba(198,180,255,.34);
+  --glow:0 0 0 1px rgba(255,255,255,.18),0 0 24px -4px rgba(150,120,255,.5);
+}
+html[data-cx-section="5"] §CARDS§{
+  background:linear-gradient(160deg,rgba(255,255,255,.16),rgba(200,190,255,.06) 45%,rgba(120,200,255,.1))!important;
+  border:1px solid transparent!important;border-radius:22px!important;
+  box-shadow:0 0 0 1.5px rgba(255,255,255,.18),0 20px 50px -18px rgba(150,120,255,.5),inset 0 2px 8px rgba(255,255,255,.4)!important;
+}
+html[data-cx-section="5"] §CARDS§::before{display:none!important;}
+html[data-cx-section="5"] §CARDS§::after{
+  display:block!important;content:""!important;padding:1.6px!important;mix-blend-mode:normal!important;opacity:.9;
+  background:conic-gradient(from 0deg,#88CCFF,#C9B4FF,#FFB3E6,#9BE8FF,#88CCFF)!important;
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0)!important;
+  mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0)!important;
+  -webkit-mask-composite:xor!important;mask-composite:exclude!important;
+}
+html[data-cx-section="5"] §HEADS§{font-family:'Orbitron',var(--sans)!important;font-weight:700!important;letter-spacing:.01em!important;}
+html[data-cx-section="5"] .cx-hero-title::before,html[data-cx-section="5"] .cx-hero-title::after{display:none!important;}
+html[data-cx-section="5"] .cx-hero-title{
+  background:linear-gradient(180deg,#fff,#C9B4FF 58%,#8AD4FF)!important;-webkit-background-clip:text!important;
+  background-clip:text!important;-webkit-text-fill-color:transparent!important;color:transparent!important;
+  text-shadow:0 6px 30px rgba(150,120,255,.5)!important;
+}
+html[data-cx-section="5"] §MV§{
+  background:linear-gradient(180deg,#fff,#C9B4FF)!important;-webkit-background-clip:text!important;
+  background-clip:text!important;-webkit-text-fill-color:transparent!important;
+}
+
+/* 6 · מבנים מתמטיים — NEO-BRUTALISM : raw, 2px borders, hard offset shadow -- */
+html[data-cx-section="6"]{
+  --gold:#C9FF3D;--gold-bright:#E3FF8A;--gold-deep:#9BD400;--gold-text:#DBFF7A;
+  --gold-wash:rgba(201,255,61,.12);--gold-line:rgba(201,255,61,.5);
+  --glow:0 0 0 2px #C9FF3D;
+}
+html[data-cx-section="6"] .stApp::after{opacity:.42;}
+html[data-cx-section="6"] §CARDS§{
+  background:#0C0C12!important;border:2px solid #F4F4F8!important;border-radius:0!important;
+  backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
+  box-shadow:6px 6px 0 0 #C9FF3D,11px 11px 0 0 rgba(0,0,0,.6)!important;
+}
+html[data-cx-section="6"] §CARDS§::before,html[data-cx-section="6"] §CARDS§::after{display:none!important;}
+html[data-cx-section="6"] §CARDS§:hover{transform:translate(-2px,-2px)!important;box-shadow:8px 8px 0 0 #C9FF3D,14px 14px 0 0 rgba(0,0,0,.6)!important;}
+html[data-cx-section="6"] §HEADS§{font-family:'Archivo Black',var(--sans)!important;text-transform:uppercase!important;letter-spacing:-.01em!important;font-weight:400!important;color:#F4F4F8!important;}
+html[data-cx-section="6"] .cx-hero-title{color:#F4F4F8!important;-webkit-text-fill-color:#F4F4F8!important;text-shadow:4px 4px 0 #C9FF3D!important;}
+html[data-cx-section="6"] .cx-hero-ghost{-webkit-text-stroke:2px rgba(201,255,61,.28)!important;opacity:1;}
+html[data-cx-section="6"] §MV§{font-family:'Archivo Black',var(--mono)!important;color:#F4F4F8!important;-webkit-text-fill-color:#F4F4F8!important;}
+html[data-cx-section="6"] §ML§{color:#C9FF3D!important;text-transform:uppercase!important;}
+
+/* 7 · מחזור ביטקוין → MSTR — MAXIMALISM : layered orange/magenta, saturated - */
+html[data-cx-section="7"]{
+  --gold:#F7931A;--gold-bright:#FFC061;--gold-deep:#C46F00;--gold-text:#FFB454;
+  --gold-wash:rgba(247,147,26,.14);--gold-line:rgba(247,147,26,.4);
+  --glow:0 0 0 1px rgba(255,180,84,.35),0 0 30px -4px rgba(247,147,26,.5);
+}
+html[data-cx-section="7"] .stApp::after{opacity:.6;}
+html[data-cx-section="7"] §CARDS§{
+  background:
+    radial-gradient(120% 140% at 0% 0%,rgba(247,147,26,.22),transparent 55%),
+    radial-gradient(120% 140% at 100% 100%,rgba(255,61,166,.18),transparent 55%),
+    linear-gradient(180deg,rgba(30,16,4,.6),rgba(20,10,26,.55))!important;
+  border:1px solid rgba(247,147,26,.42)!important;border-radius:16px!important;
+  box-shadow:0 0 0 1px rgba(255,180,84,.2),0 0 40px -8px rgba(247,147,26,.5),0 26px 60px -20px rgba(0,0,0,.7),inset 0 1px 0 rgba(255,220,180,.35)!important;
+}
+html[data-cx-section="7"] §CARDS§::before{display:none!important;}
+html[data-cx-section="7"] §HEADS§{font-family:'Playfair Display',var(--display)!important;font-weight:900!important;letter-spacing:-.02em!important;}
+html[data-cx-section="7"] .cx-hero-title::before,html[data-cx-section="7"] .cx-hero-title::after{display:none!important;}
+html[data-cx-section="7"] .cx-hero-title{
+  background:linear-gradient(92deg,#FFD9A8,#F7931A 45%,#FF3DA6)!important;-webkit-background-clip:text!important;
+  background-clip:text!important;-webkit-text-fill-color:transparent!important;color:transparent!important;
+  text-shadow:0 8px 40px rgba(247,147,26,.55)!important;
+}
+html[data-cx-section="7"] §MV§{color:#FFC061!important;-webkit-text-fill-color:#FFC061!important;text-shadow:0 0 20px rgba(247,147,26,.4)!important;}
+html[data-cx-section="7"] §ML§{color:#FFB454!important;}
+
+/* 8 · ראיות Walk-Forward — MATERIAL : tonal surface, crisp elevation, calm -- */
+html[data-cx-section="8"]{
+  --gold:#7C9EFF;--gold-bright:#A9C1FF;--gold-deep:#4E6FD8;--gold-text:#AFC4FF;
+  --gold-wash:rgba(124,158,255,.10);--gold-line:rgba(124,158,255,.3);
+  --glow:0 0 0 1px rgba(124,158,255,.3);
+}
+html[data-cx-section="8"] .stApp::after{opacity:.28;}
+html[data-cx-section="8"] §CARDS§{
+  background:#1C1C1F!important;border:1px solid rgba(255,255,255,.05)!important;border-radius:12px!important;
+  backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
+  box-shadow:0 1px 2px rgba(0,0,0,.5),0 8px 18px -6px rgba(0,0,0,.5)!important;
+}
+html[data-cx-section="8"] §CARDS§::before,html[data-cx-section="8"] §CARDS§::after{display:none!important;}
+html[data-cx-section="8"] §CARDS§:hover{box-shadow:0 2px 4px rgba(0,0,0,.5),0 14px 30px -8px rgba(0,0,0,.6)!important;transform:translateY(-1px)!important;}
+html[data-cx-section="8"] §HEADS§{font-family:var(--sans)!important;font-weight:600!important;letter-spacing:0!important;}
+html[data-cx-section="8"] .cx-hero-title{font-weight:700!important;color:#EEF1FF!important;-webkit-text-fill-color:#EEF1FF!important;text-shadow:none!important;}
+html[data-cx-section="8"] §MV§{font-family:var(--sans)!important;font-weight:600!important;}
+
+/* 9 · סיכון ומינוף — CLAYMORPHISM : puffy tactile clay, deep soft shadow ---- */
+html[data-cx-section="9"]{
+  --gold:#FF8FA3;--gold-bright:#FFB3C1;--gold-deep:#D65E76;--gold-text:#FFB0BE;
+  --gold-wash:rgba(255,143,163,.12);--gold-line:rgba(255,143,163,.34);
+  --glow:0 0 0 1px rgba(255,143,163,.34);
+}
+html[data-cx-section="9"] §CARDS§{
+  background:#26202E!important;border:0!important;border-radius:26px!important;
+  backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
+  box-shadow:0 18px 40px -12px rgba(0,0,0,.6),inset 6px 6px 14px rgba(255,255,255,.06),inset -8px -10px 20px rgba(0,0,0,.5)!important;
+}
+html[data-cx-section="9"] §CARDS§::before,html[data-cx-section="9"] §CARDS§::after{display:none!important;}
+html[data-cx-section="9"] §HEADS§{font-family:'Space Grotesk',var(--sans)!important;font-weight:700!important;color:#FDE9EC!important;}
+html[data-cx-section="9"] .cx-hero-title{color:#FFE7EC!important;-webkit-text-fill-color:#FFE7EC!important;text-shadow:0 6px 16px rgba(0,0,0,.4)!important;}
+html[data-cx-section="9"] §MV§{color:#FFB3C1!important;-webkit-text-fill-color:#FFB3C1!important;}
+html[data-cx-section="9"] [data-testid="stMain"] .stButton>button{border-radius:16px!important;box-shadow:0 8px 18px -6px rgba(0,0,0,.5),inset 3px 3px 8px rgba(255,255,255,.08),inset -4px -5px 10px rgba(0,0,0,.4)!important;}
+
+/* 10 · הגדרות — SKEUOMORPHISM : brushed metal, bevel, physical depth -------- */
+html[data-cx-section="10"]{
+  --gold:#BFC5D0;--gold-bright:#E0E4EC;--gold-deep:#8C92A0;--gold-text:#D8DCE6;
+  --gold-wash:rgba(191,197,208,.10);--gold-line:rgba(191,197,208,.3);
+  --glow:0 0 0 1px rgba(191,197,208,.3);
+}
+html[data-cx-section="10"] §CARDS§{
+  background:linear-gradient(180deg,#2C2C2F 0%,#202023 48%,#1A1A1C 52%,#212124 100%)!important;
+  border:1px solid #3C3C40!important;border-top-color:#4E4E54!important;border-radius:10px!important;
+  backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.12),inset 0 -1px 0 rgba(0,0,0,.5),0 2px 3px rgba(0,0,0,.4),0 14px 30px -14px rgba(0,0,0,.6)!important;
+}
+html[data-cx-section="10"] §CARDS§::before,html[data-cx-section="10"] §CARDS§::after{display:none!important;}
+html[data-cx-section="10"] §HEADS§{font-family:var(--sans)!important;font-weight:700!important;color:#E7EAF2!important;text-shadow:0 1px 0 rgba(0,0,0,.5)!important;}
+html[data-cx-section="10"] .cx-hero-title{color:#EDEFF5!important;-webkit-text-fill-color:#EDEFF5!important;text-shadow:0 1px 0 rgba(0,0,0,.6),0 2px 6px rgba(0,0,0,.4)!important;}
+html[data-cx-section="10"] §MV§{color:#E0E4EC!important;-webkit-text-fill-color:#E0E4EC!important;text-shadow:0 1px 0 rgba(0,0,0,.5)!important;}
+html[data-cx-section="10"] [data-baseweb="slider"] [data-testid="stSliderTrack"]{box-shadow:inset 0 1px 3px rgba(0,0,0,.6)!important;}
 """
 
 
@@ -345,8 +536,8 @@ def _css() -> str:
   --ink:{INK}; --ink-edge:{INK_EDGE}; --panel:{PANEL}; --panel-hi:{PANEL_HI};
   --sunk:{SUNK}; --line:{LINE}; --line-soft:{LINE_SOFT};
   --gold:{GOLD}; --gold-bright:{GOLD_BRIGHT}; --gold-deep:{GOLD_DEEP}; --gold-text:{GOLD_TEXT};
-  --gold-wash:rgba(14,143,168,0.10); --gold-line:rgba(14,143,168,0.30);
-  --glow:0 0 0 1px rgba(14,143,168,.28), 0 0 24px -4px rgba(14,143,168,.32);
+  --gold-wash:rgba(77,166,255,0.12); --gold-line:rgba(77,166,255,0.32);
+  --glow:0 0 0 1px rgba(77,166,255,.3), 0 0 24px -4px rgba(77,166,255,.4);
   --text:{TEXT}; --text-dim:{TEXT_DIM}; --text-faint:{TEXT_FAINT};
   --up:{UP}; --down:{DOWN};
   --display:{_DISPLAY}; --sans:{_SANS}; --mono:{_MONO};
@@ -364,36 +555,40 @@ html, body {{
 }}
 .stApp {{ background: transparent; color: var(--text); }}
 
-/* ELECTRIC OCEAN -- a bright tropical lagoon the whole app floats on.
-   back -> front:  caustic light (body::before, drifts on the compositor)
-                   a moving surface glare (.stApp::before, pointer/scroll)
-                   a soft depth wash so the reading slab detaches (.stApp::after)
-                   the storm layer (.cx-storm) + click strikes are added by JS   */
+/* ELECTRIC PLASMA -- the app's icon: near-black ground, a torus of electric-blue
+   water on the left, hot magenta plasma on the right, violet at the core.
+   back -> front:  the plasma field (body::before, drifts on the compositor)
+                   a travelling arc-glint (.stApp::before, pointer/scroll)
+                   a deep vignette (.stApp::after)
+                   the storm: swirl ring + bolts + click strikes (.cx-storm)     */
 body::before {{
   content: ""; position: fixed; inset: -16vmax; z-index: 0; pointer-events: none;
   background:
-    radial-gradient(38vmax 26vmax at 18% 12%, rgba(255,255,255,0.55), rgba(255,255,255,0) 60%),
-    radial-gradient(52vmax 40vmax at 82% 22%, rgba(220,252,255,0.5), rgba(220,252,255,0) 62%),
-    radial-gradient(64vmax 52vmax at 44% 108%, rgba(120,236,255,0.55), rgba(120,236,255,0) 66%),
-    radial-gradient(46vmax 40vmax at 6% 88%, rgba(255,255,255,0.4), rgba(255,255,255,0) 60%),
-    conic-gradient(from 200deg at 60% 40%, rgba(255,255,255,0.10), rgba(120,236,255,0) 30%, rgba(255,255,255,0.12) 62%, rgba(120,236,255,0) 100%);
-  animation: cx-caustic 34s ease-in-out infinite alternate;
+    radial-gradient(48vmax 42vmax at 20% 28%, rgba(59,123,255,0.42), rgba(59,123,255,0) 58%),
+    radial-gradient(42vmax 38vmax at 10% 64%, rgba(90,200,255,0.32), rgba(90,200,255,0) 60%),
+    radial-gradient(50vmax 46vmax at 82% 40%, rgba(255,45,158,0.40), rgba(255,45,158,0) 58%),
+    radial-gradient(40vmax 36vmax at 74% 80%, rgba(255,95,180,0.28), rgba(255,95,180,0) 60%),
+    radial-gradient(42vmax 40vmax at 50% 48%, rgba(138,77,255,0.34), rgba(138,77,255,0) 55%),
+    radial-gradient(26vmax 22vmax at 50% 46%, rgba(247,147,26,0.13), rgba(247,147,26,0) 55%),
+    radial-gradient(120vmax 120vmax at 50% 46%, rgba(7,6,14,0) 20%, rgba(4,3,9,0.92) 100%);
+  filter: saturate(1.3) brightness(0.98) contrast(1.06);
+  animation: cx-caustic 30s ease-in-out infinite alternate;
   transform: translateZ(0); will-change: transform; backface-visibility: hidden;
 }}
 .stApp::before {{
   content: ""; position: fixed; inset: -12vmax; z-index: 0; pointer-events: none;
   background:
     linear-gradient(116deg,
-      rgba(255,255,255,0) 36%, rgba(255,255,255,0.18) 47%,
-      rgba(255,255,255,0.42) 50%, rgba(255,255,255,0.16) 53%, rgba(255,255,255,0) 64%),
-    radial-gradient(30vmax 22vmax at 70% 26%, rgba(255,255,255,0.28), rgba(255,255,255,0) 60%);
+      rgba(180,215,255,0) 36%, rgba(180,215,255,0.14) 47%,
+      rgba(235,244,255,0.34) 50%, rgba(255,120,210,0.12) 54%, rgba(180,215,255,0) 64%),
+    radial-gradient(30vmax 22vmax at 70% 26%, rgba(255,90,200,0.16), rgba(255,90,200,0) 60%);
   transform: translate3d(calc(var(--cx-mx,0px) * 1.5), calc(var(--cx-plate,0px) + var(--cx-my,0px) * 1.5), 0) scale(1.06);
   transition: transform .2s cubic-bezier(.2,.8,.2,1);
   will-change: transform; backface-visibility: hidden;
 }}
 .stApp::after {{
   content: ""; position: fixed; inset: 0; z-index: 0; pointer-events: none;
-  background: radial-gradient(150% 120% at 50% 0%, rgba(255,255,255,0.28), rgba(255,255,255,0) 55%);
+  background: radial-gradient(160% 130% at 50% 40%, rgba(6,26,36,0) 30%, rgba(6,24,34,0.36) 100%);
   transform: translateZ(0); backface-visibility: hidden;
 }}
 
@@ -449,17 +644,30 @@ body::before {{
   position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden;
   contain: strict;
 }}
+.cx-storm::before {{
+  content: ""; position: absolute; left: 50%; top: 46%; width: 150vmax; height: 150vmax;
+  transform: translate(-50%,-50%); mix-blend-mode: screen; opacity: .5;
+  background: conic-gradient(from 0deg at 50% 50%,
+    rgba(59,123,255,0.28), rgba(138,77,255,0.22) 22%, rgba(255,45,158,0.26) 44%,
+    rgba(255,110,200,0.16) 60%, rgba(59,123,255,0.28) 100%);
+  -webkit-mask: radial-gradient(circle, transparent 26%, #000 40%, #000 64%, transparent 82%);
+          mask: radial-gradient(circle, transparent 26%, #000 40%, #000 64%, transparent 82%);
+  animation: cx-swirl 48s linear infinite;
+}}
+@keyframes cx-swirl {{ to {{ transform: translate(-50%,-50%) rotate(360deg); }} }}
 .cx-storm i {{
   position: absolute; top: -6vh; display: block; opacity: 0;
   background: no-repeat center top / 100% 100%; will-change: opacity;
 }}
-.cx-storm .b1 {{ left: 3%;  width: 13vmin; height: 66vh; background-image: url("{_BOLT_A}"); animation: cx-ambient 8.5s linear infinite 1.5s; }}
-.cx-storm .b2 {{ right: 2%; width: 11vmin; height: 58vh; background-image: url("{_BOLT_B}"); animation: cx-ambient 12s linear infinite 5s; }}
-.cx-storm .b3 {{ left: 44%; width: 9vmin;  height: 40vh; background-image: url("{_BOLT_A}"); animation: cx-ambient 17s linear infinite 10s; }}
+.cx-storm .b1 {{ left: 2%;  width: 14vmin; height: 70vh; background-image: url("{_BOLT_A}"); filter: drop-shadow(0 0 12px rgba(90,180,255,.9)) hue-rotate(-8deg); animation: cx-ambient 6.5s linear infinite 1.2s; }}
+.cx-storm .b2 {{ right: 1%; width: 13vmin; height: 64vh; background-image: url("{_BOLT_B}"); filter: drop-shadow(0 0 12px rgba(255,90,200,.9)) hue-rotate(180deg) saturate(1.4); animation: cx-ambient 8s linear infinite 3.5s; }}
+.cx-storm .b3 {{ left: 40%; width: 10vmin; height: 46vh; background-image: url("{_BOLT_A}"); filter: drop-shadow(0 0 10px rgba(150,120,255,.85)); animation: cx-ambient 11s linear infinite 7s; }}
+.cx-storm .b4 {{ left: 68%; width: 9vmin;  height: 42vh; background-image: url("{_BOLT_B}"); filter: drop-shadow(0 0 10px rgba(255,120,210,.8)) hue-rotate(170deg); animation: cx-ambient 13s linear infinite 9.5s; }}
+.cx-storm .b5 {{ left: 20%; width: 8vmin;  height: 38vh; background-image: url("{_BOLT_A}"); filter: drop-shadow(0 0 9px rgba(90,180,255,.8)); animation: cx-ambient 15s linear infinite 5.5s; }}
 .cx-storm::after {{
   content: ""; position: absolute; inset: 0; opacity: 0; mix-blend-mode: screen;
-  background: radial-gradient(120% 90% at 50% 0%, rgba(255,255,255,0.5), rgba(210,245,255,0) 70%);
-  animation: cx-ambient 8.5s linear infinite 1.5s;
+  background: radial-gradient(120% 100% at 50% 0%, rgba(180,215,255,0.55), rgba(255,120,210,0.12) 45%, rgba(200,225,255,0) 75%);
+  animation: cx-ambient 6.5s linear infinite 1.5s;
 }}
 @keyframes cx-ambient {{
   0%, 6%, 100% {{ opacity: 0; }}
@@ -558,11 +766,11 @@ body::before {{
 /* the glass ring band */
 .cx-orbit::before {{
   content: ""; position: absolute; inset: 34px; border-radius: 50%;
-  background: rgba(255,255,255,0.4);
-  -webkit-backdrop-filter: blur(6px) saturate(1.3); backdrop-filter: blur(6px) saturate(1.3);
+  background: rgba(16,16,18,0.34);
+  -webkit-backdrop-filter: blur(5px) saturate(1.3); backdrop-filter: blur(5px) saturate(1.3);
   border: 1px solid rgba(255,255,255,0.14);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.9), inset 0 0 60px -20px rgba(14,143,168,0.3),
-              0 30px 70px -30px rgba(9,60,72,0.3);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.35), inset 0 0 60px -20px rgba(155,140,255,0.5),
+              0 30px 80px -30px rgba(0,0,0,0.6);
   -webkit-mask: radial-gradient(circle, transparent calc(50% - 34px), #000 calc(50% - 33px));
           mask: radial-gradient(circle, transparent calc(50% - 34px), #000 calc(50% - 33px));
 }}
@@ -595,16 +803,17 @@ body::before {{
   white-space: nowrap; cursor: pointer; line-height: 1;
   font-family: var(--display); font-weight: 600; font-size: .76rem; letter-spacing: .005em;
   color: var(--text-dim);
-  background: rgba(255,255,255,0.72);
+  background: rgba(26,26,28,0.62);
   -webkit-backdrop-filter: blur(6px) saturate(1.4); backdrop-filter: blur(6px) saturate(1.4);
   border: 1px solid rgba(255,255,255,0.16); border-radius: 999px; padding: .4rem .78rem;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.95), 0 6px 18px -8px rgba(9,60,72,0.28);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.45), inset 0 0 16px -6px rgba(255,255,255,0.2),
+              0 12px 30px -14px rgba(0,0,0,0.5);
   transition: color .18s, background .18s, box-shadow .18s, border-color .18s, transform .3s cubic-bezier(.2,.85,.25,1);
 }}
 .cx-orbit.spinning .cx-orbit-item > button {{ transition: color .18s, background .18s, box-shadow .18s, border-color .18s; }}
 .cx-orbit-item > button:hover {{
-  color: var(--gold-deep); border-color: rgba(14,143,168,0.5); background: rgba(255,255,255,0.9);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,1), 0 0 22px -6px rgba(14,143,168,0.4), 0 12px 26px -14px rgba(9,60,72,0.3);
+  color: var(--text); border-color: rgba(201,190,255,0.5); background: rgba(255,255,255,0.14);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.6), 0 0 26px -6px rgba(155,140,255,0.6), 0 14px 32px -14px rgba(0,0,0,0.5);
 }}
 .cx-orbit-item.on > button {{
   color: #fff; -webkit-text-fill-color: #fff; font-weight: 700;
@@ -679,7 +888,7 @@ h2 {{ font-size: clamp(1.7rem, 2.8vw, 2.6rem); line-height: 1.06; }}
 h3 {{ font-size: 1.28rem; }}  h4 {{ font-size: 1.06rem; font-family: var(--sans); font-weight: 700; }}
 [data-testid="stMain"] [data-testid="stMarkdownContainer"] p,
 [data-testid="stMain"] [data-testid="stMarkdownContainer"] li {{
-  color: #24363D; line-height: 1.66; text-wrap: pretty; font-family: var(--sans);
+  color: #C7C9E0; line-height: 1.66; text-wrap: pretty; font-family: var(--sans);
 }}
 [data-testid="stMain"] [data-testid="stMarkdownContainer"] strong {{
   color: var(--gold-text); font-weight: 600;
@@ -695,7 +904,7 @@ code, pre, kbd, [data-testid="stMetricValue"], [data-testid="stMetricDelta"],
   border: 1px solid var(--gold-line); border-radius: 6px; padding: .05em .38em; font-size: .84em;
 }}
 pre, [data-testid="stCode"] {{
-  background: rgba(255,255,255,0.72) !important;
+  background: rgba(8,8,9,0.62) !important;
   border: 1px solid var(--line); border-radius: 12px;
 }}
 .katex {{ color: var(--text); }}
@@ -710,8 +919,8 @@ pre, [data-testid="stCode"] {{
   font-family: var(--display); font-weight: 900; text-transform: uppercase;
   font-size: clamp(4.5rem, 13vw, 10rem); line-height: .8; letter-spacing: -0.04em;
   white-space: nowrap; color: transparent;
-  -webkit-text-stroke: 1px rgba(9,42,52,0.06);
-  background: linear-gradient(180deg, rgba(14,143,168,0.12), rgba(255,255,255,0.0) 70%);
+  -webkit-text-stroke: 1px rgba(255,255,255,0.05);
+  background: linear-gradient(180deg, rgba(155,140,255,0.10), rgba(255,255,255,0.0) 70%);
   -webkit-background-clip: text; background-clip: text;
   -webkit-mask: linear-gradient(90deg, #000 0 62%, transparent 92%);
           mask: linear-gradient(90deg, #000 0 62%, transparent 92%);
@@ -728,9 +937,9 @@ pre, [data-testid="stCode"] {{
 }}
 .cx-hero-title {{
   position: relative; z-index: 2; display: block;
-  font-family: var(--display) !important; font-weight: 700; color: var(--text);
+  font-family: var(--display) !important; font-weight: 700; color: #FBFBFF;
   font-size: clamp(2.6rem, 5.2vw, 4.8rem) !important; line-height: 1.0 !important; letter-spacing: -0.028em;
-  text-shadow: 0 2px 40px rgba(14,143,168,0.18);
+  text-shadow: 0 2px 50px rgba(155,140,255,0.4);
 }}
 .cx-hero-title::before, .cx-hero-title::after {{
   content: attr(data-text); position: absolute; inset: 0; z-index: -1;
@@ -744,7 +953,7 @@ pre, [data-testid="stCode"] {{
 .cx-hero-sub {{
   position: relative; z-index: 2; margin-top: 1rem; color: var(--text-dim);
   font-size: .96rem; max-width: 64ch; text-wrap: pretty; font-family: var(--sans);
-  padding-left: 26px; border-left: 2px solid rgba(14,143,168,0.35);
+  padding-left: 26px; border-left: 1px solid rgba(255,255,255,0.14);
 }}
 @keyframes cx-rgb-l {{
   0%,88%,100% {{ transform: translate3d(-2px,0,0); }}
@@ -767,14 +976,14 @@ pre, [data-testid="stCode"] {{
 [data-testid="stMetric"] {{
   background: linear-gradient(180deg, rgba(26,26,28,0.62), rgba(15,15,16,0.54));
   border: 1px solid var(--line); border-radius: 18px; padding: 1rem 1.15rem;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.85), 0 16px 36px -22px rgba(9,60,72,0.28);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.28), 0 18px 42px -22px rgba(0,0,0,0.6);
   contain: layout style;
   transition: border-color .16s ease, box-shadow .16s ease, transform .16s ease;
 }}
 [data-testid="stMetric"]:hover {{
   background: linear-gradient(180deg, rgba(36,36,39,0.7), rgba(20,20,22,0.6));
   border-color: rgba(155,140,255,0.35);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.95), 0 0 22px -8px rgba(14,143,168,0.3), 0 18px 40px -20px rgba(9,60,72,0.25);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.4), 0 0 22px -8px rgba(91,84,232,0.3), 0 20px 48px -20px rgba(0,0,0,0.5);
   transform: translateY(-2px);
 }}
 [data-testid="stMetricLabel"], [data-testid="stMetricLabel"] p {{
@@ -811,7 +1020,7 @@ pre, [data-testid="stCode"] {{
 /* ---------- buttons ---------- */
 .stButton > button, .stDownloadButton > button, [data-testid="stFormSubmitButton"] > button {{
   border-radius: 11px; font-weight: 600; letter-spacing: .005em; font-family: var(--sans);
-  border: 1px solid var(--gold-line); background: rgba(255,255,255,0.72); color: var(--gold-text);
+  border: 1px solid var(--gold-line); background: rgba(255,255,255,0.06); color: var(--gold-text);
   box-shadow: inset 0 1px 0 rgba(255,255,255,0.22);
   transition: border-color .14s ease, color .14s ease, background .14s ease, box-shadow .14s ease;
 }}
@@ -821,13 +1030,13 @@ pre, [data-testid="stCode"] {{
   box-shadow: 0 0 22px -6px rgba(91,84,232,0.4), inset 0 1px 0 rgba(255,255,255,0.8);
 }}
 .stButton > button[kind="primary"], [data-testid="stFormSubmitButton"] > button {{
-  background: linear-gradient(135deg, #19BCD8 0%, #0E8FA8 55%, #0A6C80 100%);
+  background: linear-gradient(135deg, #9E8CFF 0%, #7B67EC 55%, #5F4BD6 100%);
   color: #fff; -webkit-text-fill-color: #fff; border-color: rgba(191,169,255,0.5);
-  box-shadow: 0 8px 24px -6px rgba(14,143,168,0.5), inset 0 1px 0 rgba(255,255,255,0.4);
+  box-shadow: 0 8px 28px -6px rgba(123,103,236,0.65), inset 0 1px 0 rgba(255,255,255,0.22);
 }}
 .stButton > button[kind="primary"]:hover, [data-testid="stFormSubmitButton"] > button:hover {{
   filter: brightness(1.08); color: #fff;
-  box-shadow: 0 10px 32px -6px rgba(14,143,168,0.7), inset 0 1px 0 rgba(255,255,255,0.5);
+  box-shadow: 0 10px 36px -6px rgba(123,103,236,0.85), inset 0 1px 0 rgba(255,255,255,0.28);
 }}
 
 /* ---------- sidebar (utility drawer, collapsed) ---------- */
@@ -864,7 +1073,7 @@ pre, [data-testid="stCode"] {{
 [data-baseweb="input"], [data-baseweb="select"] > div, [data-baseweb="textarea"],
 [data-testid="stNumberInput"] input, [data-testid="stTextInput"] input, [data-testid="stDateInput"] input {{
   border-radius: 10px !important; border-color: var(--line) !important;
-  background: rgba(255,255,255,0.78) !important; color: var(--text) !important; font-family: var(--mono);
+  background: rgba(255,255,255,0.055) !important; color: var(--text) !important; font-family: var(--mono);
 }}
 [data-baseweb="input"]:focus-within, [data-baseweb="select"] > div:focus-within {{
   border-color: var(--gold) !important;
@@ -891,7 +1100,7 @@ pre, [data-testid="stCode"] {{
 [data-testid="stNotificationContentInfo"], [data-testid="stNotificationContentWarning"],
 [data-testid="stNotificationContentError"], [data-testid="stNotificationContentSuccess"] {{
   border-radius: 14px;
-  background: linear-gradient(180deg, rgba(255,255,255,0.7), rgba(255,255,255,0.5)) !important;
+  background: linear-gradient(180deg, rgba(24,24,26,0.64), rgba(15,15,16,0.56)) !important;
 }}
 [data-testid="stAlert"] {{ border: 1px solid var(--line); border-inline-start: 3px solid var(--gold); }}
 [data-testid="stAlert"] [data-testid="stMarkdownContainer"] p, [data-testid="stAlertContainer"] p {{
@@ -899,22 +1108,22 @@ pre, [data-testid="stCode"] {{
 }}
 [data-testid="stExpander"] {{
   border-radius: 16px; border: 1px solid var(--line); overflow: hidden;
-  background: linear-gradient(180deg, rgba(255,255,255,0.66), rgba(255,255,255,0.48));
+  background: linear-gradient(180deg, rgba(23,23,25,0.6), rgba(14,14,15,0.52));
   box-shadow: inset 0 1px 0 rgba(255,255,255,0.24), 0 18px 42px -22px rgba(0,0,0,0.6);
   contain: layout style;
 }}
 [data-testid="stExpander"] summary:hover {{ background: var(--gold-wash); }}
 [data-testid="stForm"] {{
   border-radius: 18px; border: 1px solid var(--line);
-  background: linear-gradient(180deg, rgba(255,255,255,0.66), rgba(255,255,255,0.48));
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.85), 0 16px 36px -22px rgba(9,60,72,0.26);
+  background: linear-gradient(180deg, rgba(24,22,42,0.58), rgba(15,14,28,0.5));
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.24), 0 18px 42px -22px rgba(0,0,0,0.6);
   contain: layout style;
 }}
 /* bordered container -> a barely-there frame so the inner card carries the weight */
 div[data-testid="stVerticalBlockBorderWrapper"] {{
   border-radius: 20px;
-  background: rgba(255,255,255,0.4);
-  box-shadow: inset 0 0 0 1px rgba(9,42,52,0.1);
+  background: rgba(255,255,255,0.035);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.14);
 }}
 /* st.metric built-in sparkline: sit it on the card, not on a black rectangle */
 [data-testid="stMetricChart"], [data-testid="stMetricChart"] canvas,

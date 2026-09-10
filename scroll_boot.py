@@ -48,7 +48,8 @@ _ENGINE = r"""
     // the storm: ambient bolts at the lagoon edges + a strike on every click
     if(!d.querySelector('.cx-storm')){
       var storm=d.createElement('div'); storm.className='cx-storm';
-      storm.innerHTML='<i class="b1"></i><i class="b2"></i><i class="b3"></i>';
+      storm.innerHTML='<i class="b1"></i><i class="b2"></i><i class="b3"></i>'
+        +'<i class="b4"></i><i class="b5"></i>';
       d.body.appendChild(storm);
     }
     var strikeW=d.querySelector('.cx-strike-wrap');
