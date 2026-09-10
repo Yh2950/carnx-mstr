@@ -45,6 +45,35 @@ _ENGINE = r"""
     var flash=d.querySelector('.cx-flash');
     if(!flash){ flash=d.createElement('div'); flash.className='cx-flash'; d.body.appendChild(flash); }
 
+    // the storm: ambient bolts at the lagoon edges + a strike on every click
+    if(!d.querySelector('.cx-storm')){
+      var storm=d.createElement('div'); storm.className='cx-storm';
+      storm.innerHTML='<i class="b1"></i><i class="b2"></i><i class="b3"></i>';
+      d.body.appendChild(storm);
+    }
+    var strikeW=d.querySelector('.cx-strike-wrap');
+    if(!strikeW){
+      strikeW=d.createElement('div'); strikeW.className='cx-strike-wrap';
+      strikeW.innerHTML='<div class="cx-strike"></div><div class="cx-strike-bolt"></div>';
+      d.body.appendChild(strikeW);
+    }
+    var strikeT=null, lastStrike=0;
+    function strike(x,y){
+      var now=Date.now(); if(now-lastStrike<140) return; lastStrike=now;
+      strikeW.style.setProperty('--sx', (x|0)+'px');
+      strikeW.style.setProperty('--sy', (y|0)+'px');
+      strikeW.classList.remove('on'); void strikeW.offsetWidth; strikeW.classList.add('on');
+      if(navigator.vibrate) navigator.vibrate(8);
+      clearTimeout(strikeT);
+      strikeT=setTimeout(function(){ strikeW.classList.remove('on'); }, 460);
+    }
+    if(!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches)){
+      d.addEventListener('pointerdown', function(e){
+        if(e.button && e.button!==0) return;
+        strike(e.clientX, e.clientY);
+      }, {passive:true, capture:true});
+    }
+
     function scroller(){
       var c=[d.querySelector('[data-testid=stMain]'),
              d.querySelector('[data-testid=stAppViewContainer]'),

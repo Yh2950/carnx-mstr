@@ -60,6 +60,33 @@ LIME = "#9BE86B"
 AMBER = "#F7931A"        # Bitcoin orange -- the hub logo only
 CATEGORICAL = [GOLD, CYAN, UP, MAGENTA, VIOLET, "#6C8CFF", "#37D6E8", DOWN]
 
+# "electric ocean" backdrop -- a bright tropical-lagoon aqua the whole page
+# floats on, with lightning.  Content rides a dark translucent slab so text and
+# the section cards keep their contrast.
+OCEAN_TOP = "#93ECFF"
+OCEAN_MID = "#5CD8F1"
+OCEAN_DEEP = "#31BFE3"
+SLAB = "rgba(11,14,18,0.60)"      # the reading surface over the water
+
+_BOLT_A = (
+    "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 160 620'%3E"
+    "%3Cdefs%3E%3Cfilter id='g' x='-90%25' y='-12%25' width='280%25' height='124%25'%3E"
+    "%3CfeGaussianBlur stdDeviation='8'/%3E%3C/filter%3E%3C/defs%3E"
+    "%3Cpath d='M112 0 L62 205 L104 198 L44 372 L90 360 L34 620' fill='none' "
+    "stroke='%23d6f7ff' stroke-width='12' filter='url(%23g)' opacity='0.85'/%3E"
+    "%3Cpath d='M112 0 L62 205 L104 198 L44 372 L90 360 L34 620' fill='none' "
+    "stroke='%23ffffff' stroke-width='3' stroke-linejoin='round'/%3E%3C/svg%3E"
+)
+_BOLT_B = (
+    "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 160 620'%3E"
+    "%3Cdefs%3E%3Cfilter id='g' x='-90%25' y='-12%25' width='280%25' height='124%25'%3E"
+    "%3CfeGaussianBlur stdDeviation='8'/%3E%3C/filter%3E%3C/defs%3E"
+    "%3Cpath d='M52 0 L104 195 L64 202 L120 366 L74 356 L126 620' fill='none' "
+    "stroke='%23d6f7ff' stroke-width='12' filter='url(%23g)' opacity='0.85'/%3E"
+    "%3Cpath d='M52 0 L104 195 L64 202 L120 366 L74 356 L126 620' fill='none' "
+    "stroke='%23ffffff' stroke-width='3' stroke-linejoin='round'/%3E%3C/svg%3E"
+)
+
 # editorial: a dramatic high-contrast serif for the cinematic display type,
 # a clean grotesque for working UI, a mono for figures.
 _DISPLAY = "'Playfair Display', 'Frank Ruhl Libre', 'Fraunces', Georgia, 'Times New Roman', serif"
@@ -523,34 +550,54 @@ def _css() -> str:
  *                 grain + vignette (.stApp::after)
  *                 the section-change sweep + flash (.cx-wipe / .cx-flash)       */
 html, body, [class*="stApp"] {{ font-family: var(--sans); }}
-html, body {{ background: {INK}; }}
+html, body {{
+  background: linear-gradient(178deg, {OCEAN_TOP} 0%, {OCEAN_MID} 44%, {OCEAN_DEEP} 100%);
+}}
 .stApp {{ background: transparent; color: var(--text); }}
 
-/* Neutral near-black ground -- NO colour.  Just a soft depth vignette. */
+/* ELECTRIC OCEAN -- a bright tropical lagoon the whole app floats on.
+   back -> front:  caustic light (body::before, drifts on the compositor)
+                   a moving surface glare (.stApp::before, pointer/scroll)
+                   a soft depth wash so the reading slab detaches (.stApp::after)
+                   the storm layer (.cx-storm) + click strikes are added by JS   */
 body::before {{
   content: ""; position: fixed; inset: -16vmax; z-index: 0; pointer-events: none;
   background:
-    radial-gradient(130vmax 120vmax at 50% 38%, rgba(0,0,0,0) 26%, rgba(0,0,0,0.55) 100%);
-  transform: translateZ(0); backface-visibility: hidden;
+    radial-gradient(38vmax 26vmax at 18% 12%, rgba(255,255,255,0.55), rgba(255,255,255,0) 60%),
+    radial-gradient(52vmax 40vmax at 82% 22%, rgba(220,252,255,0.5), rgba(220,252,255,0) 62%),
+    radial-gradient(64vmax 52vmax at 44% 108%, rgba(120,236,255,0.55), rgba(120,236,255,0) 66%),
+    radial-gradient(46vmax 40vmax at 6% 88%, rgba(255,255,255,0.4), rgba(255,255,255,0) 60%),
+    conic-gradient(from 200deg at 60% 40%, rgba(255,255,255,0.10), rgba(120,236,255,0) 30%, rgba(255,255,255,0.12) 62%, rgba(120,236,255,0) 100%);
+  animation: cx-caustic 34s ease-in-out infinite alternate;
+  transform: translateZ(0); will-change: transform; backface-visibility: hidden;
 }}
-/* the pointer/scroll parallax veil -- a whisper of neutral light, transform-only */
 .stApp::before {{
-  content: ""; position: fixed; inset: -10vmax; z-index: 0; pointer-events: none;
+  content: ""; position: fixed; inset: -12vmax; z-index: 0; pointer-events: none;
   background:
-    linear-gradient(118deg,
-      rgba(255,255,255,0) 40%, rgba(255,255,255,0.025) 49%,
-      rgba(255,255,255,0.045) 50%, rgba(255,255,255,0.02) 51%, rgba(255,255,255,0) 60%);
-  transform: translate3d(calc(var(--cx-mx,0px) * 1.4), calc(var(--cx-plate,0px) + var(--cx-my,0px) * 1.4), 0) scale(1.06);
+    linear-gradient(116deg,
+      rgba(255,255,255,0) 36%, rgba(255,255,255,0.18) 47%,
+      rgba(255,255,255,0.42) 50%, rgba(255,255,255,0.16) 53%, rgba(255,255,255,0) 64%),
+    radial-gradient(30vmax 22vmax at 70% 26%, rgba(255,255,255,0.28), rgba(255,255,255,0) 60%);
+  transform: translate3d(calc(var(--cx-mx,0px) * 1.5), calc(var(--cx-plate,0px) + var(--cx-my,0px) * 1.5), 0) scale(1.06);
   transition: transform .2s cubic-bezier(.2,.8,.2,1);
   will-change: transform; backface-visibility: hidden;
 }}
 .stApp::after {{
-  content: ""; position: fixed; inset: 0; z-index: 0; pointer-events: none; opacity: .3;
-  background:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E"),
-    radial-gradient(150% 130% at 50% 0%, rgba(0,0,0,0) 46%, rgba(0,0,0,0.65) 100%);
-  background-size: 150px 150px, cover;
+  content: ""; position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background: radial-gradient(160% 130% at 50% 40%, rgba(6,26,36,0) 30%, rgba(6,24,34,0.36) 100%);
   transform: translateZ(0); backface-visibility: hidden;
+}}
+
+/* the reading slab -- a single frosted panel the content rides over the water.
+   ONE backdrop-filter on ONE element (not per-card) -> perf-safe. */
+[data-testid="stMain"] .block-container {{
+  background: {SLAB};
+  -webkit-backdrop-filter: blur(9px) saturate(1.15); backdrop-filter: blur(9px) saturate(1.15);
+  border: 1px solid rgba(255,255,255,0.13);
+  border-radius: 26px;
+  box-shadow: 0 44px 130px -44px rgba(3,20,30,0.78), inset 0 1px 0 rgba(255,255,255,0.15);
+  margin: 1.4rem auto 3rem;
+  padding-left: 2.1rem; padding-right: 2.1rem;
 }}
 
 
@@ -579,6 +626,62 @@ body::before {{
 }}
 @keyframes cx-flash {{
   0% {{ opacity: 0; }}  18% {{ opacity: 1; }}  100% {{ opacity: 0; }}
+}}
+@keyframes cx-caustic {{
+  0%   {{ transform: translate3d(0,0,0) scale(1); }}
+  100% {{ transform: translate3d(-3vmax, 2.4vmax, 0) scale(1.14); }}
+}}
+
+/* ===================== the storm ===================== *
+ * ambient bolts at the edges of the lagoon (.cx-storm, behind the slab) and a
+ * strike on every click (.cx-strike-wrap, above everything).  Opacity-only
+ * animations -- compositor cheap.  Both layers are built by scroll_boot.        */
+.cx-storm {{
+  position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden;
+  contain: strict;
+}}
+.cx-storm i {{
+  position: absolute; top: -6vh; display: block; opacity: 0;
+  background: no-repeat center top / 100% 100%; will-change: opacity;
+}}
+.cx-storm .b1 {{ left: 3%;  width: 13vmin; height: 66vh; background-image: url("{_BOLT_A}"); animation: cx-ambient 8.5s linear infinite 1.5s; }}
+.cx-storm .b2 {{ right: 2%; width: 11vmin; height: 58vh; background-image: url("{_BOLT_B}"); animation: cx-ambient 12s linear infinite 5s; }}
+.cx-storm .b3 {{ left: 44%; width: 9vmin;  height: 40vh; background-image: url("{_BOLT_A}"); animation: cx-ambient 17s linear infinite 10s; }}
+.cx-storm::after {{
+  content: ""; position: absolute; inset: 0; opacity: 0; mix-blend-mode: screen;
+  background: radial-gradient(120% 90% at 50% 0%, rgba(255,255,255,0.5), rgba(210,245,255,0) 70%);
+  animation: cx-ambient 8.5s linear infinite 1.5s;
+}}
+@keyframes cx-ambient {{
+  0%, 6%, 100% {{ opacity: 0; }}
+  1.4% {{ opacity: .95; }}
+  2.6% {{ opacity: .12; }}
+  3.6% {{ opacity: .8; }}
+  5% {{ opacity: 0; }}
+}}
+.cx-strike-wrap {{ position: fixed; inset: 0; z-index: 1200; pointer-events: none; }}
+.cx-strike {{
+  position: absolute; inset: 0; opacity: 0;
+  background: radial-gradient(70vmax 70vmax at var(--sx,50%) var(--sy,38%),
+    rgba(232,251,255,0.62), rgba(190,238,255,0) 58%);
+}}
+.cx-strike-bolt {{
+  position: absolute; left: var(--sx,50%); top: -8vh; width: 24vmin;
+  height: calc(var(--sy,38vh) + 10vh); transform: translateX(-50%); opacity: 0;
+  background: url("{_BOLT_A}") no-repeat center bottom / 100% 100%;
+}}
+.cx-strike-wrap.on .cx-strike {{ animation: cx-strike-flash .42s ease-out; }}
+.cx-strike-wrap.on .cx-strike-bolt {{ animation: cx-strike-bolt .42s ease-out; }}
+@keyframes cx-strike-flash {{
+  0% {{ opacity: 0; }} 8% {{ opacity: 1; }} 20% {{ opacity: .22; }}
+  30% {{ opacity: .66; }} 100% {{ opacity: 0; }}
+}}
+@keyframes cx-strike-bolt {{
+  0% {{ opacity: 0; }} 6% {{ opacity: 1; }} 16% {{ opacity: .28; }}
+  26% {{ opacity: .92; }} 55% {{ opacity: 0; }} 100% {{ opacity: 0; }}
+}}
+@media (prefers-reduced-motion: reduce) {{
+  .cx-storm, .cx-strike-wrap {{ display: none !important; }}
 }}
 
 /* per-section hue shift for the section-change flash (cheap; one var). */
@@ -697,10 +800,10 @@ body::before {{
 }}
 .cx-orbit-item.on > button {{
   color: #fff; -webkit-text-fill-color: #fff; font-weight: 700;
-  background: linear-gradient(135deg, rgba(201,190,255,0.5), rgba(155,140,255,0.35));
-  border-color: rgba(201,190,255,0.7);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.7), inset 0 0 20px -4px rgba(255,255,255,0.4),
-              0 0 40px -4px rgba(155,140,255,0.8), 0 16px 40px -12px rgba(0,0,0,0.55);
+  background: linear-gradient(135deg, rgba(150,236,255,0.5), rgba(90,210,240,0.34));
+  border-color: rgba(180,245,255,0.75);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.75), inset 0 0 20px -4px rgba(255,255,255,0.45),
+              0 0 42px -4px rgba(110,225,255,0.85), 0 16px 40px -12px rgba(0,0,0,0.55);
   transform: translate(-50%,-50%) rotate(calc(-1 * var(--a) - var(--orbit-rot) - var(--spin))) scale(1.16);
   z-index: 4;
 }}
@@ -712,17 +815,17 @@ body::before {{
 .cx-orbit-hub:active {{ cursor: grabbing; }}
 .cx-orbit-hub svg, .cx-orbit-hub img {{
   width: 100%; height: 100%; display: block; border-radius: 50%; position: relative; z-index: 2;
-  box-shadow: 0 24px 60px -12px rgba(155,140,255,.6), 0 4px 16px rgba(0,0,0,.35),
+  box-shadow: 0 24px 60px -12px rgba(110,225,255,.65), 0 4px 16px rgba(0,0,0,.35),
               inset 0 0 0 2px rgba(255,255,255,.35), inset 0 3px 10px rgba(255,255,255,.25);
 }}
 .cx-orbit-hub::before {{  /* soft always-on aura */
   content: ""; position: absolute; inset: -18px; border-radius: 50%; z-index: 0;
-  background: radial-gradient(circle, rgba(155,140,255,.5) 0%, rgba(77,227,240,.2) 45%, rgba(155,140,255,0) 72%);
+  background: radial-gradient(circle, rgba(120,230,255,.55) 0%, rgba(255,255,255,.25) 42%, rgba(120,230,255,0) 72%);
   filter: blur(6px); animation: cx-hub-pulse 4.5s ease-in-out infinite;
 }}
 .cx-orbit-hub::after {{  /* rotating conic ring */
   content: ""; position: absolute; inset: -12px; border-radius: 50%; z-index: 1;
-  background: conic-gradient(from 0deg, rgba(155,140,255,0), rgba(200,220,255,.85), rgba(77,227,240,.4), rgba(255,110,199,.3), rgba(155,140,255,0) 70%);
+  background: conic-gradient(from 0deg, rgba(120,230,255,0), rgba(240,252,255,.9), rgba(90,216,241,.5), rgba(255,255,255,.35), rgba(120,230,255,0) 70%);
   opacity: .5; transition: opacity .3s; animation: cx-orbit-spin 8s linear infinite;
   -webkit-mask: radial-gradient(circle, transparent calc(50% - 5px), #000 calc(50% - 3px));
           mask: radial-gradient(circle, transparent calc(50% - 5px), #000 calc(50% - 3px));
