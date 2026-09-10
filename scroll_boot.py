@@ -178,7 +178,7 @@ _ENGINE = r"""
       return w[0]||n;
     }
 
-    var orbit=d.querySelector('.cx-orbit'), oRing, oHub, oName, oItems=[];
+    var orbit=d.querySelector('.cx-orbit'), oRing, oHub, oItems=[];
     var oSel=0, oN=0, STEP=32.72, dragging=false, navT=null, rot=0;
 
     function buildOrbit(){
@@ -188,9 +188,7 @@ _ENGINE = r"""
       if(!orbit){
         orbit=d.createElement('div'); orbit.className='cx-orbit';
         orbit.innerHTML='<div class="cx-orbit-ring"></div>'
-          +'<div class="cx-orbit-hub">'+BTC+'</div>'
-          +'<div class="cx-orbit-name"></div>'
-          +'<div class="cx-orbit-hint">סובב · גרור · בחר</div>';
+          +'<div class="cx-orbit-hub">'+BTC+'</div>';
         var mast=d.querySelector('.cx-mast');
         var row=mast && mast.closest('[data-testid=stHorizontalBlock]');
         var host=(row && row.closest('[data-testid=stElementContainer]')) || row;
@@ -198,7 +196,6 @@ _ENGINE = r"""
         else (d.querySelector('[data-testid=stMain] .block-container [data-testid=stVerticalBlock]')||d.body).prepend(orbit);
         oRing=orbit.querySelector('.cx-orbit-ring');
         oHub=orbit.querySelector('.cx-orbit-hub');
-        oName=orbit.querySelector('.cx-orbit-name');
         bindOrbit();
       }
       if(oItems.length!==oN){
@@ -225,7 +222,6 @@ _ENGINE = r"""
       oSel=Math.max(0,Math.min(oN-1,sel|0));
       rot = -oSel*STEP;
       orbit.style.setProperty('--orbit-rot', rot+'deg');
-      oName.textContent = names[oSel]||'';
       for(var i=0;i<oItems.length;i++) oItems[i].classList.toggle('on', i===oSel);
     }
 
@@ -258,8 +254,6 @@ _ENGINE = r"""
         var tgt=Math.max(0,Math.min(oN-1, Math.round(sel0 - acc/STEP)));
         if(tgt!==oSel){
           oSel=tgt;
-          var names=navNames();
-          oName.textContent=names[oSel]||'';
           for(var i=0;i<oItems.length;i++) oItems[i].classList.toggle('on', i===oSel);
           if(navigator.vibrate) navigator.vibrate(5);
           goTo(oSel, false);

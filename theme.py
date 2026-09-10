@@ -1045,8 +1045,7 @@ def header_nav(sections: list[str] | None = None, default: str = "סקירה") -
     top = st.columns([5, 1], vertical_alignment="center")
     with top[0]:
         st.markdown(
-            f'<div class="cx-mast">{_wordmark_svg()}'
-            f'<span class="cx-sub">MSTR · Bitcoin — probabilistic instrument</span></div>',
+            f'<div class="cx-mast">{_wordmark_svg()}</div>',
             unsafe_allow_html=True,
         )
     with top[1]:
@@ -1075,8 +1074,6 @@ def hero(title: str, subtitle: str = "", eyebrow: str = "CARN-X") -> None:
         '<div class="cx-hero">',
         f'<span class="cx-hero-ghost" aria-hidden="true">{ghost}</span>',
     ]
-    if eyebrow:
-        parts.append(f'<span class="cx-hero-eyebrow">{_h.escape(eyebrow)}</span>')
     parts.append(f'<h2 class="cx-hero-title cx-glitch" data-text="{t}">{t}</h2>')
     if subtitle:
         parts.append(f'<div class="cx-hero-sub">{_h.escape(subtitle)}</div>')
