@@ -151,6 +151,19 @@ rets = np.log(close).diff()
 fresh = panel_freshness(panel)
 lq = get_live_quote()
 
+# --- CARN conversational agent (top of the sidebar; reads the model, never mutates it)
+try:
+    import agent as _cx_agent
+
+    _cx_agent.render_sidebar(
+        data=data,
+        get_model=(lambda: load_model_cached(data, model_mtime()) if model_exists() else None),
+        last_price=last_price,
+        live_price=lq.price,
+    )
+except Exception as _e:  # a cosmetic panel must never break the app
+    st.sidebar.caption(f"CARN agent unavailable: {type(_e).__name__}")
+
 st.sidebar.markdown("---")
 st.sidebar.metric(
     f"סגירת MSTR ({as_of.date()})",

@@ -1260,6 +1260,91 @@ body::after {{
 
 /* ====================== per-section design languages ====================== */
 {_section_themes()}
+
+/* ================= CARN agent -- carved mahogany ================= *
+ * The one warm surface in the app: deep figured mahogany with gold inlay,
+ * a carved bevel, sharp bright specular.  Lives only in the sidebar.        */
+[data-testid="stSidebar"] {{
+  background:
+    linear-gradient(115deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0) 22%),
+    repeating-linear-gradient(94deg, rgba(0,0,0,0.05) 0 2px, rgba(255,255,255,0.018) 2px 5px),
+    linear-gradient(160deg, #6E3320 0%, #521F12 40%, #3A1109 74%, #2A0B05 100%) !important;
+  border-right: 1px solid rgba(247,227,166,0.35) !important;
+  box-shadow: inset 0 0 0 1px rgba(247,227,166,0.10),
+              inset 0 40px 90px -60px rgba(255,220,180,0.5),
+              12px 0 48px -12px rgba(0,0,0,0.6) !important;
+  -webkit-backdrop-filter: none !important; backdrop-filter: none !important;
+}}
+[data-testid="stSidebar"] * {{ --gold: #F1D89A; --gold-text: #F6E7C3; }}
+[data-testid="stSidebar"] [data-testid="stMarkdownContainer"] p,
+[data-testid="stSidebar"] label p, [data-testid="stSidebar"] .stMarkdown {{
+  color: #EAD9C2 !important;
+}}
+.cx-agent-head {{
+  display: flex; align-items: center; gap: .6rem; padding: .2rem 0 .7rem;
+  border-bottom: 1px solid rgba(247,227,166,0.22); margin-bottom: .6rem;
+}}
+.cx-agent-head svg {{
+  filter: drop-shadow(0 3px 8px rgba(0,0,0,0.5)) drop-shadow(0 0 10px rgba(127,233,255,0.25));
+  flex: 0 0 auto;
+}}
+.cx-agent-id {{ display: flex; flex-direction: column; line-height: 1.15; }}
+.cx-agent-id b {{
+  font-family: var(--display); font-size: 1.12rem; letter-spacing: .02em;
+  color: #FBEFD6; text-shadow: 0 1px 0 rgba(0,0,0,0.5), 0 0 14px rgba(247,227,166,0.3);
+}}
+.cx-agent-id span {{
+  font-family: var(--mono); font-size: .58rem; letter-spacing: .12em;
+  text-transform: uppercase; color: #C9A86E;
+}}
+[data-testid="stSidebar"] [data-testid="stVerticalBlockBorderWrapper"] {{
+  background: rgba(20,7,3,0.5) !important;
+  border: 1px solid rgba(247,227,166,0.16) !important; border-radius: 12px !important;
+  box-shadow: inset 0 2px 10px rgba(0,0,0,0.55), inset 0 0 0 1px rgba(255,220,180,0.05) !important;
+  padding: .5rem !important;
+}}
+.cx-a-msg {{
+  font-size: .82rem; line-height: 1.6; border-radius: 12px;
+  padding: .55rem .7rem; margin: .38rem 0; max-width: 92%;
+  border: 1px solid rgba(247,227,166,0.18);
+  box-shadow: 0 6px 16px -8px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,235,200,0.14);
+}}
+.cx-a-msg b {{ color: #FBEAC6; }}
+.cx-a-msg i {{ color: #C7AE8A; font-style: italic; }}
+.cx-a-bot {{
+  background: linear-gradient(165deg, #5A281A, #3D160C);
+  color: #EEDCC4; margin-inline-end: auto; border-bottom-left-radius: 4px;
+}}
+.cx-a-me {{
+  background: linear-gradient(165deg, #8A5A2C, #6B3F1C);
+  color: #FBF0DC; margin-inline-start: auto;
+  border-bottom-right-radius: 4px; border-color: rgba(247,227,166,0.32);
+}}
+[data-testid="stSidebar"] [data-testid="stChatInput"],
+[data-testid="stSidebar"] [data-testid="stChatInput"] > div,
+[data-testid="stSidebar"] [data-testid="stTextArea"] textarea {{
+  background: linear-gradient(180deg, #3A1509, #2A0D05) !important;
+  border: 1px solid rgba(247,227,166,0.34) !important; border-radius: 12px !important;
+  color: #F6E7C3 !important;
+  box-shadow: inset 0 2px 8px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,220,180,0.06) !important;
+}}
+[data-testid="stSidebar"] [data-testid="stChatInput"] textarea::placeholder {{ color: rgba(180,144,96,0.6) !important; }}
+[data-testid="stSidebar"] [data-testid="stChatInputSubmitButton"] {{ color: #F1D89A !important; }}
+[data-testid="stSidebar"] .stFormSubmitButton button {{
+  background: linear-gradient(180deg, #C9973F, #9A6B23) !important;
+  color: #2A0D05 !important; -webkit-text-fill-color: #2A0D05 !important;
+  border: 1px solid rgba(247,227,166,0.5) !important; font-weight: 700 !important;
+}}
+.cx-agent-rule {{
+  height: 2px; margin: .5rem 0 .2rem;
+  background: linear-gradient(90deg, transparent, rgba(247,227,166,0.5), transparent);
+}}
+[data-testid="stSidebar"] [data-testid="stMetricValue"] {{ color: #FBEFD6 !important; -webkit-text-fill-color: #FBEFD6 !important; }}
+[data-testid="stSidebar"] [data-testid="stMetricLabel"] p {{ color: #C9A86E !important; }}
+[data-testid="stSidebar"] hr {{ border-color: rgba(247,227,166,0.2) !important; }}
+[data-testid="stSidebar"] [data-testid="stAlert"] {{
+  background: rgba(20,7,3,0.5) !important; border: 1px solid rgba(247,227,166,0.2) !important;
+}}
 </style>
 """
 

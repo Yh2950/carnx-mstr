@@ -74,6 +74,7 @@ def _():
         "ltr_boot",
         "brand_boot",
         "scroll_boot",
+        "agent",
         "charts",
         "tv_chart",
         "math_structures",
