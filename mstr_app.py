@@ -15,7 +15,7 @@ from __future__ import annotations
 
 import envcheck  # noqa: F401  (must precede heavy imports)
 import ltr_boot  # noqa: F401  (patches static/index.html -> LTR sliders on RTL browsers)
-import brand_boot  # noqa: F401  (installs the favicon / iOS-home-screen icon + manifest)
+import brand_boot  # favicon / iOS-home-screen icon -- render() call is below, after set_page_config
 import scroll_boot  # nav wheel / scroll meter / parallax / reveal -- rendered below, after set_page_config
 
 import glob
@@ -39,6 +39,7 @@ from theme import inject_theme, hero, header_nav  # visual layer only — no log
 import charts as C  # themed chart builders — visual only
 
 inject_theme()
+brand_boot.render()
 scroll_boot.render()
 
 # ---------------------------------------------------------------------------
