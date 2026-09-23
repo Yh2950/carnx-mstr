@@ -18,7 +18,11 @@ sympy
 networkx
 
 # app + data
-streamlit>=1.40
+# pinned exactly: scroll_boot's nav wheel uses the deprecated (but still
+# functional) st.components.v1.html to reach the real page from an iframe --
+# verified end-to-end against this exact version. An unpinned `>=` let Cloud
+# silently resolve a newer release that could drop the API without warning.
+streamlit==1.60.0
 altair
 yfinance
 pyarrow

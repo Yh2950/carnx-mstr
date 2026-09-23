@@ -1,37 +1,48 @@
 """
 CARN-X  --  scroll engine  (presentation only, no app logic)
 ===========================================================
-Streamlit's ``st.html`` strips a raw ``<script>`` even with
-``unsafe_allow_javascript=True``, so -- exactly like ``ltr_boot`` and
-``brand_boot`` -- this module writes one small ``<script>`` into Streamlit's
-static ``index.html`` (just before ``</body>``).  It drives, in the real page:
+Delivered through a zero-size ``st.components.v1.html`` iframe rather than by
+patching Streamlit's own ``static/index.html``: the earlier approach silently
+does nothing on managed hosts that don't allow writing into the installed
+package (confirmed on a live Streamlit Community Cloud deploy -- the app
+booted fine, but the nav wheel this module builds never appeared, because the
+patch never landed). The iframe is same-origin (no ``sandbox`` restriction), so
+its script reaches ``window.parent`` -- the real page -- for every DOM/window
+op; a ``var window = win`` / ``var document = win.document`` shadow at the top
+means the rest of the engine, written exactly as if it ran in the top page
+directly, only needed its handful of *unqualified* global calls
+(``setTimeout``/``requestAnimationFrame``/``navigator`` etc., which resolve via
+the iframe's own global scope regardless of local shadowing) explicitly
+re-pointed at ``win.``. It drives, in the real page:
 
-* a hair-thin gilt scroll-progress meter (``--cx-progress``);
-* a slow parallax on the engraved backdrop (``--cx-plate``);
+* a hair-thin scroll-progress meter (``--cx-progress``);
+* a slow parallax on the backdrop (``--cx-plate``);
+* the orbital nav ring (progressive enhancement -- see theme.py for the plain,
+  JS-free tab-bar fallback that is the actual always-on navigation);
 * a one-time reveal cascade: on the first page load each content block rises in
-  as it enters the viewport.  After the first load settles, blocks render
+  as it enters the viewport. After the first load settles, blocks render
   normally, so dragging a slider or switching a tab never re-animates the page.
 
 Every visual rule lives in ``theme.py``'s stylesheet (guarded by ``html.cx-js``
-and ``prefers-reduced-motion``).  If this script never runs, the page shows
+and ``prefers-reduced-motion``). If this script never runs, the page shows
 everything in its finished state -- nothing depends on it.
 
-Idempotent (marker-guarded, strip-and-replace) and self-healing (re-applied every
-process start, so ``pip install -U streamlit`` can't quietly undo it).  Fully
-exception-guarded: a cosmetic patch must never break app startup.
+Idempotent (the ``win.__cxScroll`` guard lives on the real page's window, which
+survives across Streamlit reruns even though the iframe itself is recreated
+each time) and fully exception-guarded: a cosmetic enhancement must never break
+the app.
 """
 
 from __future__ import annotations
 
-import os
-import re
-
-_MARKER = "carnx-scroll-boot"
-
 # Bare engine.  Waits for <body>, then for Streamlit's async content via a
-# MutationObserver.  All state on window/documentElement so it survives reruns.
+# MutationObserver.  All persistent state lives on window.parent (`win`), the
+# real page, since the iframe hosting this script is recreated every rerun.
 _ENGINE = r"""
 (function(){
+  var win=window.parent||window;
+  var window=win;                            // shadow: every window.x below now hits the real page
+  var document=win.document;                 // shadow: every bare `document` below now hits the real page
   function boot(){
    try{
     if(window.__cxScroll) return; window.__cxScroll=true;
@@ -68,7 +79,7 @@ _ENGINE = r"""
     function onScroll(){
       _scrolling=Date.now();
       if(_spending) return;
-      _spending=true; requestAnimationFrame(paintScroll);
+      _spending=true; win.requestAnimationFrame(paintScroll);
     }
     var bound=null;
     function bindScroll(){
@@ -95,7 +106,7 @@ _ENGINE = r"""
         var w=window.innerWidth||1, h=window.innerHeight||1;
         px=((e.clientX/w)-0.5); py=((e.clientY/h)-0.5);
         if(tick) return; tick=true;
-        requestAnimationFrame(function(){
+        win.requestAnimationFrame(function(){
           tick=false;
           r.style.setProperty('--cx-mx', (-px*24).toFixed(1)+'px');
           r.style.setProperty('--cx-my', (-py*20).toFixed(1)+'px');
@@ -128,11 +139,11 @@ _ENGINE = r"""
     var rt;
     function bumpReady(){
       if(window.__cxReady) return;
-      clearTimeout(rt);
-      rt=setTimeout(function(){ window.__cxReady=true; }, 1400);
+      win.clearTimeout(rt);
+      rt=win.setTimeout(function(){ window.__cxReady=true; }, 1400);
     }
-    setTimeout(function(){ window.__cxReady=true; }, 6000);
-    setTimeout(function(){
+    win.setTimeout(function(){ window.__cxReady=true; }, 6000);
+    win.setTimeout(function(){
       d.querySelectorAll('.cx-hide').forEach(function(el){ el.classList.add('cx-rev'); });
     }, 6800);
 
@@ -157,11 +168,11 @@ _ENGINE = r"""
       // the section-change sweep + hue flash (transform/opacity only)
       wipe.classList.remove('run'); void wipe.offsetWidth; wipe.classList.add('run');
       flash.classList.remove('run'); void flash.offsetWidth; flash.classList.add('run');
-      if(navigator.vibrate) navigator.vibrate([4,18,8]);
+      if(win.navigator.vibrate) win.navigator.vibrate([4,18,8]);
       // re-arm the reveal cascade for the "new page"
-      window.__cxReady=false; clearTimeout(rt);
+      window.__cxReady=false; win.clearTimeout(rt);
       pass(true); bumpReady(); orbitSync(i);
-      setTimeout(function(){ window.__cxReady=true;
+      win.setTimeout(function(){ window.__cxReady=true;
         d.querySelectorAll('.cx-hide').forEach(function(el){
           var b=el.getBoundingClientRect();
           if(b.top < (window.innerHeight||0)*1.05) el.classList.add('cx-rev');
@@ -244,8 +255,8 @@ _ENGINE = r"""
         var L=navLabels();
         if(L[sel] && !L[sel].querySelector('input:checked')) L[sel].click();
       };
-      clearTimeout(navT);
-      if(now) fire(); else navT=setTimeout(fire, 200);
+      win.clearTimeout(navT);
+      if(now) fire(); else navT=win.setTimeout(fire, 200);
     }
 
     function bindOrbit(){
@@ -268,7 +279,7 @@ _ENGINE = r"""
         if(tgt!==oSel){
           oSel=tgt;
           for(var i=0;i<oItems.length;i++) oItems[i].classList.toggle('on', i===oSel);
-          if(navigator.vibrate) navigator.vibrate(5);
+          if(win.navigator.vibrate) win.navigator.vibrate(5);
           goTo(oSel, false);
         }
         if(e.cancelable) e.preventDefault();
@@ -289,21 +300,21 @@ _ENGINE = r"""
       // hover -> the ring spins; leave -> it eases back to rest
       orbit.addEventListener('pointerenter', function(e){
         if(e.pointerType==='touch') return;
-        clearTimeout(hoverT); orbit.classList.add('spinning','touched');
+        win.clearTimeout(hoverT); orbit.classList.add('spinning','touched');
       });
       orbit.addEventListener('pointerleave', function(e){
         if(e.pointerType==='touch') return;
-        clearTimeout(hoverT);
-        hoverT=setTimeout(function(){ orbit.classList.remove('spinning'); renderOrbit(oSel); }, 120);
+        win.clearTimeout(hoverT);
+        hoverT=win.setTimeout(function(){ orbit.classList.remove('spinning'); renderOrbit(oSel); }, 120);
       });
       // long-press on touch also spins
       orbit.addEventListener('touchstart', function(){
-        clearTimeout(hoverT);
-        hoverT=setTimeout(function(){ if(!dragging) orbit.classList.add('spinning'); }, 420);
+        win.clearTimeout(hoverT);
+        hoverT=win.setTimeout(function(){ if(!dragging) orbit.classList.add('spinning'); }, 420);
       }, {passive:true});
       orbit.addEventListener('touchend', function(){
-        clearTimeout(hoverT);
-        setTimeout(function(){ orbit.classList.remove('spinning'); renderOrbit(oSel); }, 200);
+        win.clearTimeout(hoverT);
+        win.setTimeout(function(){ orbit.classList.remove('spinning'); renderOrbit(oSel); }, 200);
       });
 
       orbit.addEventListener('wheel', function(e){
@@ -339,7 +350,7 @@ _ENGINE = r"""
       (window.requestIdleCallback||window.requestAnimationFrame)(moFlush);
     });
     mo.observe(d.body, {childList:true, subtree:true});
-    setInterval(syncSection, 600);
+    win.setInterval(syncSection, 600);
    }catch(e){
     try{
       document.documentElement.classList.remove('cx-js');
@@ -352,51 +363,13 @@ _ENGINE = r"""
 })();
 """
 
-_SNIPPET = f"<script>/* {_MARKER} */{_ENGINE}</script>"
 
-
-def _index_html_path() -> str | None:
+def render() -> None:
+    """Mount the engine.  Call once per script run, anywhere after
+    inject_theme() -- a zero-size iframe, invisible regardless of position."""
     try:
-        import streamlit
-    except Exception:  # pragma: no cover
-        return None
-    p = os.path.join(os.path.dirname(streamlit.__file__), "static", "index.html")
-    return p if os.path.isfile(p) else None
+        import streamlit.components.v1 as components
 
-
-def apply() -> bool:
-    """Patch static/index.html if needed.  Returns True when a write happened."""
-    path = _index_html_path()
-    if not path:
-        return False
-    try:
-        with open(path, encoding="utf-8") as fh:
-            html = fh.read()
-    except Exception:
-        return False
-    # drop any earlier carnx-scroll-boot script so a corrected snippet always wins
-    cleaned = re.sub(
-        r"\s*<script>/\* " + _MARKER + r" \*/.*?</script>", "", html, flags=re.S
-    )
-    if _SNIPPET in cleaned:
-        patched = cleaned
-    else:
-        anchor = "</body>"
-        i = cleaned.rfind(anchor)
-        if i == -1:
-            return False
-        patched = cleaned[:i] + _SNIPPET + "\n" + cleaned[i:]
-    if patched == html:
-        return False
-    try:
-        with open(path, "w", encoding="utf-8") as fh:
-            fh.write(patched)
-    except Exception:
-        return False
-    return True
-
-
-try:
-    _PATCHED = apply()
-except Exception:  # a cosmetic patch must never break app startup
-    _PATCHED = False
+        components.html(f"<script>{_ENGINE}</script>", height=0, width=0)
+    except Exception:  # a cosmetic enhancement must never break the app
+        pass
