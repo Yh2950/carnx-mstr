@@ -1,24 +1,25 @@
 """
 CARN-X  --  scroll engine  (presentation only, no app logic)
 ===========================================================
-Delivered through a zero-size ``st.components.v1.html`` iframe rather than by
-patching Streamlit's own ``static/index.html``: the earlier approach silently
-does nothing on managed hosts that don't allow writing into the installed
-package (confirmed on a live Streamlit Community Cloud deploy -- the app
-booted fine, but the nav wheel this module builds never appeared, because the
-patch never landed). The iframe is same-origin (no ``sandbox`` restriction), so
-its script reaches ``window.parent`` -- the real page -- for every DOM/window
-op; a ``var window = win`` / ``var document = win.document`` shadow at the top
-means the rest of the engine, written exactly as if it ran in the top page
-directly, only needed its handful of *unqualified* global calls
-(``setTimeout``/``requestAnimationFrame``/``navigator`` etc., which resolve via
-the iframe's own global scope regardless of local shadowing) explicitly
-re-pointed at ``win.``. It drives, in the real page:
+Delivered through ``st.html(..., unsafe_allow_javascript=True)`` -- verified
+empirically (Playwright, this exact Streamlit version) to execute the script
+natively in the real page, no iframe involved.  Two earlier delivery
+mechanisms were tried and both failed silently on Streamlit Community Cloud
+specifically (confirmed on the user's live deploy): patching Streamlit's own
+``static/index.html`` at process start (blocked -- the host doesn't allow
+writing into the installed package), and a zero-size
+``st.components.v1.html`` iframe (blocked too -- Cloud serves that component's
+content from a separate URL path that 403'd there, unlike a plain local
+``streamlit run`` where it is inlined via ``srcdoc``). ``st.html`` has no such
+dependency -- it is the same primitive ``st.markdown(unsafe_allow_html=True)``
+uses, just explicitly permitted to keep its ``<script>`` tag, so there is
+nothing here for a managed host to block. It drives, in the page:
 
 * a hair-thin scroll-progress meter (``--cx-progress``);
 * a slow parallax on the backdrop (``--cx-plate``);
 * the orbital nav ring (progressive enhancement -- see theme.py for the plain,
-  JS-free tab-bar fallback that is the actual always-on navigation);
+  JS-free tab-bar fallback that is the actual always-on navigation, in case a
+  future host blocks this mechanism too);
 * a one-time reveal cascade: on the first page load each content block rises in
   as it enters the viewport. After the first load settles, blocks render
   normally, so dragging a slider or switching a tab never re-animates the page.
@@ -27,22 +28,18 @@ Every visual rule lives in ``theme.py``'s stylesheet (guarded by ``html.cx-js``
 and ``prefers-reduced-motion``). If this script never runs, the page shows
 everything in its finished state -- nothing depends on it.
 
-Idempotent (the ``win.__cxScroll`` guard lives on the real page's window, which
-survives across Streamlit reruns even though the iframe itself is recreated
-each time) and fully exception-guarded: a cosmetic enhancement must never break
-the app.
+Idempotent (the ``window.__cxScroll`` guard lives on the page itself, so a
+Streamlit rerun re-issuing the same ``st.html`` call is a harmless no-op) and
+fully exception-guarded: a cosmetic enhancement must never break the app.
 """
 
 from __future__ import annotations
 
 # Bare engine.  Waits for <body>, then for Streamlit's async content via a
-# MutationObserver.  All persistent state lives on window.parent (`win`), the
-# real page, since the iframe hosting this script is recreated every rerun.
+# MutationObserver.  All persistent state lives on window/documentElement so
+# it survives Streamlit reruns.
 _ENGINE = r"""
 (function(){
-  var win=window.parent||window;
-  var window=win;                            // shadow: every window.x below now hits the real page
-  var document=win.document;                 // shadow: every bare `document` below now hits the real page
   function boot(){
    try{
     if(window.__cxScroll) return; window.__cxScroll=true;
@@ -79,7 +76,7 @@ _ENGINE = r"""
     function onScroll(){
       _scrolling=Date.now();
       if(_spending) return;
-      _spending=true; win.requestAnimationFrame(paintScroll);
+      _spending=true; requestAnimationFrame(paintScroll);
     }
     var bound=null;
     function bindScroll(){
@@ -106,7 +103,7 @@ _ENGINE = r"""
         var w=window.innerWidth||1, h=window.innerHeight||1;
         px=((e.clientX/w)-0.5); py=((e.clientY/h)-0.5);
         if(tick) return; tick=true;
-        win.requestAnimationFrame(function(){
+        requestAnimationFrame(function(){
           tick=false;
           r.style.setProperty('--cx-mx', (-px*24).toFixed(1)+'px');
           r.style.setProperty('--cx-my', (-py*20).toFixed(1)+'px');
@@ -139,11 +136,11 @@ _ENGINE = r"""
     var rt;
     function bumpReady(){
       if(window.__cxReady) return;
-      win.clearTimeout(rt);
-      rt=win.setTimeout(function(){ window.__cxReady=true; }, 1400);
+      clearTimeout(rt);
+      rt=setTimeout(function(){ window.__cxReady=true; }, 1400);
     }
-    win.setTimeout(function(){ window.__cxReady=true; }, 6000);
-    win.setTimeout(function(){
+    setTimeout(function(){ window.__cxReady=true; }, 6000);
+    setTimeout(function(){
       d.querySelectorAll('.cx-hide').forEach(function(el){ el.classList.add('cx-rev'); });
     }, 6800);
 
@@ -168,11 +165,11 @@ _ENGINE = r"""
       // the section-change sweep + hue flash (transform/opacity only)
       wipe.classList.remove('run'); void wipe.offsetWidth; wipe.classList.add('run');
       flash.classList.remove('run'); void flash.offsetWidth; flash.classList.add('run');
-      if(win.navigator.vibrate) win.navigator.vibrate([4,18,8]);
+      if(navigator.vibrate) navigator.vibrate([4,18,8]);
       // re-arm the reveal cascade for the "new page"
-      window.__cxReady=false; win.clearTimeout(rt);
+      window.__cxReady=false; clearTimeout(rt);
       pass(true); bumpReady(); orbitSync(i);
-      win.setTimeout(function(){ window.__cxReady=true;
+      setTimeout(function(){ window.__cxReady=true;
         d.querySelectorAll('.cx-hide').forEach(function(el){
           var b=el.getBoundingClientRect();
           if(b.top < (window.innerHeight||0)*1.05) el.classList.add('cx-rev');
@@ -255,8 +252,8 @@ _ENGINE = r"""
         var L=navLabels();
         if(L[sel] && !L[sel].querySelector('input:checked')) L[sel].click();
       };
-      win.clearTimeout(navT);
-      if(now) fire(); else navT=win.setTimeout(fire, 200);
+      clearTimeout(navT);
+      if(now) fire(); else navT=setTimeout(fire, 200);
     }
 
     function bindOrbit(){
@@ -279,7 +276,7 @@ _ENGINE = r"""
         if(tgt!==oSel){
           oSel=tgt;
           for(var i=0;i<oItems.length;i++) oItems[i].classList.toggle('on', i===oSel);
-          if(win.navigator.vibrate) win.navigator.vibrate(5);
+          if(navigator.vibrate) navigator.vibrate(5);
           goTo(oSel, false);
         }
         if(e.cancelable) e.preventDefault();
@@ -300,21 +297,21 @@ _ENGINE = r"""
       // hover -> the ring spins; leave -> it eases back to rest
       orbit.addEventListener('pointerenter', function(e){
         if(e.pointerType==='touch') return;
-        win.clearTimeout(hoverT); orbit.classList.add('spinning','touched');
+        clearTimeout(hoverT); orbit.classList.add('spinning','touched');
       });
       orbit.addEventListener('pointerleave', function(e){
         if(e.pointerType==='touch') return;
-        win.clearTimeout(hoverT);
-        hoverT=win.setTimeout(function(){ orbit.classList.remove('spinning'); renderOrbit(oSel); }, 120);
+        clearTimeout(hoverT);
+        hoverT=setTimeout(function(){ orbit.classList.remove('spinning'); renderOrbit(oSel); }, 120);
       });
       // long-press on touch also spins
       orbit.addEventListener('touchstart', function(){
-        win.clearTimeout(hoverT);
-        hoverT=win.setTimeout(function(){ if(!dragging) orbit.classList.add('spinning'); }, 420);
+        clearTimeout(hoverT);
+        hoverT=setTimeout(function(){ if(!dragging) orbit.classList.add('spinning'); }, 420);
       }, {passive:true});
       orbit.addEventListener('touchend', function(){
-        win.clearTimeout(hoverT);
-        win.setTimeout(function(){ orbit.classList.remove('spinning'); renderOrbit(oSel); }, 200);
+        clearTimeout(hoverT);
+        setTimeout(function(){ orbit.classList.remove('spinning'); renderOrbit(oSel); }, 200);
       });
 
       orbit.addEventListener('wheel', function(e){
@@ -350,7 +347,7 @@ _ENGINE = r"""
       (window.requestIdleCallback||window.requestAnimationFrame)(moFlush);
     });
     mo.observe(d.body, {childList:true, subtree:true});
-    win.setInterval(syncSection, 600);
+    setInterval(syncSection, 600);
    }catch(e){
     try{
       document.documentElement.classList.remove('cx-js');
@@ -366,10 +363,10 @@ _ENGINE = r"""
 
 def render() -> None:
     """Mount the engine.  Call once per script run, anywhere after
-    inject_theme() -- a zero-size iframe, invisible regardless of position."""
+    inject_theme()."""
     try:
-        import streamlit.components.v1 as components
+        import streamlit as st
 
-        components.html(f"<script>{_ENGINE}</script>", height=0, width=0)
+        st.html(f"<script>{_ENGINE}</script>", unsafe_allow_javascript=True)
     except Exception:  # a cosmetic enhancement must never break the app
         pass

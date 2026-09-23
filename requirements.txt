@@ -18,10 +18,11 @@ sympy
 networkx
 
 # app + data
-# pinned exactly: scroll_boot's nav wheel uses the deprecated (but still
-# functional) st.components.v1.html to reach the real page from an iframe --
-# verified end-to-end against this exact version. An unpinned `>=` let Cloud
-# silently resolve a newer release that could drop the API without warning.
+# pinned exactly: verified end-to-end (Playwright, real browser) against this
+# exact version -- scroll_boot's nav wheel and the RTL shim both depend on
+# st.html(unsafe_allow_javascript=True) actually executing its <script>, which
+# is undocumented/version-sensitive behaviour. An unpinned `>=` let Cloud
+# silently resolve a different release that could change it without warning.
 streamlit==1.60.0
 altair
 yfinance
