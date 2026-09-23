@@ -17,9 +17,9 @@
     "qqq": "QQQ"
   },
   "ffill_limit": 3,
-  "fetched_at": 1789037296.6374397,
-  "fetched_at_iso": "2026-09-10T13:48:16",
-  "rows": 1828,
+  "fetched_at": 1790148366.7269003,
+  "fetched_at_iso": "2026-09-23T10:26:06",
+  "rows": 1837,
   "columns": [
     "mstr_ffilled",
     "mstr_open",
@@ -124,5 +124,5 @@
     "qqq": 0
   },
   "date_min": "2019-06-03",
-  "date_max": "2026-09-09"
+  "date_max": "2026-09-22"
 }

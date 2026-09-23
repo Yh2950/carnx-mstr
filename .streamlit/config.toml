@@ -1,29 +1,29 @@
-# CARN-X  --  "liquid glass" visual theme only (no behaviour / no logic touched).
-# Deep electric ground, near-clear glass, bright specular rims.  The mesh, the
-# glass recipe and the orbital nav live in theme.py.
+# CARN-X  --  calm, normal theme (cosmetic only; no behaviour/logic touched).
+# One flat near-black ground, one quiet blue accent, plain sans typography.
+# See theme.py for the full stylesheet.
 
 [theme]
 base = "dark"
-primaryColor = "#58C6FF"
-backgroundColor = "#08111C"
-secondaryBackgroundColor = "#101B28"
-textColor = "#F2F6FA"
-linkColor = "#A6E6FF"
-borderColor = "#25384A"
+primaryColor = "#4C8DFF"
+backgroundColor = "#0B0F14"
+secondaryBackgroundColor = "#12161C"
+textColor = "#E7EAEE"
+linkColor = "#9CC2FF"
+borderColor = "#242A31"
 showWidgetBorder = true
-baseRadius = "0.9rem"
+baseRadius = "0.6rem"
 baseFontSize = 15
 
 font = "'Inter':https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
-headingFont = "'Playfair Display':https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,800;0,900;1,600&display=swap"
+headingFont = "'Inter':https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
 codeFont = "'IBM Plex Mono':https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap"
 
 chartCategoricalColors = [
-  "#58C6FF", "#8FE0FF", "#37D6E8", "#3DDC97",
-  "#7AB6FF", "#A6E6FF", "#5AC8FF", "#B36BFF",
+  "#4C8DFF", "#3FB950", "#E2A23D", "#F85149",
+  "#58C6FF", "#9C8CFF", "#6C8CFF", "#E888C4",
 ]
 
 [theme.sidebar]
-backgroundColor = "#0B0B0C"
-secondaryBackgroundColor = "#161617"
-borderColor = "#242426"
+backgroundColor = "#070A0D"
+secondaryBackgroundColor = "#12161C"
+borderColor = "#242A31"
