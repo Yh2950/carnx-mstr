@@ -1,19 +1,24 @@
 """
 CARN-X  --  scroll engine  (presentation only, no app logic)
 ===========================================================
-Delivered through ``st.html(..., unsafe_allow_javascript=True)`` -- verified
-empirically (Playwright, this exact Streamlit version) to execute the script
-natively in the real page, no iframe involved.  Two earlier delivery
-mechanisms were tried and both failed silently on Streamlit Community Cloud
-specifically (confirmed on the user's live deploy): patching Streamlit's own
+Delivered through ``st.html(..., unsafe_allow_javascript=True)``, base64-
+encoded (see ``render()`` for why). Two earlier delivery mechanisms were
+tried and both failed silently on Streamlit Community Cloud specifically
+(confirmed on the user's live deploy): patching Streamlit's own
 ``static/index.html`` at process start (blocked -- the host doesn't allow
 writing into the installed package), and a zero-size
 ``st.components.v1.html`` iframe (blocked too -- Cloud serves that component's
-content from a separate URL path that 403'd there, unlike a plain local
-``streamlit run`` where it is inlined via ``srcdoc``). ``st.html`` has no such
-dependency -- it is the same primitive ``st.markdown(unsafe_allow_html=True)``
-uses, just explicitly permitted to keep its ``<script>`` tag, so there is
-nothing here for a managed host to block. It drives, in the page:
+content from a separate URL path that 403'd there). Plain ``st.html`` looked
+like the fix and even *appeared* to work in earlier local testing -- but that
+was a false positive from a stale physical patch left on disk by the first
+mechanism, still present in the installed Streamlit package. Once that was
+cleaned up, honest testing (Playwright, minimal isolated repro apps) found
+the real bug: DOMPurify (which sanitizes ``st.html`` content even with the
+JS flag set) silently wipes the *entire* script body to empty if it contains
+so much as one literal ``<`` -- true of nearly any nontrivial JS (loop
+guards, ``<img>``/``<div>`` template strings). Base64-encoding the payload
+and decoding+``eval``-ing it at runtime sidesteps this: the text DOMPurify
+actually inspects has no ``<`` in it. It drives, in the page:
 
 * a hair-thin scroll-progress meter (``--cx-progress``);
 * a slow parallax on the backdrop (``--cx-plate``);
@@ -365,8 +370,23 @@ def render() -> None:
     """Mount the engine.  Call once per script run, anywhere after
     inject_theme()."""
     try:
+        import base64
+
         import streamlit as st
 
-        st.html(f"<script>{_ENGINE}</script>", unsafe_allow_javascript=True)
+        # st.html(unsafe_allow_javascript=True) runs the body through
+        # DOMPurify on the frontend before it ever reaches the JS engine --
+        # and empirically (Playwright, this exact Streamlit version) a
+        # single literal "<" ANYWHERE in that body (a "i<n" loop guard, an
+        # "<img ...>" template string, doesn't matter) makes DOMPurify wipe
+        # the *entire* script tag to empty, with no error anywhere. _ENGINE
+        # is full of both, so shipping it as raw text never had a chance --
+        # this is what silently defeated the plain st.html attempt, on
+        # Cloud and locally alike. Base64 has no "<" in its alphabet, so
+        # decode-and-eval it at runtime instead of inlining it: the string
+        # DOMPurify actually inspects is "<" -free, and eval() itself is not
+        # blocked here (verified empirically).
+        b64 = base64.b64encode(_ENGINE.encode("utf-8")).decode("ascii")
+        st.html(f'<script>eval(atob("{b64}"))</script>', unsafe_allow_javascript=True)
     except Exception:  # a cosmetic enhancement must never break the app
         pass
