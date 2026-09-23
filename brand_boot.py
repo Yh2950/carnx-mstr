@@ -18,8 +18,10 @@ shows up; on a host that allows both, the second is idempotent (window-flag
 guarded) and a harmless no-op once the tags already exist.
 
 * a real favicon (the engraved mark, not the default Streamlit icon);
-* apple-touch-icon, so "Add to Home Screen" on iOS uses the right icon;
-* ``theme-color`` so the mobile status bar matches the deep-navy plate.
+* apple-touch-icon + a web manifest, so "Add to Home Screen" on iOS/Android
+  installs CARN-X with the right icon, name and a standalone (chrome-less)
+  window instead of opening inside Safari/Chrome;
+* ``theme-color`` so the status bar / task-switcher tint matches the app.
 
 Nothing here touches the model, the screens, or any widget behaviour.
 """
@@ -33,8 +35,8 @@ import shutil
 
 _MARKER = "carnx-brand-boot"
 _APP_NAME = "CARN-X"
-_THEME = "#0A0A14"       # the ground -- matches theme.py --ink
-_BG = "#060610"          # splash background -- matches theme.py --ink-edge
+_THEME = "#EAF2FF"       # the ground -- matches theme.py --ink-edge
+_BG = "#FFFFFF"          # splash background -- matches theme.py --ink
 
 # project assets  ->  name inside  static/carnx/  (file-patch path only)
 _ICONS = {
@@ -75,12 +77,12 @@ _HEAD = f"""<!-- {_MARKER} -->
     <link rel="apple-touch-icon" sizes="180x180" href="./carnx/icon-180.png">
     <link rel="manifest" href="./carnx/manifest.webmanifest">
     <meta name="theme-color" content="{_THEME}">
-    <meta name="color-scheme" content="dark">
+    <meta name="color-scheme" content="light">
     <meta name="application-name" content="{_APP_NAME}">
     <meta name="apple-mobile-web-app-title" content="{_APP_NAME}">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
 """
 
 
@@ -185,14 +187,38 @@ def render() -> None:
     """Build the same <link>/<meta> identity tags at runtime, straight in
     document.head, with every icon inlined -- no filesystem write, so it
     works on hosts that refuse ``apply()``'s. Call once per script run,
-    anywhere after ``inject_theme()``."""
+    anywhere after ``inject_theme()``.
+
+    This -- plus apple-touch-icon -- is what iOS Safari actually reads for
+    "Add to Home Screen": the app icon, the name under it, and standalone
+    (chrome-less) launch. A manifest is not required for that on iOS, but
+    is built here too (via a Blob: URL, so still no filesystem write) since
+    Android/Chrome's install prompt does need one."""
     try:
+        import json
+
         import streamlit as st
 
         icon32 = _data_uri("favicon_32.png")
         icon180 = _data_uri("icon_180.png")
-        if not icon32 and not icon180:
+        icon192 = _data_uri("icon_192.png")
+        if not (icon32 or icon180 or icon192):
             return  # nothing to inline; leave apply()'s attempt as-is
+
+        manifest = {
+            "name": f"{_APP_NAME} — probabilistic forecasting",
+            "short_name": _APP_NAME,
+            "start_url": "./",
+            "scope": "./",
+            "display": "standalone",
+            "orientation": "any",
+            "lang": "en",
+            "dir": "ltr",
+            "background_color": _BG,
+            "theme_color": _THEME,
+            "icons": ([{"src": icon192, "sizes": "192x192", "type": "image/png"}] if icon192 else []),
+        }
+        manifest_json = json.dumps(manifest)
 
         js = (
             "(function(){"
@@ -216,11 +242,25 @@ def render() -> None:
                 else ""
             )
             + f"H.appendChild(mk('meta',{{name:'theme-color',content:'{_THEME}'}}));"
-            "H.appendChild(mk('meta',{name:'color-scheme',content:'dark'}));"
+            "H.appendChild(mk('meta',{name:'color-scheme',content:'light'}));"
             f"H.appendChild(mk('meta',{{name:'application-name',content:'{_APP_NAME}'}}));"
             f"H.appendChild(mk('meta',{{name:'apple-mobile-web-app-title',content:'{_APP_NAME}'}}));"
             "H.appendChild(mk('meta',{name:'apple-mobile-web-app-capable',content:'yes'}));"
-            "}catch(e){}"
+            "H.appendChild(mk('meta',{name:'mobile-web-app-capable',content:'yes'}));"
+            "H.appendChild(mk('meta',{name:'apple-mobile-web-app-status-bar-style',content:'default'}));"
+            + (
+                # base64, not a literal JSON string: sidesteps any quote/
+                # backslash escaping mismatch between Python's repr() and
+                # JS string-literal syntax (the manifest text itself has
+                # both quotes and a \uXXXX escape from json.dumps).
+                "H.appendChild(mk('link',{rel:'manifest',"
+                "href:URL.createObjectURL(new Blob([atob('"
+                + base64.b64encode(manifest_json.encode("ascii")).decode("ascii")
+                + "')],{type:'application/manifest+json'}))}));"
+                if icon192
+                else ""
+            )
+            + "}catch(e){}"
             "})();"
         )
         # same reasoning as scroll_boot.render(): DOMPurify strips a
