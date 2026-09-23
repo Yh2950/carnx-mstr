@@ -634,10 +634,42 @@ def _live_quote_direct(ticker: str) -> dict:
     return out
 
 
+# a short circuit-breaker: on a cloud host Yahoo blocks the datacenter IP
+# outright, and without this, live_quote()'s multi-fallback chain (and
+# yfinance's own noisy failure prints) reruns in full every ~12-30s forever via
+# the auto-refresh live-ticker fragment. After a few consecutive misses back
+# off hard instead of hammering a host that is already refusing every request.
+_LIVE_FAIL: dict[str, dict[str, float]] = {}
+_LIVE_COOLDOWN_AFTER = 3.0
+_LIVE_COOLDOWN_S = 300.0 if _ON_CLOUD else 60.0
+
+
+def _live_cooldown_active(ticker: str) -> bool:
+    st = _LIVE_FAIL.get(ticker)
+    return bool(st and st["n"] >= _LIVE_COOLDOWN_AFTER and time.time() < st["until"])
+
+
+def _live_note_result(ticker: str, ok: bool) -> None:
+    st = _LIVE_FAIL.setdefault(ticker, {"n": 0.0, "until": 0.0})
+    if ok:
+        st["n"], st["until"] = 0.0, 0.0
+    else:
+        st["n"] += 1.0
+        if st["n"] >= _LIVE_COOLDOWN_AFTER:
+            st["until"] = time.time() + _LIVE_COOLDOWN_S
+
+
 def live_quote(ticker: str = "MSTR") -> LiveQuote:
     """Best-effort *real-time* quote, separate from the daily panel. For display and
     the live ticker -- the model always runs on completed daily bars.
     """
+    if _live_cooldown_active(ticker):
+        return LiveQuote(
+            ticker=ticker, price=None, prev_close=None, change_pct=None,
+            as_of=_now_ny().strftime("%Y-%m-%d %H:%M %Z"),
+            source="cooldown (Yahoo unreachable)",
+            market_state=market_status(ticker), epoch=time.time(),
+        )
     price = prev = None
     d_open = d_high = d_low = vol = y_high = y_low = None
     src = "unavailable"
@@ -686,6 +718,7 @@ def live_quote(ticker: str = "MSTR") -> LiveQuote:
     chg = ((price / prev - 1.0) * 100.0) if (price and prev) else None
     ext_px = _f(md.get("extended_price"))
     ext_chg = md.get("extended_change_pct")
+    _live_note_result(ticker, price is not None)
 
     return LiveQuote(
         ticker=ticker,

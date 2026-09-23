@@ -139,11 +139,27 @@ html, body {{ background: var(--ink); }}
 }}
 .st-key-cx_refresh button p, .cx-reload button p {{ color: #fff !important; }}
 
-/* ---------- nav: a quiet ring of plain pills around the mark ---------- *
- * Built by scroll_boot from the keyed radio, which stays in the DOM (hidden)
- * so the JS can click it and AppTest can still read it.  No glow, no spin,
- * no pulsing aura -- click / drag / scroll to move between pages. */
-.st-key-cx_nav {{
+/* ---------- nav ---------- *
+ * A plain, always-visible horizontal tab list is the REAL navigation -- it
+ * needs no JavaScript at all, so it works even where scroll_boot's page-patch
+ * can't run (some managed hosts block writing into Streamlit's own static
+ * files). Where the patch DOES run, scroll_boot additionally builds a quiet
+ * ring of pills around the mark (.cx-orbit) and -- only once that actually
+ * exists in the page -- CSS hides this plain list in its favour. Either way
+ * there is always a working way to switch pages. */
+.st-key-cx_nav [role="radiogroup"] {{
+  display: flex; flex-wrap: wrap; gap: .4rem; justify-content: center;
+}}
+.st-key-cx_nav [role="radiogroup"] > label {{
+  border: 1px solid var(--line); border-radius: 999px; background: var(--panel);
+  padding: .4rem .9rem; cursor: pointer; transition: background .12s ease, border-color .12s ease;
+}}
+.st-key-cx_nav [role="radiogroup"] > label:hover {{ background: var(--panel-hi); }}
+.st-key-cx_nav [role="radiogroup"] > label:has(input:checked) {{
+  background: var(--gold-deep); border-color: var(--gold);
+}}
+.st-key-cx_nav [role="radiogroup"] > label:has(input:checked) p {{ color: #fff !important; }}
+body:has(.cx-orbit) .st-key-cx_nav {{
   position: absolute !important; left: -9999px !important; top: 0 !important;
   width: 1px !important; height: 0 !important; overflow: hidden !important;
   opacity: 0 !important; pointer-events: none !important; margin: 0 !important; border: 0 !important;
