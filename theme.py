@@ -1,11 +1,13 @@
 """
 CARN-X  --  presentation layer  (visual only; no logic, no data, no decisions)
 =============================================================================
-A calm, normal dark dashboard: one flat near-black ground, one quiet accent
-colour, plain cards with a hairline border, ordinary sans typography. No
-animated backdrop, no glow, no chromatic effects, no per-page "design
-languages" -- one consistent look everywhere, on purpose (the app was
-repeatedly too loud; this is the deliberate correction).
+A calm, normal white dashboard: a flat white ground with a family of blue /
+turquoise accents (cards and lines carry a faint blue wash rather than one
+single flat tint, so the surface reads as "white, varied" rather than
+"white, blank"), plain cards with a hairline border, ordinary sans
+typography. No animated backdrop, no glow, no chromatic effects, no
+per-page "design languages" -- one consistent look everywhere, on purpose
+(the app was repeatedly too loud; this is the deliberate correction).
 
 Public surface (unchanged):
     inject_theme()               once, right after st.set_page_config
@@ -25,36 +27,38 @@ import os
 import streamlit as st
 
 # --------------------------------------------------------------------------- #
-# palette  --  flat near-black ground, one quiet blue accent, plain surfaces.
+# palette  --  flat white ground, a family of blue/turquoise accents, plain
+# surfaces tinted with a faint blue wash instead of grey (that wash is what
+# reads as "varied" against a flat white, per the user's request).
 # (var NAMES kept as GOLD*/INK* for back-compat with the rest of this file --
 #  the values are just a normal, calm colour set.)
 # --------------------------------------------------------------------------- #
-INK = "#0B0F14"           # the ground -- flat, no gradient, no motion
-INK_EDGE = "#070A0D"
-PANEL = "rgba(255,255,255,0.045)"   # a plain card fill
-PANEL_HI = "rgba(255,255,255,0.07)"  # hover state
-SUNK = "rgba(0,0,0,0.25)"
-LINE = "rgba(255,255,255,0.10)"      # the hairline every card/input uses
-LINE_SOFT = "rgba(255,255,255,0.05)"
+INK = "#FFFFFF"           # the ground -- white
+INK_EDGE = "#EAF2FF"      # a pale blue surface (sidebar) -- the "variety" against flat white
+PANEL = "rgba(31,79,189,0.045)"   # a plain card fill -- a faint blue wash over white
+PANEL_HI = "rgba(31,79,189,0.08)"  # hover state
+SUNK = "rgba(31,79,189,0.06)"
+LINE = "rgba(31,79,189,0.16)"      # the hairline every card/input uses
+LINE_SOFT = "rgba(31,79,189,0.08)"
 
-GOLD = "#4C8DFF"          # the one accent colour (a plain, quiet blue)
-GOLD_BRIGHT = "#7FB0FF"
-GOLD_DEEP = "#2F63C9"
-GOLD_TEXT = "#9CC2FF"
+GOLD = "#2F6FED"          # the one accent colour (a plain, strong blue)
+GOLD_BRIGHT = "#4C8DFF"
+GOLD_DEEP = "#1D4FBD"
+GOLD_TEXT = "#1D4FBD"
 
-TEXT = "#E7EAEE"
-TEXT_DIM = "#9AA4B2"
-TEXT_FAINT = "#6B7684"
+TEXT = "#0B1220"
+TEXT_DIM = "#4C5B75"
+TEXT_FAINT = "#7C8AA3"
 
-UP = "#3FB950"
-DOWN = "#F85149"
+UP = "#1E8E3E"
+DOWN = "#D33B2C"
 
-CYAN = "#58C6FF"
-VIOLET = "#9C8CFF"
-MAGENTA = "#E888C4"
-LIME = "#9BE86B"
-AMBER = "#E2A23D"
-CATEGORICAL = [GOLD, UP, AMBER, DOWN, CYAN, VIOLET, "#6C8CFF", MAGENTA]
+CYAN = "#00AEEF"          # turquoise, for the requested blue/cyan variety
+VIOLET = "#7B68F0"
+MAGENTA = "#D0499D"
+LIME = "#5FAE3A"
+AMBER = "#D68A1D"
+CATEGORICAL = [GOLD, UP, AMBER, DOWN, CYAN, VIOLET, "#3D7FE0", MAGENTA]
 
 # one plain sans family throughout -- no display/serif split, no dramatic
 # glitch type.  numerals use the mono face (normal in a finance app).
@@ -89,8 +93,8 @@ def _css() -> str:
   --ink:{INK}; --ink-edge:{INK_EDGE}; --panel:{PANEL}; --panel-hi:{PANEL_HI};
   --sunk:{SUNK}; --line:{LINE}; --line-soft:{LINE_SOFT};
   --gold:{GOLD}; --gold-bright:{GOLD_BRIGHT}; --gold-deep:{GOLD_DEEP}; --gold-text:{GOLD_TEXT};
-  --gold-wash:rgba(76,141,255,0.10); --gold-line:rgba(76,141,255,0.28);
-  --glow:0 0 0 1px rgba(76,141,255,.28);
+  --gold-wash:rgba(47,111,237,0.10); --gold-line:rgba(47,111,237,0.28);
+  --glow:0 0 0 1px rgba(47,111,237,.28);
   --text:{TEXT}; --text-dim:{TEXT_DIM}; --text-faint:{TEXT_FAINT};
   --up:{UP}; --down:{DOWN};
   --display:{_DISPLAY}; --sans:{_SANS}; --mono:{_MONO};
@@ -113,7 +117,7 @@ html, body {{ background: var(--ink); }}
 /* section-change cue: a quick, barely-there fade -- not a "sweep", not a flash */
 .cx-wipe, .cx-flash {{
   position: fixed; inset: 0; z-index: 5; pointer-events: none; opacity: 0;
-  background: rgba(255,255,255,0.03);
+  background: rgba(31,79,189,0.05);
 }}
 .cx-wipe.run, .cx-flash.run {{ animation: cx-fade .3s ease-out; }}
 @keyframes cx-fade {{ 0% {{ opacity: 0; }} 30% {{ opacity: 1; }} 100% {{ opacity: 0; }} }}
@@ -132,7 +136,7 @@ html, body {{ background: var(--ink); }}
   padding: .38rem .95rem !important; border-radius: 8px !important;
   color: #fff !important; -webkit-text-fill-color: #fff !important;
   background: #2E9F5C !important;
-  border: 1px solid rgba(255,255,255,0.12) !important;
+  border: 1px solid rgba(31,79,189,0.14) !important;
   transition: background .12s ease !important;
 }}
 .st-key-cx_refresh button:hover, .cx-reload button:hover {{ background: #35B267 !important; }}
@@ -202,7 +206,7 @@ body:has(.cx-orbit) .st-key-cx_nav {{
   transition: color .15s, background .15s, border-color .15s;
 }}
 .cx-orbit-item > button:hover {{
-  color: var(--text); border-color: rgba(255,255,255,.2); background: var(--panel-hi);
+  color: var(--text); border-color: rgba(31,79,189,.22); background: var(--panel-hi);
 }}
 .cx-orbit-item.on > button {{
   color: #fff; -webkit-text-fill-color: #fff; font-weight: 700;
@@ -270,7 +274,7 @@ pre, [data-testid="stCode"] {{
   contain: layout style;
   transition: background .15s ease, border-color .15s ease;
 }}
-[data-testid="stMetric"]:hover {{ background: var(--panel-hi); border-color: rgba(255,255,255,.16); }}
+[data-testid="stMetric"]:hover {{ background: var(--panel-hi); border-color: rgba(31,79,189,.20); }}
 [data-testid="stMetricLabel"], [data-testid="stMetricLabel"] p {{
   text-transform: uppercase !important; letter-spacing: .07em !important;
   font-size: .66rem !important; color: var(--text-faint) !important;
@@ -310,7 +314,7 @@ pre, [data-testid="stCode"] {{
 }}
 .stButton > button:hover, .stDownloadButton > button:hover,
 [data-testid="stFormSubmitButton"] > button:hover {{
-  border-color: rgba(255,255,255,.18); background: var(--panel-hi);
+  border-color: rgba(31,79,189,.20); background: var(--panel-hi);
 }}
 .stButton > button[kind="primary"], [data-testid="stFormSubmitButton"] > button {{
   background: var(--gold); color: #fff; -webkit-text-fill-color: #fff;
@@ -598,10 +602,10 @@ def _wordmark_svg() -> str:
     img = (
         f'<img src="{src}" alt="" '
         'style="height:38px;width:38px;border-radius:9px;display:block;'
-        'border:1px solid rgba(255,255,255,.12)">'
+        'border:1px solid rgba(31,79,189,.16)">'
         if src
         else '<div style="height:38px;width:38px;border-radius:9px;'
-        'border:1px solid rgba(255,255,255,.12)"></div>'
+        'border:1px solid rgba(31,79,189,.16)"></div>'
     )
     return (
         img
@@ -688,9 +692,9 @@ def _register_altair_theme() -> None:
                 "font": _SANS,
                 "title": {"color": GOLD_TEXT, "fontSize": 14, "font": _SANS, "fontWeight": 600},
                 "axis": {
-                    "domainColor": "rgba(255,255,255,0.16)",
-                    "gridColor": "rgba(255,255,255,0.06)",
-                    "tickColor": "rgba(255,255,255,0.16)",
+                    "domainColor": "rgba(11,18,32,0.18)",
+                    "gridColor": "rgba(11,18,32,0.07)",
+                    "tickColor": "rgba(11,18,32,0.18)",
                     "labelColor": TEXT_DIM,
                     "titleColor": TEXT_DIM,
                     "labelFont": _MONO,
@@ -704,8 +708,8 @@ def _register_altair_theme() -> None:
                 },
                 "range": {
                     "category": CATEGORICAL,
-                    "heatmap": ["#12161C", "#2F63C9", GOLD, CYAN],
-                    "ramp": ["#12161C", "#2F63C9", GOLD, "#BCD6FF"],
+                    "heatmap": ["#EAF2FF", "#8FB8FF", GOLD, GOLD_DEEP],
+                    "ramp": ["#EAF2FF", "#8FB8FF", GOLD, GOLD_DEEP],
                 },
             }
         }
