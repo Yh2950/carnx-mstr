@@ -184,7 +184,7 @@ _ENGINE = r"""
 
 
     /* ---- orbital navigation: page buttons on a ring around the Bitcoin hub ---- */
-    var BTC='<img src="./carnx/hub.png" alt="" '
+    var BTC='<img src="./app/static/hub.png" alt="" '
       +'style="width:100%;height:100%;display:block;border-radius:50%;object-fit:cover">';
 
     function navLabels(){ return d.querySelectorAll('.st-key-cx_nav [role=radiogroup] label'); }
@@ -366,26 +366,6 @@ _ENGINE = r"""
 """
 
 
-def _hub_data_uri() -> str:
-    """Inline assets/hub.png as a data: URI.
-
-    The engine used to point the orbit hub at ``./carnx/hub.png``, a path
-    that only exists once brand_boot copies it into Streamlit's static
-    directory -- blocked on a managed host exactly like every other static
-    write in this app. A data: URI has no such dependency.
-    """
-    import base64
-    import os
-
-    path = os.path.join(os.path.dirname(__file__), "assets", "hub.png")
-    try:
-        with open(path, "rb") as fh:
-            b64 = base64.b64encode(fh.read()).decode("ascii")
-        return f"data:image/png;base64,{b64}"
-    except Exception:
-        return "./carnx/hub.png"  # last-resort fallback, same as before
-
-
 def render() -> None:
     """Mount the engine.  Call once per script run, anywhere after
     inject_theme()."""
@@ -393,8 +373,6 @@ def render() -> None:
         import base64
 
         import streamlit as st
-
-        engine = _ENGINE.replace("./carnx/hub.png", _hub_data_uri())
 
         # st.html(unsafe_allow_javascript=True) runs the body through
         # DOMPurify on the frontend before it ever reaches the JS engine --
@@ -408,7 +386,7 @@ def render() -> None:
         # decode-and-eval it at runtime instead of inlining it: the string
         # DOMPurify actually inspects is "<" -free, and eval() itself is not
         # blocked here (verified empirically).
-        b64 = base64.b64encode(engine.encode("utf-8")).decode("ascii")
+        b64 = base64.b64encode(_ENGINE.encode("utf-8")).decode("ascii")
         st.html(f'<script>eval(atob("{b64}"))</script>', unsafe_allow_javascript=True)
     except Exception:  # a cosmetic enhancement must never break the app
         pass

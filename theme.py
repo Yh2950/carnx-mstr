@@ -21,9 +21,6 @@ Nothing here computes, fetches, caches or decides.
 
 from __future__ import annotations
 
-import base64
-import os
-
 import streamlit as st
 
 # --------------------------------------------------------------------------- #
@@ -578,34 +575,18 @@ def inject_theme() -> None:
     _register_altair_theme()
 
 
-def _asset_data_uri(filename: str) -> str:
-    """Inline a PNG from assets/ as a data: URI.
-
-    brand_boot's ``./carnx/*.png`` paths depend on copying files into
-    Streamlit's own static directory, which a managed host (e.g. Streamlit
-    Community Cloud) can silently refuse to let it write into -- that's
-    exactly what left the header logo (and the orbit hub icon) blank on the
-    live deploy. A data: URI has no such dependency: the bytes live directly
-    in the HTML, so there is nothing left for a restrictive host to block.
-    """
-    path = os.path.join(os.path.dirname(__file__), "assets", filename)
-    try:
-        with open(path, "rb") as fh:
-            b64 = base64.b64encode(fh.read()).decode("ascii")
-        return f"data:image/png;base64,{b64}"
-    except Exception:
-        return ""
-
-
 def _wordmark_svg() -> str:
-    src = _asset_data_uri("mark.png")
+    # Served by Streamlit's own app-level static route (see brand_boot.py
+    # and [server] enableStaticServing in .streamlit/config.toml) straight
+    # from this repo's static/ folder -- a real, same-origin URL, so it
+    # works on any host with no runtime filesystem write. An earlier
+    # version inlined this as a data: URI instead; that avoided the write
+    # too, but iOS Safari's icon fetch (a related, not identical, path)
+    # doesn't reliably honour data: URIs, which is what led to this.
     img = (
-        f'<img src="{src}" alt="" '
+        '<img src="./app/static/mark.png" alt="" '
         'style="height:38px;width:38px;border-radius:9px;display:block;'
         'border:1px solid rgba(31,79,189,.16)">'
-        if src
-        else '<div style="height:38px;width:38px;border-radius:9px;'
-        'border:1px solid rgba(31,79,189,.16)"></div>'
     )
     return (
         img

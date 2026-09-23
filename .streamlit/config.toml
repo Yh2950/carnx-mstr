@@ -1,6 +1,16 @@
 # CARN-X  --  calm, white theme with a blue/cyan accent family (cosmetic only;
 # no behaviour/logic touched). See theme.py for the full stylesheet.
 
+# Serves ./static/* at <app-url>/app/static/* -- Streamlit's own built-in
+# static file route, reading straight from this repo's checked-in files.
+# No filesystem write at runtime, so unlike the old approach (copying icons
+# into Streamlit's *installed package* static dir) this works on Streamlit
+# Community Cloud. iOS's "Add to Home Screen" icon fetch also needs a real
+# fetchable URL -- it does not reliably honour a data: URI -- which this
+# gives it, where the earlier data-URI icons didn't.
+[server]
+enableStaticServing = true
+
 [theme]
 base = "light"
 primaryColor = "#2F6FED"
